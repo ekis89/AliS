@@ -1,0 +1,5 @@
+C:\Users\Resi\source\repos\AliS_WinVer\AliSDatos\bin\Debug\AliSDatos.dll
+C:\Users\Resi\source\repos\AliS_WinVer\AliSDatos\bin\Debug\AliSDatos.pdb
+C:\Users\Resi\source\repos\AliS_WinVer\AliSDatos\obj\Debug\AliSDatos.csproj.CoreCompileInputs.cache
+C:\Users\Resi\source\repos\AliS_WinVer\AliSDatos\obj\Debug\AliSDatos.dll
+C:\Users\Resi\source\repos\AliS_WinVer\AliSDatos\obj\Debug\AliSDatos.pdb

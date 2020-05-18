@@ -1,0 +1,11 @@
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSLogica.dll
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSLogica.pdb
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSDatos.dll
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSlib.dll
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSDatos.pdb
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSlib.pdb
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\obj\Debug\AliSLogica.csprojAssemblyReference.cache
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\obj\Debug\AliSLogica.csproj.CoreCompileInputs.cache
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\obj\Debug\AliSLogica.csproj.CopyComplete
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\obj\Debug\AliSLogica.dll
+C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\obj\Debug\AliSLogica.pdb
