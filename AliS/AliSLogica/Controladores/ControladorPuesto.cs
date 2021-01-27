@@ -21,11 +21,23 @@ namespace AliSLogica.Controladores
             }
         }
 
-        public static string InsertarAcualizarPuesto(int codigoEmpresa, int codigoPuesto, string descripcion, int tipoPuesto, string montoBasico)
+        public static DataTable RecuperarPuestoPorEmpresaYLegajo(int codigoEmpresa, string numeroLegajo)
         {
             try
             {
-                DataTable rta = CatalogoPuesto.InsertarAcualizarPuesto(codigoEmpresa, codigoPuesto, descripcion, tipoPuesto, montoBasico);
+                return CatalogoPuesto.RecuperarPuestoPorEmpresaYLegajo(codigoEmpresa, numeroLegajo);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static string InsertarAcualizarPuesto(int codigoEmpresa, string codigo, int codigoPuesto, string descripcion, int tipoPuesto, string montoBasico)
+        {
+            try
+            {
+                DataTable rta = CatalogoPuesto.InsertarAcualizarPuesto(codigoEmpresa, codigo, codigoPuesto, descripcion, tipoPuesto, montoBasico);
                 return Convert.ToString(rta.Rows[0][0]);
             }
             catch (Exception ex)

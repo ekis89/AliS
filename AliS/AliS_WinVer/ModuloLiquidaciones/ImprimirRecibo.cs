@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Recibo;
 using Microsoft.Reporting.WinForms;
 using AliSDatos.Clases;
 
@@ -15,15 +14,28 @@ namespace AliS_WinVer
         public List<AliSDatos.Clases.Concepto> ConcepList = new List<AliSDatos.Clases.Concepto>();
         public List<PieRecibo> FooterList = new List<PieRecibo>();
 
-        public ImprimirRecibo(PrincipalLiquidaciones screenReciboBuilder, ReciboBuilderMini screenRBMini)
+        private string _titulo;
+
+        public ImprimirRecibo(PrincipalLiquidaciones screenReciboBuilder, string titulo = "")
         {
             InitializeComponent();
             this.screenReciboBuilder = screenReciboBuilder;
+            this._titulo = titulo;
+
+        }
+
+        public ImprimirRecibo(ReciboBuilderMini screenRBMini, string titulo = "")
+        {
+            InitializeComponent();
             this.screenRBMini = screenRBMini;
+            this._titulo = titulo;
+
         }
 
         private void ReciboPrinter_Load(object sender, EventArgs e)
         {
+            this.Text = _titulo;
+
             reportViewer1.SetDisplayMode(DisplayMode.PrintLayout);
             reportViewer1.LocalReport.DataSources.Clear();
 

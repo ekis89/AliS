@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using AliSlib;
-using Obj;
 using AliSLogica.Controladores;
 using System.Data;
 
@@ -10,18 +9,16 @@ namespace AliS_WinVer
     public partial class PrincipalEmpresas : Form
     {
         #region PROPIEDADES
-        Index Index;
+        Principal Index;
 
         #endregion
 
         #region INICIO
 
-        public PrincipalEmpresas(Index Index)
+        public PrincipalEmpresas(Principal Index)
         {
             InitializeComponent();
             this.Index = Index;
-
-            this.Index.Enabled = false;
 
         }
 
@@ -63,7 +60,8 @@ namespace AliS_WinVer
                         case "ok":
                             MessageBox.Show("¡Empresa creada con exito!");
 
-                            Index.Index_Load(null, EventArgs.Empty);
+                            Index.Principal_Load(null, EventArgs.Empty);
+
                             this.Close();
 
                             break;
@@ -92,6 +90,10 @@ namespace AliS_WinVer
         {
             Index.Enabled = true;
             Index.Focus();
+            Index.comboEmpresas.ComboBox.Enabled = true;
+
+            if (Index.comboEmpresas.ComboBox.SelectedIndex != -1)
+                (this.MdiParent as Principal).ActivarBotonesTS();
         }
 
         private void textBox7_KeyPress(object sender, KeyPressEventArgs e)

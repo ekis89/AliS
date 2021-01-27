@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditarConcepto));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tbxComponentes = new System.Windows.Forms.TextBox();
             this.btnSeleccionar = new System.Windows.Forms.Button();
@@ -267,7 +268,7 @@
             this.btnCancelar.UseVisualStyleBackColor = true;
             this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
             // 
-            // EditConcepto
+            // EditarConcepto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -283,7 +284,8 @@
             this.Controls.Add(this.optRemunerativo);
             this.Controls.Add(this.optNoRemunerativo);
             this.Controls.Add(this.btnAceptar);
-            this.Name = "EditConcepto";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "EditarConcepto";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Editar concepto";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EditConcepto_FormClosing);

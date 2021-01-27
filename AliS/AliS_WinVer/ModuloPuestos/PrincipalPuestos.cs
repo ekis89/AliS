@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AliS_WinVer.Clases;
 using AliSlib;
 using AliSLogica.Controladores;
 
@@ -15,19 +16,22 @@ namespace AliS_WinVer
     public partial class PrincipalPuestos : Form
     {
         private DataTable tablaPuestos;
-        private Index Index;
+        private Form Index;
+
+        private Empresa _empresa;
 
         #region INICIO
-        public PrincipalPuestos(Index Index)
+        public PrincipalPuestos(Principal Index, Empresa empresa)
         {
             InitializeComponent();
             this.Index = Index;
+            this._empresa = empresa;
         }
 
         //Carga la tabla de puestos.
         public void puestos_Load(object sender, EventArgs e)
         {
-            this.Text = string.Format("{0}: Puestos", UsuarioSingleton.Instance.NombreEmpresa);
+            this.Text = string.Format("{0}: Puestos", _empresa.NombreEmpresa);
             CargarPuestos();
         }
         #endregion
@@ -35,7 +39,7 @@ namespace AliS_WinVer
         #region BOTONES
         private void button1_Click(object sender, EventArgs e)
         {
-            AñadirPuesto addPuesto = new AñadirPuesto(this);
+            AñadirPuesto addPuesto = new AñadirPuesto(this, _empresa);
 
             this.Enabled = false;
             this.Visible = false;
@@ -55,7 +59,7 @@ namespace AliS_WinVer
             {
                 try
                 {
-                    string rta = ControladorPuesto.InsertarAcualizarPuesto(UsuarioSingleton.Instance.codigoEmpresa,codigoPuesto,"",0, promptValue);
+                    string rta = ControladorPuesto.InsertarAcualizarPuesto(_empresa.codigoEmpresa, "", codigoPuesto,"",0, promptValue);
 
                     if (rta.Equals("ok")){
                         MessageBox.Show("¡El puesto ha sido actualizado!");
@@ -99,6 +103,10 @@ namespace AliS_WinVer
 
                         MessageBox.Show("¡El puesto ha sido eliminado!");
                     }
+                    else
+                    {
+                        MessageBox.Show(rta);
+                    }
   
                 }
                 catch (Exception ex)
@@ -122,18 +130,22 @@ namespace AliS_WinVer
         {
             Index.Enabled = true;
             Index.Visible = true;
+
+            if (Index.GetType() == typeof(Principal))
+                (this.MdiParent as Principal).ActivarBotonesTS();
         }
         #endregion
 
         #region METODOS
         private void CargarPuestos()
         {
-            tablaPuestos = ControladorPuesto.RecuperarPuestosPorEmpresa(UsuarioSingleton.Instance.codigoEmpresa);
+            tablaPuestos = ControladorPuesto.RecuperarPuestosPorEmpresa(_empresa.codigoEmpresa);
 
             // Modifica los tamaños de las celdas del dataGrid.
             dataGridView1.DataSource = tablaPuestos;
             dataGridView1.Columns[0].Visible = false;
-            dataGridView1.Columns[1].Width = 150;
+            dataGridView1.Columns[1].Width = 106;
+            dataGridView1.Columns[2].Width = 150;
 
             dataGridView1.ClearSelection();
 

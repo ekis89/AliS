@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AliS_WinVer.Clases;
 using AliSLogica.Controladores;
 
 namespace AliS_WinVer
@@ -18,13 +19,16 @@ namespace AliS_WinVer
         EditarConcepto screenEditConcepto;
         bool isEditMode;
 
-        public SeleccionarComponentesHaberPorcentual(PrincipalConceptos screenConceptos, AñadirConcepto screenNewConcepto, EditarConcepto screenEditConcepto, bool isEditMode)
+        private Empresa _empresa;
+
+        public SeleccionarComponentesHaberPorcentual(PrincipalConceptos screenConceptos, AñadirConcepto screenNewConcepto, EditarConcepto screenEditConcepto, Empresa empresa, bool isEditMode)
         {
             InitializeComponent();
             this.screenConceptos = screenConceptos;
             this.screenNewConcepto = screenNewConcepto;
             this.screenEditConcepto = screenEditConcepto;
             this.isEditMode = isEditMode;
+            this._empresa = empresa;
         }
 
         private void PorcHabComp_Load(object sender, EventArgs e)
@@ -83,7 +87,7 @@ namespace AliS_WinVer
         {
             try
             {
-                dgvConceptosList.DataSource = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(UsuarioSingleton.Instance.codigoEmpresa);
+                dgvConceptosList.DataSource = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(_empresa.codigoEmpresa);
 
                 dgvConceptosList.Columns[0].Width = 30;
                 dgvConceptosList.Columns[2].Width = 55;

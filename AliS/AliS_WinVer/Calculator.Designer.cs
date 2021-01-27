@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Calculator));
             this.dgvConceptosList = new System.Windows.Forms.DataGridView();
             this.btnSumar = new System.Windows.Forms.Button();
             this.btnRestar = new System.Windows.Forms.Button();
@@ -181,6 +182,7 @@
             this.Controls.Add(this.btnRestar);
             this.Controls.Add(this.btnSumar);
             this.Controls.Add(this.dgvConceptosList);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Calculator";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Calculadora";

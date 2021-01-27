@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
-using Obj;
 
 namespace AliS_WinVer
 {
@@ -63,7 +62,7 @@ namespace AliS_WinVer
 
         private void dgvConceptosList_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            string Check = dgvConceptosList.CurrentRow.Cells[4].Value.ToString();
+            string Check = dgvConceptosList.CurrentRow.Cells[5].Value.ToString();
 
             if(Check == "RM" || Check == "NRM")
             {

@@ -24,6 +24,39 @@ namespace AliSDatos.Catalogos
             }
         }
 
+        public static DataTable RecuperarListaCodigosConceptosPorCodigoEmpresaYNumeroLegajo(int codigoEmpresa, string numeroLegajo)
+        {
+            try
+            {
+                Dictionary<string, object> listaParametros = new Dictionary<string, object>();
+                listaParametros.Add("intCodigoEmpresa", codigoEmpresa);
+                listaParametros.Add("chvNumeroLegajo", numeroLegajo);
+
+                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("RecuperarListaCodigosConceptosPorCodigoEmpresaYNumeroLegajo", listaParametros);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static DataTable RecuperarConceptosPorListaConceptosCodigoEmpresaYNumeroLegajo(DataTable tblCodigosConceptos, int codigoEmpresa, string numeroLegajo)
+        {
+            try
+            {
+                Dictionary<string, object> listaParametros = new Dictionary<string, object>();
+                listaParametros.Add("tblCodigosConcepto", tblCodigosConceptos);
+                listaParametros.Add("intCodigoEmpresa", codigoEmpresa);
+                listaParametros.Add("chvNumeroLegajo", numeroLegajo);
+
+                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("RecuperarConceptosPorListaConceptosCodigoEmpresaYNumeroLegajo", listaParametros);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public static DataTable InsertarActualizarConcepto(int codigoEmpresa, int codigoConceptoPorEmpresa, string codigo, string descripcion, string habFijo,
             string habPorc, string dedFijo, string dedPorc, int codigoTipoConcepto, int codigoModoConcepto, string formulaPorc)
         {

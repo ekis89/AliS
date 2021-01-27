@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PrincipalConceptos));
             this.label1 = new System.Windows.Forms.Label();
             this.dgvConceptos = new System.Windows.Forms.DataGridView();
             this.button1 = new System.Windows.Forms.Button();
@@ -37,7 +38,6 @@
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.AceptarEditBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvConceptos)).BeginInit();
             this.SuspendLayout();
             // 
@@ -132,23 +132,11 @@
             this.button4.TabIndex = 9;
             this.button4.UseVisualStyleBackColor = true;
             // 
-            // AceptarEditBtn
-            // 
-            this.AceptarEditBtn.Location = new System.Drawing.Point(363, 550);
-            this.AceptarEditBtn.Name = "AceptarEditBtn";
-            this.AceptarEditBtn.Size = new System.Drawing.Size(75, 23);
-            this.AceptarEditBtn.TabIndex = 10;
-            this.AceptarEditBtn.Text = "Aceptar";
-            this.AceptarEditBtn.UseVisualStyleBackColor = true;
-            this.AceptarEditBtn.Visible = false;
-            this.AceptarEditBtn.Click += new System.EventHandler(this.AceptarEditBtn_Click);
-            // 
-            // AddConcepto
+            // PrincipalConceptos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 585);
-            this.Controls.Add(this.AceptarEditBtn);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
@@ -158,9 +146,10 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.dgvConceptos);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "AddConcepto";
+            this.Name = "PrincipalConceptos";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "conceptos";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.conceptos_FormClosing);
@@ -182,6 +171,5 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button4;
         public System.Windows.Forms.DataGridView dgvConceptos;
-        private System.Windows.Forms.Button AceptarEditBtn;
     }
 }

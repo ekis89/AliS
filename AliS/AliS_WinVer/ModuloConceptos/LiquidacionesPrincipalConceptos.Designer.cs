@@ -28,15 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LiquidacionesPrincipalConceptos));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnAceptar = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.unidBox = new System.Windows.Forms.TextBox();
+            this.tbxUnidades = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -101,15 +102,15 @@
             this.button5.Text = "Concepto";
             this.button5.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btnAceptar
             // 
-            this.button1.Location = new System.Drawing.Point(322, 586);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 14;
-            this.button1.Text = "Aceptar";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnAceptar.Location = new System.Drawing.Point(322, 586);
+            this.btnAceptar.Name = "btnAceptar";
+            this.btnAceptar.Size = new System.Drawing.Size(75, 23);
+            this.btnAceptar.TabIndex = 14;
+            this.btnAceptar.Text = "Aceptar";
+            this.btnAceptar.UseVisualStyleBackColor = true;
+            this.btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
             // 
             // label2
             // 
@@ -120,12 +121,12 @@
             this.label2.TabIndex = 15;
             this.label2.Text = "Unidades:";
             // 
-            // unidBox
+            // tbxUnidades
             // 
-            this.unidBox.Location = new System.Drawing.Point(381, 543);
-            this.unidBox.Name = "unidBox";
-            this.unidBox.Size = new System.Drawing.Size(100, 20);
-            this.unidBox.TabIndex = 16;
+            this.tbxUnidades.Location = new System.Drawing.Point(381, 543);
+            this.tbxUnidades.Name = "tbxUnidades";
+            this.tbxUnidades.Size = new System.Drawing.Size(100, 20);
+            this.tbxUnidades.TabIndex = 16;
             // 
             // button2
             // 
@@ -137,24 +138,25 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // recibo_Builder_addConcepto
+            // LiquidacionesPrincipalConceptos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 621);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.unidBox);
+            this.Controls.Add(this.tbxUnidades);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnAceptar);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dataGridView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "recibo_Builder_addConcepto";
+            this.Name = "LiquidacionesPrincipalConceptos";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Agregar concepto";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.recibo_Builder_addConcepto_FormClosing);
@@ -173,9 +175,9 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnAceptar;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox unidBox;
+        private System.Windows.Forms.TextBox tbxUnidades;
         private System.Windows.Forms.Button button2;
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PrincipalEmpresas));
             this.Aceptar = new System.Windows.Forms.Button();
             this.Cancelar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -35,7 +36,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.nombreInput = new System.Windows.Forms.TextBox();
             this.CUIT1 = new System.Windows.Forms.TextBox();
             this.localidadInput = new System.Windows.Forms.TextBox();
@@ -45,6 +45,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.CUIT2 = new System.Windows.Forms.TextBox();
             this.CUIT3 = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Aceptar
@@ -111,17 +112,6 @@
             this.label5.Size = new System.Drawing.Size(52, 13);
             this.label5.TabIndex = 6;
             this.label5.Text = "Teléfono:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(76, 18);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(247, 24);
-            this.label7.TabIndex = 8;
-            this.label7.Text = "Ingrese los siguientes datos:";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // nombreInput
             // 
@@ -201,7 +191,18 @@
             this.CUIT3.TabIndex = 3;
             this.CUIT3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CUIT3_KeyPress);
             // 
-            // AddEmpresas
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(129, 24);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(140, 13);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "Ingrese los siguientes datos:";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // PrincipalEmpresas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -223,9 +224,10 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Cancelar);
             this.Controls.Add(this.Aceptar);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "AddEmpresas";
+            this.Name = "PrincipalEmpresas";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Nueva empresa";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.add_empr_FormClosing);
@@ -244,7 +246,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox nombreInput;
         private System.Windows.Forms.TextBox CUIT1;
         private System.Windows.Forms.TextBox localidadInput;
@@ -254,5 +255,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox CUIT2;
         private System.Windows.Forms.TextBox CUIT3;
+        private System.Windows.Forms.Label label7;
     }
 }

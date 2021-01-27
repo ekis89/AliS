@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
+using AliS_WinVer.Clases;
 using AliSlib;
 using AliSLogica.Controladores;
 
@@ -15,24 +16,30 @@ namespace AliS_WinVer
         string OldDescripcionConcepto;
         string TipoConcepto;
 
-        //bool isDeduccion;
         bool isEdit;
+
+        private Empresa _empresa;
+
         #endregion
 
         #region INICIO
-        public EditarConcepto(PrincipalConceptos screenConceptos, /*bool isDeduccion,*/ bool isEdit)
+        public EditarConcepto(PrincipalConceptos screenConceptos, Empresa empresa, bool isEdit)
         {
             InitializeComponent();
             this.screenConceptos = screenConceptos;
-            //this.isDeduccion = isDeduccion;
+
             this.OldCodigoConcepto = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[1].Value);
             this.OldDescripcionConcepto = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[2].Value);
             this.TipoConcepto = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[7].Value);
             this.isEdit = isEdit;
+
+            this._empresa = empresa;
         }
 
         private void EditConcepto_Load(object sender, EventArgs e)
         {
+            
+
             tbxCodigo.Text = OldCodigoConcepto;
             tbxNombre.Text = OldDescripcionConcepto;
 
@@ -54,9 +61,10 @@ namespace AliS_WinVer
                     }
                     else
                     {
+
                         optPorcentaje.Checked = true;
                         tbxPorcentaje.Text = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[4].Value);
-                        tbxComponentes.Text = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[9].Value);
+                        tbxComponentes.Text = ConvertirFormulaCodigoACodigoString();
                     }
 
                     optRemunerativo.Checked = true;
@@ -70,7 +78,7 @@ namespace AliS_WinVer
                     {
                         optPorcentaje.Checked = true;
                         tbxPorcentaje.Text = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[4].Value);
-                        tbxComponentes.Text = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[9].Value);
+                        tbxComponentes.Text = ConvertirFormulaCodigoACodigoString();
                     }
                     optNoRemunerativo.Checked = true;
                     break;
@@ -87,7 +95,7 @@ namespace AliS_WinVer
                     else
                     {
                         tbxPorcentaje.Text = screenConceptos.dgvConceptos.CurrentRow.Cells[6].Value.ToString();
-                        tbxComponentes.Text = screenConceptos.dgvConceptos.CurrentRow.Cells[9].Value.ToString();
+                        tbxComponentes.Text = ConvertirFormulaCodigoACodigoString();
                         optPorcentaje.Checked = true;
                     }
                     break;
@@ -100,6 +108,8 @@ namespace AliS_WinVer
             }
 
         }
+
+
         #endregion
 
         #region BOTONES
@@ -107,20 +117,20 @@ namespace AliS_WinVer
         {
             if (TipoConcepto.Equals("DED"))
             {
-                SeleccionarComponentesDeduccionPorcentual screenDeduccionComponentes = new SeleccionarComponentesDeduccionPorcentual(screenConceptos, null, this, true);
+                SeleccionarComponentesDeduccionPorcentual screenDeduccionComponentes = new SeleccionarComponentesDeduccionPorcentual(screenConceptos, null, this, _empresa, true);
                 screenDeduccionComponentes.Show();
 
             }
             else
             {
-                SeleccionarComponentesHaberPorcentual screenHaberesComponentes = new SeleccionarComponentesHaberPorcentual(screenConceptos, null, this, true);
+                SeleccionarComponentesHaberPorcentual screenHaberesComponentes = new SeleccionarComponentesHaberPorcentual(screenConceptos, null, this, _empresa, true);
                 screenHaberesComponentes.Show();
             }
         }
 
         private void btnFormula_Click(object sender, EventArgs e)
         {
-            CrearFormulaHaberFijo edit_form = new CrearFormulaHaberFijo(screenConceptos, null, this, true);
+            CrearFormulaHaberFijo edit_form = new CrearFormulaHaberFijo(screenConceptos, null, this, _empresa, true);
             edit_form.Show();
         }
 
@@ -132,7 +142,7 @@ namespace AliS_WinVer
             string descripcionConcepto = tbxNombre.Text;
             string valorFijo = (optValorFijo.Checked) ? tbxValorFijo.Text : null;
             string valorPorcentual = (optValorFijo.Checked) ? null : tbxPorcentaje.Text; 
-            string componentesPorcentaje = (optValorFijo.Checked) ? null : tbxComponentes.Text;
+            string componentesPorcentaje = (optValorFijo.Checked) ? null : ConvertirCodigoStringAFormulaCodigo();
 
             int codigoTipoConcepto = 0;
             int codigoModoConcepto = 0;
@@ -146,14 +156,14 @@ namespace AliS_WinVer
                         codigoModoConcepto = 1;
                         valorFijo = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[3].Value);
 
-                        rta = ControladorConcepto.InsertarActualizarConcepto(UsuarioSingleton.Instance.codigoEmpresa, codigoConceptoPorEmpresa, codigoConcepto,
+                        rta = ControladorConcepto.InsertarActualizarConcepto(_empresa.codigoEmpresa, codigoConceptoPorEmpresa, codigoConcepto,
                             descripcionConcepto, valorFijo, valorPorcentual, null, null, codigoTipoConcepto, codigoModoConcepto, componentesPorcentaje);
                         break;
                     case "RM":
                         codigoTipoConcepto = 2;
                         codigoModoConcepto = (optValorFijo.Checked) ? 1 : 2;
 
-                        rta = ControladorConcepto.InsertarActualizarConcepto(UsuarioSingleton.Instance.codigoEmpresa, codigoConceptoPorEmpresa, codigoConcepto,
+                        rta = ControladorConcepto.InsertarActualizarConcepto(_empresa.codigoEmpresa, codigoConceptoPorEmpresa, codigoConcepto,
                             descripcionConcepto,valorFijo, valorPorcentual, null, null, codigoTipoConcepto, codigoModoConcepto, componentesPorcentaje);
 
                         break;
@@ -161,14 +171,14 @@ namespace AliS_WinVer
                         codigoTipoConcepto = 3;
                         codigoModoConcepto = (optValorFijo.Checked) ? 1 : 2;
 
-                        rta = ControladorConcepto.InsertarActualizarConcepto(UsuarioSingleton.Instance.codigoEmpresa, codigoConceptoPorEmpresa, codigoConcepto,
+                        rta = ControladorConcepto.InsertarActualizarConcepto(_empresa.codigoEmpresa, codigoConceptoPorEmpresa, codigoConcepto,
                             descripcionConcepto, valorFijo, valorPorcentual, null, null, codigoTipoConcepto, codigoModoConcepto, componentesPorcentaje);
                         break;
                     case "DED":
                         codigoTipoConcepto = 4;
                         codigoModoConcepto = (optValorFijo.Checked) ? 3 : 4;
 
-                        rta = ControladorConcepto.InsertarActualizarConcepto(UsuarioSingleton.Instance.codigoEmpresa, codigoConceptoPorEmpresa, codigoConcepto,
+                        rta = ControladorConcepto.InsertarActualizarConcepto(_empresa.codigoEmpresa, codigoConceptoPorEmpresa, codigoConcepto,
                             descripcionConcepto, null, null, valorFijo, valorPorcentual, codigoTipoConcepto, codigoModoConcepto, componentesPorcentaje);
                         break;
                 }
@@ -252,25 +262,52 @@ namespace AliS_WinVer
         #endregion
 
         #region METODOS
-        public void EditarTablaScreenConceptos(string codigoConcepto, string valorFijo, string valorPorcentual,string tipoConcepto, string modo, string componentesPorcentaje)
+        private string ConvertirFormulaCodigoACodigoString()
         {
-            DataRow[] Rows = screenConceptos.tablaConceptos.Select("Código Like '" + codigoConcepto + "'");
-            DataRow row = Rows[0];
-            int index = screenConceptos.tablaConceptos.Rows.IndexOf(row);
+            string formulaPorcentaje = Convert.ToString(screenConceptos.dgvConceptos.CurrentRow.Cells[9].Value);
+            string[] formulaPorcentajeSplited = formulaPorcentaje.Split('+');
+            string codigoConceptoGrilla;
 
-            if (tipoConcepto.Equals("RM") || tipoConcepto.Equals("NRM"))
+            for (int i = 0; i < formulaPorcentajeSplited.Length; i++)
             {
-                screenConceptos.tablaConceptos.Rows[index][2] = valorFijo;
-                screenConceptos.tablaConceptos.Rows[index][3] = valorPorcentual;
-            }
-            else
-            {
-                screenConceptos.tablaConceptos.Rows[index][4] = valorFijo;
-                screenConceptos.tablaConceptos.Rows[index][5] = valorPorcentual;
+                for (int a = 0; a < screenConceptos.dgvConceptos.Rows.Count; a++)
+                {
+                    codigoConceptoGrilla = Convert.ToString(screenConceptos.dgvConceptos.Rows[a].Cells[0].Value);
+
+
+                    if (formulaPorcentajeSplited[i].Trim() == String.Format("|{0}|", codigoConceptoGrilla))
+                    {
+                        formulaPorcentaje = formulaPorcentaje.Replace(formulaPorcentajeSplited[i], String.Format(" |{0}| ", Convert.ToString(screenConceptos.dgvConceptos.Rows[a].Cells[1].Value) ));
+                    }
+                }
+
             }
 
-            screenConceptos.tablaConceptos.Rows[index][7] = tipoConcepto;
-            screenConceptos.tablaConceptos.Rows[index][8] = componentesPorcentaje;
+            return formulaPorcentaje;
+        }
+
+        private string ConvertirCodigoStringAFormulaCodigo()
+        {
+            string formulaPorcentaje = tbxComponentes.Text;
+            string[] formulaPorcentajeSplited = formulaPorcentaje.Split('+');
+            string codigoConceptoGrilla;
+
+            for (int i = 0; i < formulaPorcentajeSplited.Length; i++)
+            {
+                for (int a = 0; a < screenConceptos.dgvConceptos.Rows.Count; a++)
+                {
+                    codigoConceptoGrilla = Convert.ToString(screenConceptos.dgvConceptos.Rows[a].Cells[1].Value);
+
+
+                    if (formulaPorcentajeSplited[i].Trim() == String.Format("|{0}|", codigoConceptoGrilla))
+                    {
+                        formulaPorcentaje = formulaPorcentaje.Replace(formulaPorcentajeSplited[i], String.Format(" |{0}| ", Convert.ToString(screenConceptos.dgvConceptos.Rows[a].Cells[0].Value)));
+                    }
+                }
+
+            }
+
+            return formulaPorcentaje;
         }
         #endregion
     }

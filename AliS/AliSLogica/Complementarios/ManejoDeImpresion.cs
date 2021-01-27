@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Windows.Forms;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace AliSLogica.Complementarios
             //List<CabeceraRecibo> listaCabeceraRecibo = new List<CabeceraRecibo>();
 
             CabeceraRecibo header = new CabeceraRecibo();
-            header.EmpleadoLegajoNum = string.Format("Nº {0}", legajoNumero);
+            header.EmpleadoLegajoNum = string.Format("Nº {0}", Convert.ToInt32(legajoNumero).ToString("000"));
             header.EmpresaNombre = empresaNombre.ToUpper();
             header.EmpresaCuit = string.Format("CUIT: {0}", empresaCuit);
             header.EmpresaConvenio = string.Format("CONVENIO:     {0}", empresaConvenio);
@@ -49,20 +50,24 @@ namespace AliSLogica.Complementarios
             return header;
         }
 
-        public static List<Concepto>GenerarDetalle(DataGridView dgvDetallesRecibo)
+        public static List<Concepto>GenerarDetalle(DataTable dt)
         {
-            //CabeceraRecibo cabeceraRecibo = new CabeceraRecibo();
-
             List<Concepto> listaConceptos = new List<Concepto>();
 
-            foreach (DataGridViewRow row in dgvDetallesRecibo.Rows)
+            foreach (DataRow row in dt.Rows)
             {
                 Concepto conceptoItem = new Concepto();
-                int index = dgvDetallesRecibo.Rows.IndexOf(row);
+
                 string haberList;
                 string deduccionList;
-                string haberRow = dgvDetallesRecibo.Rows[index].Cells[4].Value.ToString().Replace("$", "");
-                string deduccionRow = dgvDetallesRecibo.Rows[index].Cells[5].Value.ToString().Replace("$", "");
+                string haberRow = (Convert.ToString(row["tipo"]) == "RM" || Convert.ToString(row["tipo"]) == "NRM" || Convert.ToString(row["tipo"]) == "BAS") ? Convert.ToString(row["total"]).Replace("$", "") : "";
+                string deduccionRow = (Convert.ToString(row["tipo"]) == "DED" ) ? Convert.ToString(row["total"]).Replace("$", "") : "";
+                string porcentajeRow = "";
+
+                if (Convert.ToString(row["modo"]) == "hab_porc")
+                    porcentajeRow = Convert.ToString(row["hab_porc"]) + "%";
+                else if (Convert.ToString(row["modo"]) == "ded_porc")
+                    porcentajeRow = Convert.ToString(row["ded_porc"]) + "%";
 
 
                 if (haberRow.Length != 0 || haberRow != "")
@@ -83,9 +88,58 @@ namespace AliSLogica.Complementarios
                     deduccionList = "";
                 }
 
-                conceptoItem.Descripcion = dgvDetallesRecibo.Rows[index].Cells[1].Value.ToString();
+                conceptoItem.Descripcion = Convert.ToString(row["descripcion"]);
                 conceptoItem.Haberes = haberList;
                 conceptoItem.Deducciones = deduccionList;
+                conceptoItem.Tipo = Convert.ToString(row["tipo"]);
+                conceptoItem.Porcentaje = porcentajeRow;
+
+                listaConceptos.Add(conceptoItem);
+            }
+
+            return listaConceptos;
+        }
+
+        public static List<Concepto> GenerarDetalleMINI(DataTable dtDetalle)
+        {
+            List<Concepto> listaConceptos = new List<Concepto>();
+
+            foreach (DataRow row in dtDetalle.Rows)
+            {
+                Concepto conceptoItem = new Concepto();
+                //int index = dgvDetallesRecibo.Rows.IndexOf(row);
+                string haberList;
+                string deduccionList;
+                //string haberRow = dgvDetallesRecibo.Rows[index].Cells[2].Value.ToString().Replace("$", "");
+                string haberRow = Convert.ToString(row["Haberes"]).Replace("$", "");
+                //string deduccionRow = dgvDetallesRecibo.Rows[index].Cells[3].Value.ToString().Replace("$", "");
+                string deduccionRow = Convert.ToString(row["Deducciones"]).Replace("$", "");
+                string porcentajeRow = String.IsNullOrEmpty(Convert.ToString(row["Porcentaje"])) ? "" : Convert.ToString(row["Porcentaje"]) + "%";
+
+
+                if (haberRow.Length != 0 || haberRow != "")
+                {
+                    haberList = string.Format("{0:0,0.00}", double.Parse(haberRow));
+                }
+                else
+                {
+                    haberList = "";
+                }
+
+                if (deduccionRow.Length != 0 || deduccionRow != "")
+                {
+                    deduccionList = string.Format("{0:0,0.00}", double.Parse(deduccionRow));
+                }
+                else
+                {
+                    deduccionList = "";
+                }
+
+                conceptoItem.Descripcion = Convert.ToString(row["Descripcion"]);
+                conceptoItem.Haberes = haberList;
+                conceptoItem.Deducciones = deduccionList;
+                conceptoItem.Tipo = Convert.ToString(row["Tipo"]);
+                conceptoItem.Porcentaje = porcentajeRow;
 
                 listaConceptos.Add(conceptoItem);
             }
@@ -100,13 +154,26 @@ namespace AliSLogica.Complementarios
 
             pieRecibo.TotalRemunerativo = remunerativo;
             pieRecibo.TotalNoRemunerativo = noRemunerativo;
-            pieRecibo.TotalDeduccion = "- " + deducciones;
+            pieRecibo.TotalDeduccion = deducciones;
             pieRecibo.TotalNeto = "$ " + sueldoNeto;
             //pie.TotalNeto =  tneto.Text.Replace("$","");
             pieRecibo.FooterText = string.Format(" Recibí de: {0} - con domicilio en {1} \n LA CANTIDAD DE PESOS: {2} \n Correspondiente a los haberes de:  {3} según liquidación precedente de la que \n recibo duplicado y tomo conocimiento que los aportes jubilatorios del mes de {4},\n fueron depositados en {5} el {6}. \n Rosario.      {7}   ", empresaNombre.ToUpper(), empresaUbicacion, netoString, mesActual, mesAnterior, banco.ToUpper(), pagoString, FechaLiquidacion);
 
             return pieRecibo;
+        }
 
+        public static PieRecibo GenerarPieReciboMINI(string remunerativo, string noRemunerativo, string deducciones, string sueldoNeto, string footerText)
+        {
+            PieRecibo pieRecibo = new PieRecibo();
+
+            pieRecibo.TotalRemunerativo = remunerativo;
+            pieRecibo.TotalNoRemunerativo = noRemunerativo;
+            pieRecibo.TotalDeduccion = deducciones;
+            pieRecibo.TotalNeto = "$ " + sueldoNeto;
+
+            pieRecibo.FooterText = footerText;
+
+            return pieRecibo;
         }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SeleccionarComponentesHaberPorcentual));
             this.dgvConceptosList = new System.Windows.Forms.DataGridView();
             this.checkCol = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
@@ -98,7 +99,7 @@
             this.tbxPorcentaje.Size = new System.Drawing.Size(100, 20);
             this.tbxPorcentaje.TabIndex = 6;
             // 
-            // PorcHabComp
+            // SeleccionarComponentesHaberPorcentual
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -108,17 +109,13 @@
             this.Controls.Add(this.btnAceptar);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.dgvConceptosList);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "PorcHabComp";
+            this.Name = "SeleccionarComponentesHaberPorcentual";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Haberes: Porcentaje(%) - Componentes";
             this.Load += new System.EventHandler(this.PorcHabComp_Load);
-            this.Controls.SetChildIndex(this.dgvConceptosList, 0);
-            this.Controls.SetChildIndex(this.label2, 0);
-            this.Controls.SetChildIndex(this.btnAceptar, 0);
-            this.Controls.SetChildIndex(this.label3, 0);
-            this.Controls.SetChildIndex(this.tbxPorcentaje, 0);
             ((System.ComponentModel.ISupportInitialize)(this.dgvConceptosList)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

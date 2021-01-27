@@ -97,6 +97,19 @@ namespace AliSLogica.Complementarios
                 Num2Text = toText(Math.Truncate(value / 1000000000000)) + " BILLONES";
                 if ((value - Math.Truncate(value / 1000000000000) * 1000000000000) > 0) Num2Text = Num2Text + " " + toText(value - Math.Truncate(value / 1000000000000) * 1000000000000);
             }
+
+            if (Num2Text.Contains(" Y UNO MIL"))
+            {
+                Num2Text = Num2Text.Replace(" Y UNO MIL", "IÚN MIL");
+            }
+            else if(Num2Text.Contains("VEINTIUNO MIL"))
+            {
+                Num2Text = Num2Text.Replace("VEINTIUNO MIL", "VEINTIÚN MIL");
+            }
+            else if (Num2Text.Contains("UNO MIL"))
+            {
+                Num2Text = Num2Text.Replace("UNO MIL", "IÚN MIL");
+            }
             return Num2Text;
 
         }

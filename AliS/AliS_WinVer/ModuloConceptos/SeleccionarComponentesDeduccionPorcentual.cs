@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using AliS_WinVer.Clases;
 using AliSLogica.Controladores;
 
 namespace AliS_WinVer
@@ -11,15 +12,18 @@ namespace AliS_WinVer
         AñadirConcepto screenNewConcepto;
         EditarConcepto screenEditConcepto;
         bool isEditMode;
-        string componentes;
 
-        public SeleccionarComponentesDeduccionPorcentual(PrincipalConceptos screenConceptos, AñadirConcepto screenNewConcepto, EditarConcepto screenEditConcepto, bool isEditMode)
+
+        private Empresa _empresa;
+
+        public SeleccionarComponentesDeduccionPorcentual(PrincipalConceptos screenConceptos, AñadirConcepto screenNewConcepto, EditarConcepto screenEditConcepto, Empresa empresa, bool isEditMode)
         {
             InitializeComponent();
             this.screenConceptos = screenConceptos;
             this.screenNewConcepto = screenNewConcepto;
             this.screenEditConcepto = screenEditConcepto;
             this.isEditMode = isEditMode;
+            this._empresa = empresa;
         }
 
         private void PorcDedComp_Load(object sender, EventArgs e)
@@ -43,46 +47,37 @@ namespace AliS_WinVer
 
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            if (isEditMode == true)
+            string sliceComp ="";
+            string componentes ="";
+
+            if (chkAplicaEnRem.Checked == true)
             {
-                if (chkAplicaEnRem.Checked == true)
+                sliceComp = "TotalRemunerativos";
+            }
+            else
+            {
+                for (int i = 0; i < dgvConceptosList.RowCount; i++)
                 {
-                    screenEditConcepto.tbxComponentes.Text = "Total Remunerativos";
-                }
-                else
-                {
-                    componentes = "";
-                    for (int i = 0; i < dgvConceptosList.RowCount; i++)
+                    if (Convert.ToBoolean(dgvConceptosList.Rows[i].Cells[0].Value))
                     {
-                        if (Convert.ToBoolean(dgvConceptosList.Rows[i].Cells[0].Value))
-                        {
-                            componentes += '"' + dgvConceptosList.Rows[i].Cells[2].Value.ToString() + '"' + " + ";
-                        }
+                        componentes += '|' + dgvConceptosList.Rows[i].Cells[2].Value.ToString() + '|' + " + ";
                     }
-                    string sliceComp = componentes.Substring(0, componentes.Length - 2);
-                    screenEditConcepto.tbxComponentes.Text = sliceComp;
                 }
+                if (!String.IsNullOrEmpty(componentes))
+                {
+                    sliceComp = componentes.Substring(0, componentes.Length - 2);
+
+                }
+            }
+
+            if (isEditMode)
+            {
+                screenEditConcepto.tbxComponentes.Text = sliceComp;
                 screenEditConcepto.tbxPorcentaje.Text = tbxPorcentaje.Text;
             }
             else
             {
-                if (chkAplicaEnRem.Checked == true)
-                {
-                    screenNewConcepto.tbxDeducComponentes.Text = "Total Remunerativos";
-                }
-                else
-                {
-                    componentes = "";
-                    for (int i = 0; i < dgvConceptosList.RowCount; i++)
-                    {
-                        if (Convert.ToBoolean(dgvConceptosList.Rows[i].Cells[0].Value))
-                        {
-                            componentes += '|' + dgvConceptosList.Rows[i].Cells[1].Value.ToString() + '|' + " + ";
-                        }
-                    }
-                    string sliceComp = componentes.Substring(0, componentes.Length - 2);
-                    screenNewConcepto.tbxDeducComponentes.Text = sliceComp;
-                }
+                screenNewConcepto.tbxDeducComponentes.Text = sliceComp;
                 screenNewConcepto.tbxDeducPorcentaje.Text = tbxPorcentaje.Text;
             }
 
@@ -121,7 +116,7 @@ namespace AliS_WinVer
         {
             try
             {
-                dgvConceptosList.DataSource = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(UsuarioSingleton.Instance.codigoEmpresa);
+                dgvConceptosList.DataSource = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(_empresa.codigoEmpresa);
 
                 dgvConceptosList.Columns[0].Width = 30;
                 dgvConceptosList.Columns[2].Width = 55;

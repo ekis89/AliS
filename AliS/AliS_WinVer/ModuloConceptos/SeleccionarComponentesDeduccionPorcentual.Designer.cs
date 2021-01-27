@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SeleccionarComponentesDeduccionPorcentual));
             this.tbxPorcentaje = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnAceptar = new System.Windows.Forms.Button();
@@ -110,7 +111,7 @@
             this.chkAplicaEnRem.UseVisualStyleBackColor = true;
             this.chkAplicaEnRem.CheckedChanged += new System.EventHandler(this.chkAplicaEnRem_CheckedChanged);
             // 
-            // PorcDedComp
+            // SeleccionarComponentesDeduccionPorcentual
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -121,18 +122,13 @@
             this.Controls.Add(this.btnAceptar);
             this.Controls.Add(this.lblTip);
             this.Controls.Add(this.dgvConceptosList);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "PorcDedComp";
+            this.Name = "SeleccionarComponentesDeduccionPorcentual";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Deducciones: Porcentaje(%) - Componentes";
             this.Load += new System.EventHandler(this.PorcDedComp_Load);
-            this.Controls.SetChildIndex(this.dgvConceptosList, 0);
-            this.Controls.SetChildIndex(this.lblTip, 0);
-            this.Controls.SetChildIndex(this.btnAceptar, 0);
-            this.Controls.SetChildIndex(this.label3, 0);
-            this.Controls.SetChildIndex(this.tbxPorcentaje, 0);
-            this.Controls.SetChildIndex(this.chkAplicaEnRem, 0);
             ((System.ComponentModel.ISupportInitialize)(this.dgvConceptosList)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Catalogos\CatalogoConcepto.cs" />
     <Compile Include="Catalogos\CatalogoEmpresa.cs" />
+    <Compile Include="Catalogos\CatalogoPersona.cs" />
     <Compile Include="Catalogos\CatalogoPuesto.cs" />
     <Compile Include="Clases\ReciboDeSueldo.cs" />
     <Compile Include="Complementarios\ManejoDeDBs.cs" />

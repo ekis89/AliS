@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AliS_WinVer.Clases;
+using System;
 using System.Windows.Forms;
 
 namespace AliS_WinVer
@@ -9,25 +10,35 @@ namespace AliS_WinVer
 
         public string UserFolder = "";
         public string AlisFolder = "";
+        private string currentUserXmlFolder;
 
-        public int codigoEmpresa { get; set; }
-        public string NombreEmpresa { get; set; }
-        public string CuitEmpresa { get; set; }
-        public string ConvenioEmpresa { get; set; }
-        public string LocalidadEmpresa { get; set; }
-        public int PostalEmpresa { get; set; }
-        public string DireccionEmpresa { get; set; }
-        public string TelefonoEmpresa { get; set; }
+        public Legajo _Legajo { get; set; }
+        public Empresa _Empresa { get; set; }
 
-        public int codigoPersona { get; set; }
-        public string NombreEmpleado { get; set; }
-        public string EmpleadoCUIL { get; set; }
-        public string PuestoRecibo { get; set; }
-        public string FechaIngreso { get; set; }
-        public string LegajoNumero { get; set; }
-        public string Banco { get; set; }
-        public string Convenio { get; set; }
-        public string TipoSalario { get; set; }
+        //public int codigoEmpresa { get; set; }
+        //public string NombreEmpresa { get; set; }
+        //public string CuitEmpresa { get; set; }
+        //public string ConvenioEmpresa { get; set; }
+        //public string LocalidadEmpresa { get; set; }
+        //public int PostalEmpresa { get; set; }
+        //public string DireccionEmpresa { get; set; }
+        //public string TelefonoEmpresa { get; set; }
+
+        //public int codigoPersona { get; set; }
+        //public string NombreEmpleado { get; set; }
+        //public string EmpleadoCUIL { get; set; }
+        //public string PuestoRecibo { get; set; }
+        //public string FechaIngreso { get; set; }
+        //public string LegajoNumero { get; set; }
+        //public string Banco { get; set; }
+        //public string Convenio { get; set; }
+        //public string TipoSalario { get; set; }
+
+        //public string CurrentUserXmlFolder
+        //{
+        //    get { return currentUserXmlFolder; }
+        //    set { currentUserXmlFolder = AlisFolder + value; }
+        //}
 
         public string[] Meses = new string[] { "Undefined", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
 

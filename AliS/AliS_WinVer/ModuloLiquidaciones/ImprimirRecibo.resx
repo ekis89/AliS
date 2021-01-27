@@ -120,4 +120,73 @@
   <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAHh4AAAEAIACwDgAAFgAAACgAAAAeAAAAPAAAAAEAIAAAAAAAEA4AAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAA/wAAAZR9a5+Qemf6j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495
+        Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/5B6Z/yTfWu9mYBmCgAA
+        AAAAAAAAkHpnRZiDb/TPvKv/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9K+rf+ijHr3j3tmcAAA
+        AAAAAAAAj3hmf6+aifvUwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP+6ppT/lH5rsAAA
+        AAAAAAAAlH9rt7yol//UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/FsqH/k31r3AAA
+        AAAAAAAAlH1q5Mi1pP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/Qvaz/kXpo+P8A
+        AAGAgGAIkHpn+9K/rv/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/lH1q9ZF3
+        Zh6ReGQzmINv9dTBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/nol29JB6
+        ZUePemVgpZB9/tTBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/q5WD/495
+        ZnCSe2iTtJ+N/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/uKSS/5R+
+        aaKVfmvKwK2b/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/w6+e/5V+
+        bdGQemjsj3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495
+        Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/5F7
+        Z+4AAAAAj3lm/9TBsP/UwbD/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495
+        Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/9TBsP/UwbD/j3lm/wAA
+        AAAAAAAAj3lm/9TBsP/UwbD/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495
+        Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/9TBsP/UwbD/j3lm/wAA
+        AAAAAAAAj3lm/9TBsP/UwbD/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495
+        Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/495Zv+PeWb/j3lm/9TBsP/UwbD/j3lm/wAA
+        AAAAAAAAj3lm/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/j3lm/wAA
+        AAAAAAAAj3lm/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/j3lm/wAA
+        AAAAAAAAkX1p7cWxn//UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TB
+        sP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/UwbD/1MGw/9TBsP/EsJ//k3xp7AAA
+        AAAAAAAAkHxoTJJ7ae6PeWb/j3lm/495Zv+ci3j/nIt4/5yLeP+ci3j/nIt4/5yLeP+ci3j/nIt4/5yL
+        eP+ci3j/nIt4/5yLeP+ci3j/nIt4/5yLeP+ci3j/nIt4/5yLeP+PeWb/j3lm/495Zv+RfWntkXxnSgAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAI95Zv+ci3j/////////////////////////////////////////
+        /////////////////////////////////////////////5yLeP+PeWb/AAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAI95Zv+ci3j/////////////////////////////////////////
+        /////////////////////////////////////////////5yLeP+PeWb/AAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACci3j/////////////////////////////////////////
+        /////////////////////////////////////////////5yLeP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACci3j/////////////////////////////////////////
+        /////////////////////////////////////////////5yLeP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACci3j/////////////////////////////////////////
+        /////////////////////////////////////////////5yLeP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACci3j/////////////////////////////////////////
+        /////////////////////////////////////////////5yLeP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACci3j/nIt4/5yLeP+ci3j/nIt4/5yLeP+ci3j/nIt4/5yL
+        eP+ci3j/nIt4/5yLeP+ci3j/nIt4/5yLeP+ci3j/nIt4/5yLeP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAD////8/////P////z////8gAAABIAAAASAAAAEgAAABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AACAAAAEgAAABIAAAASAAAAEgAAABIAAAASAAAAE+AAAfPgAAHz8AAD8/AAA/PwAAPz8AAD8/AAA/P//
+        //w=
+</value>
+  </data>
 </root>

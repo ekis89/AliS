@@ -11,6 +11,8 @@ namespace AliSDatos.Clases
         public string Descripcion { get; set; }
         public string Haberes { get; set; }
         public string Deducciones { get; set; }
+        public string Tipo { get; set; }
+        public string Porcentaje { get; set; }
     }
 
     public class CabeceraRecibo

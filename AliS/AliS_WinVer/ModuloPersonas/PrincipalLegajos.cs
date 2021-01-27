@@ -5,549 +5,545 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using System.IO;
-using Obj;
 using AliSlib;
 using AliSLogica.Controladores;
 using AliSLogica.Complementarios;
+using System.Drawing;
+using System.Text;
+using AliS_WinVer.Clases;
 
 namespace AliS_WinVer
 {
     public partial class PrincipalLegajos : Form
     {
         #region PROPIEDADES
-        private Index Index;
+        private Form Index;
+        private DataTable tablaPersonas;
 
-        private string oldNumeroLegajo;
-
-        private int treeViewEmpresasIndex;
-        private bool preventTabChange = false;
-
-        private List<string> CacheEdit = new List<string>();
-        private List<bool> CacheEditDGV = new List<bool>();
-
+        private Empresa _empresa;
         #endregion
 
         #region INICIO
-        public PrincipalLegajos(Index Index, int TVindex)
+        public PrincipalLegajos(Principal Index, Empresa empresa)
         {
             InitializeComponent();
 
             this.Index = Index;
-            this.treeViewEmpresasIndex = TVindex;
+            this._empresa = empresa;
         }
 
         private void add_empl_Load(object sender, EventArgs e)
         {
-            this.Text = string.Format("{0}: Legajos", UsuarioSingleton.Instance.NombreEmpresa);
+            this.Text = string.Format("{0}: Legajos", _empresa.NombreEmpresa);
 
-            // Rellena el comboBox con los puestos de trabajo disponibles.
-            DataTable tablaPuestos = ControladorAddLegajos.RecuperarPuestos(UsuarioSingleton.Instance.CuitEmpresa);
+            CargarCombos();
+            CargarGrillas();
+            CargarParametros();
 
-            DataRow toInsert = tablaPuestos.NewRow();
-            tablaPuestos.Rows.InsertAt(toInsert, 0);
+        }
 
-            tablaPuestos.Rows[0]["puesto"] = "-- Selecciones un puesto --";
+        private void CargarParametros()
+        {
+            try
+            {
+                DataTable tablaBancos = ControladorEmpresa.RecuperarParametrosPorCodigoTipoParametro(3);
+                DataTable tablaConvenios = ControladorEmpresa.RecuperarParametrosPorCodigoTipoParametro(2);
 
-            puestoSelect.DataSource = tablaPuestos;
-            puestoSelect.ValueMember = "puesto";
+                AutoCompleteStringCollection asc = new AutoCompleteStringCollection();
+                AutoCompleteStringCollection asc2 = new AutoCompleteStringCollection();
 
-            // Carga la lista de conceptos para liquidar.
-            DataTable tablaConceptos = ControladorAddLegajos.RecuperarConceptos(UsuarioSingleton.Instance.NombreEmpresa);
+                for (int i = 0; i < tablaBancos.Rows.Count; i++)
+                {
+                    asc.Add(Convert.ToString(tablaBancos.Rows[i]["descripcion"]));
+                }
 
-            // Modifica los tamaños de las celdas del dataGrid.
-            dataGridView1.DataSource = tablaConceptos;
-            dataGridView1.Columns[0].Width = 30;
-            dataGridView1.Columns[1].Width = 70;
-            dataGridView1.Columns[1].ReadOnly = true;
-            dataGridView1.Columns[2].Width = 220;
-            dataGridView1.Columns[2].ReadOnly = true;
-            dataGridView1.Columns[3].Width = 65;
-            dataGridView1.Columns[3].ReadOnly = true;
+                for (int i = 0; i < tablaConvenios.Rows.Count; i++)
+                {
+                    asc2.Add(Convert.ToString(tablaConvenios.Rows[i]["descripcion"]));
+                }
 
-            conceptosDGV.DataSource = tablaConceptos;
-            conceptosDGV.Columns[0].Width = 30;
-            conceptosDGV.Columns[1].Width = 70;
-            conceptosDGV.Columns[1].ReadOnly = true;
-            conceptosDGV.Columns[2].Width = 220;
-            conceptosDGV.Columns[2].ReadOnly = true;
-            conceptosDGV.Columns[3].Width = 65;
-            conceptosDGV.Columns[3].ReadOnly = true;
+                txtBanco.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                txtBanco.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtBanco.AutoCompleteCustomSource = asc;
+
+                txtConvenio.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                txtConvenio.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtConvenio.AutoCompleteCustomSource = asc2;
+
+
+                txtBancoEditar.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                txtBancoEditar.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtBancoEditar.AutoCompleteCustomSource = asc;
+
+                txtConvenioEditar.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                txtConvenioEditar.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtConvenioEditar.AutoCompleteCustomSource = asc2;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void CargarGrillas()
+        {
+            DataTable tablaConceptos = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(_empresa.codigoEmpresa);
+            DataView dv = new DataView(tablaConceptos);
+            dv.RowFilter = "NOT [hab_fijo] = '' OR NOT [hab_porc] = '' OR NOT [ded_fijo] = '' OR NOT [ded_porc] = ''";
+
+            dgvConceptos.DataSource = dv;
+            dgvConceptos.Columns[0].Width = 30;
+            dgvConceptos.Columns[1].Visible = false;
+            dgvConceptos.Columns[2].Width = 70;
+            dgvConceptos.Columns[2].ReadOnly = true;
+            dgvConceptos.Columns[3].Width = 220;
+            dgvConceptos.Columns[3].ReadOnly = true;
+            dgvConceptos.Columns[4].Visible = false;
+            dgvConceptos.Columns[5].Visible = false;
+            dgvConceptos.Columns[6].Visible = false;
+            dgvConceptos.Columns[7].Visible = false;
+            dgvConceptos.Columns[8].Width = 65;
+            dgvConceptos.Columns[8].ReadOnly = true;
+            dgvConceptos.Columns[9].Visible = false;
+            dgvConceptos.Columns[10].Visible = false;
+
+            dgvConceptosEditar.DataSource = dv;
+            dgvConceptosEditar.Columns[0].Width = 30;
+            dgvConceptosEditar.Columns[1].Visible = false;
+            dgvConceptosEditar.Columns[2].Width = 70;
+            dgvConceptosEditar.Columns[2].ReadOnly = true;
+            dgvConceptosEditar.Columns[3].Width = 220;
+            dgvConceptosEditar.Columns[3].ReadOnly = true;
+            dgvConceptosEditar.Columns[4].Visible = false;
+            dgvConceptosEditar.Columns[5].Visible = false;
+            dgvConceptosEditar.Columns[6].Visible = false;
+            dgvConceptosEditar.Columns[7].Visible = false;
+            dgvConceptosEditar.Columns[8].Width = 65;
+            dgvConceptosEditar.Columns[8].ReadOnly = true;
+            dgvConceptosEditar.Columns[9].Visible = false;
+            dgvConceptosEditar.Columns[10].Visible = false;
+
         }
         #endregion
 
-        #region TREEVIEW
-        private void treeViewLegajos_AfterSelect(object sender, TreeViewEventArgs e)
+        private void CargarCombos()
         {
-            string legajo = treeViewLegajos.SelectedNode.Text.Substring(3);
-            string puesto;
-            string txt = treeViewLegajos.SelectedNode.Text;
-            string conceptosList;
-            string[] conceptosSplit;
+            DataTable tablaPuestos = ControladorPuesto.RecuperarPuestosPorEmpresa(_empresa.codigoEmpresa);
+            tablaPuestos.Columns.Add("codigoYDescripcion");
 
-            string cmd = string.Format("SELECT n_legajo, nombre, cuil, puesto, ingreso, banco, convenio, conceptos FROM Legajos WHERE n_legajo = '{0}' AND cuit_empresa = '{1}'", legajo, UsuarioSingleton.Instance.CuitEmpresa);
-            DataSet DS4 = Utilidades.alisDB(cmd);
-            
-            if (txt != UsuarioSingleton.Instance.NombreEmpresa)
+            foreach (DataRow row in tablaPuestos.Rows)
             {
-                puesto = DS4.Tables[0].Rows[0][3].ToString();
-
-                editLegajoLabel.Text = DS4.Tables[0].Rows[0][0].ToString();
-                editNombreLabel.Text = DS4.Tables[0].Rows[0][1].ToString();
-                editCuilLabel.Text = DS4.Tables[0].Rows[0][2].ToString();
-                editPuestoLabel.Text = puesto;
-                editFechaLabel.Text = DS4.Tables[0].Rows[0][4].ToString();
-                editBancoLabel.Text = DS4.Tables[0].Rows[0][5].ToString();
-                editConvenioLabel.Text = DS4.Tables[0].Rows[0][6].ToString();
-                conceptosList = DS4.Tables[0].Rows[0][7].ToString();
-                conceptosSplit = conceptosList.Split(';');
-
-                cmd = string.Format("SELECT puesto FROM Puestos WHERE cuit_empresa = '{0}'", UsuarioSingleton.Instance.CuitEmpresa);
-                DS4 = Utilidades.alisDB(cmd);
-
-                editPuestoSelect.DataSource = DS4.Tables[0];
-                editPuestoSelect.ValueMember = "puesto";
-
-                editPuestoSelect.SelectedIndex = editPuestoSelect.FindStringExact(puesto);
-
-                editLegajoButton.Enabled = true;
-                deleteLegajoButton.Enabled = true;
-
-                conceptosDGV.Enabled = true;
-
-                foreach (DataGridViewRow row in conceptosDGV.Rows)
-                {
-                    int index = conceptosDGV.Rows.IndexOf(row);
-                    conceptosDGV.Rows[index].Cells[0].Value = false;
-                }
-
-                CacheEditDGV.Clear();
-
-                for (int i = 0; i < conceptosSplit.Length; i++)
-                {
-                    foreach (DataGridViewRow row in conceptosDGV.Rows)
-                    {
-                        int index = conceptosDGV.Rows.IndexOf(row);
-
-                        if (conceptosDGV.Rows[index].Cells[1].Value.ToString() == conceptosSplit[i])
-                        {
-                            conceptosDGV.Rows[index].Cells[0].Value = true;
-                            break;
-                        }
-                    }
-                }
-
-                foreach (DataGridViewRow row in conceptosDGV.Rows)
-                {
-                    int index = conceptosDGV.Rows.IndexOf(row);
-                    CacheEditDGV.Add(Convert.ToBoolean(conceptosDGV.Rows[index].Cells[0].Value));
-                }
+                row["codigoYDescripcion"] = Convert.ToString(row["codigo"]) + " - " + Convert.ToString(row["descripcion"]);
             }
 
+            tablaPuestos.AcceptChanges();
+
+            cboPuesto.DisplayMember = "codigoYDescripcion";
+            cboPuesto.ValueMember = "codigoPuesto";
+            cboPuesto.DataSource = tablaPuestos;
+
+            cboPuesto.SelectedIndex = -1;
+
+            cboPuestoEditar.DisplayMember = "codigoYDescripcion";
+            cboPuestoEditar.ValueMember = "codigoPuesto";
+            cboPuestoEditar.DataSource = tablaPuestos;
+
+            cboPuestoEditar.SelectedIndex = -1;
         }
-
-        #endregion
-
+ 
         #region BOTONES
-
-        private void editLegajoButton_Click(object sender, EventArgs e)
-        {
-            HabilitarEdicionLegajo();
-        }
-
-        private void cancelEdit_Click(object sender, EventArgs e)
-        {
-            DeshabilitarEdicionLegajo();
-        }
-
-        //EDITA LOS LEGAJOS DE LA BASE DE DATOS.
-        private void saveEdit_Click(object sender, EventArgs e)
-        {
-            string numeroLegajo = editLegajoNumeroInput.Text;
-            string nombre = editNombre.Text;
-            string puesto = editPuestoSelect.Text;
-            string banco = editBanco.Text;
-            string convenio = editConvenio.Text;
-            string conceptos = "";
-            bool DGVchanges = false;
-
-            for (int i = 0; i < conceptosDGV.RowCount; i++)
-            {
-                if(Convert.ToBoolean(conceptosDGV.Rows[i].Cells[0].Value) != CacheEditDGV[i])
-                {
-                    DGVchanges = true;
-                    break;
-                }
-            }
-
-            if (CacheEdit[0] == numeroLegajo && CacheEdit[1] == nombre && CacheEdit[2] == puesto && CacheEdit[3] == banco && CacheEdit[4] == convenio && !DGVchanges)
-            {
-                //MessageBox.Show("nada cambio");
-            }
-            else
-            {
-                if (numeroLegajo.Length == 0 || numeroLegajo == " " || nombre.Length == 0 || nombre == " " || banco.Length == 0 || banco == " " || convenio.Length == 0 || convenio == " " || dataGridView1.Rows.Count < 1)
-                {
-                    MessageBox.Show("Error: Asegurese de que todos los campos esten llenos.");
-                }
-                else
-                {
-                    try
-                    {
-                        try
-                        {
-                            for (int i = 0; i < conceptosDGV.RowCount; i++)
-                            {
-                                if (Convert.ToBoolean(conceptosDGV.Rows[i].Cells[0].Value))
-                                {
-                                    conceptos += conceptosDGV.Rows[i].Cells[1].Value.ToString() + ";";
-                                }
-                            }
-                            conceptos = conceptos.Substring(0, conceptos.Length - 1);
-                        }
-                        catch (Exception error)
-                        {
-                            MessageBox.Show("error: Debe elegir al menos un concepto de la lista de conceptos.");
-                            throw error;
-                        }
-
-                        ControladorAddLegajos.EditarLegajo(UsuarioSingleton.Instance.CuitEmpresa, nombre, puesto, conceptos, numeroLegajo, oldNumeroLegajo, banco, convenio);
-
-                        treeViewLegajos.Nodes.Clear();
-                        add_empl_Load(null, EventArgs.Empty);
-
-                        treeViewLegajos.Enabled = true;
-
-                        editLegajoButton.Enabled = true;
-                        editLegajoButton.Visible = true;
-
-                        deleteLegajoButton.Enabled = true;
-                        deleteLegajoButton.Visible = true;
-
-                        saveEdit.Visible = false;
-                        cancelEdit.Visible = false;
-
-                        editNombre.ReadOnly = true;
-                        editLegajoNumeroInput.ReadOnly = true;
-                        editBanco.ReadOnly = true;
-                        editConvenio.ReadOnly = true;
-
-                        CargarLegajos();
-
-                        MessageBox.Show("El legajo ha sido actualizado.");
-
-                        editNombre.Visible = false;
-                        editLegajoNumeroInput.Visible = false;
-                        editBanco.Visible = false;
-                        editConvenio.Visible = false;
-
-                        editPuestoSelect.Enabled = false;
-                        editPuestoSelect.Visible = false;
-
-                        editLegajoLabel.Visible = true;
-                        editNombreLabel.Visible = true;
-                        editPuestoLabel.Visible = true;
-                        editBancoLabel.Visible = true;
-                        editConvenioLabel.Visible = true;
-
-                        TreeNode[] tns = treeViewLegajos.Nodes
-                            .Cast<TreeNode>()
-                            .Where(r => r.Text == "Nº " + editLegajoNumeroInput.Text)
-                            .ToArray();
-
-                        if (tns.Length > 0)
-                        {
-                            treeViewLegajos.SelectedNode = tns[0];
-                            treeViewLegajos.Focus();
-                        }
-                        conceptosDGV.Columns[0].ReadOnly = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                    
-                }
-            }
-            preventTabChange = false;
-
-        }
-
-        //BORRA LOS LEGAJOS DE LA BASE DE DATOS.
-        private void deleteLegajoButton_Click(object sender, EventArgs e)
-        {
-            string numeroLegajo = editLegajoLabel.Text;
-            string nombre = editNombre.Text;
-
-            string folder = string.Format("{0}/{1}/{2}", UsuarioSingleton.Instance.AlisFolder, UsuarioSingleton.Instance.NombreEmpresa,
-                            editCuilLabel.Text.Replace("-", ""));
-
-            DialogResult confirm = MessageBox.Show("¿Esta seguro que desea eliminar el siguiente legajo?\n \n   " + "Legajo: Nº "+numeroLegajo+"\n   Nombre: "+ nombre, "Eliminar legajo:", MessageBoxButtons.YesNo);
-
-            if (confirm == DialogResult.Yes)
-            {
-                try
-                {
-                    ControladorAddLegajos.EliminarLegajos(UsuarioSingleton.Instance.CuitEmpresa, numeroLegajo);
-                    ManejoDirectiorios.EliminarDirectorio(folder);
-
-                    MessageBox.Show("¡El legajo ha sido eliminado!");
-                    LimpiarCamposEditarLegajos();
-                    CargarLegajos();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-        }
-
         private void createLegajo_Click(object sender, EventArgs e)
         {
-            string numeroLegajo = LegajoNumeroInput.Text;
-            string nombreEmpleado = UsuarioSingleton.UppercaseFirst(nombreInput.Text);
-            string apellidoEmpleado = UsuarioSingleton.UppercaseFirst(apellidoInput.Text);
-            string cuil1 = cuilInput1.Text;
-            string cuil2 = cuilInput2.Text;
-            string cuil3 = cuilInput3.Text;
-            string ocupacionEmpleado = UsuarioSingleton.UppercaseFirst(puestoSelect.Text);
-            string ingresoEmpleado = ingresoPicker.Text;
-            string convenioEmpleado = convenioInput.Text;
-            string bancoEmpleado = bancoInput.Text;
-            string conceptosEmpleado = "";
+            int numeroLegajo = (String.IsNullOrEmpty(txtNumeroLegajo.Text)) ? 0 : Convert.ToInt32(txtNumeroLegajo.Text);
+            string nombre = (String.IsNullOrEmpty(txtNombre.Text)) ? null : txtNombre.Text;
+            string apellido = (String.IsNullOrEmpty(txtApellido.Text)) ? null : txtApellido.Text;
 
-            if (numeroLegajo.Length == 0 || numeroLegajo== " " || nombreEmpleado.Length == 0 || nombreEmpleado == " " || apellidoEmpleado.Length == 0 || apellidoEmpleado == " " || cuil1.Length == 0 || cuil1 == " " || cuil2.Length == 0 || cuil2 == " " || cuil3.Length == 0 || cuil3 == " " || ocupacionEmpleado.Length == 0 || ocupacionEmpleado == " " || ingresoEmpleado.Length == 0 || ingresoEmpleado == " " || convenioEmpleado.Length == 0  || convenioEmpleado == " " || bancoEmpleado.Length == 0 || bancoEmpleado == " " || puestoSelect.Text == "-- Selecciones un puesto --")
+            string cuil1 = (String.IsNullOrEmpty(txtCuil1.Text)) ? "" : txtCuil1.Text;
+            string cuil2 = (String.IsNullOrEmpty(txtCuil2.Text)) ? "" : txtCuil2.Text;
+            string cuil3 = (String.IsNullOrEmpty(txtCuil3.Text)) ? "" : txtCuil3.Text;
+            string cuil = String.Format("{0}-{1}-{2}", cuil1, cuil2, cuil3);
+
+            int codigoPuesto = Convert.ToInt32(cboPuesto.SelectedValue);
+            string convenio = (String.IsNullOrEmpty(txtConvenio.Text)) ? null : txtConvenio.Text;
+            DateTime fechaIngreso = dtFechaIngreso.Value;
+            string banco = (String.IsNullOrEmpty(txtBanco.Text)) ? null : txtBanco.Text;
+
+            string conceptos = "";
+
+            if ((numeroLegajo < 1) || (nombre == null) || (apellido == null) || (cuil1 == "") || (cuil2 == "") || (cuil2 == "") || (convenio == null)
+                || (banco == null) || codigoPuesto == 0)
             {
-                MessageBox.Show("Error: Debe rellenar todos los campos.");
+                MessageBox.Show("Faltan rellenar campos.");
+                return;
             }
-            else
+
+            conceptos = CrearListaConceptosAsignados(dgvConceptos);
+
+            switch (conceptos)
             {
-                try
+                case "NoSeleccionoConceptos":
+                    MessageBox.Show("Debe elegir al menos un concepto de la lista de conceptos.");
+                    return;
+                case "NoSeleccionoBasico":
+                    MessageBox.Show("Debe elegir al menos un concepto del tipo \"básico\" de la lista de conceptos.");
+                    return;
+
+                case "MasDeUnBasico":
+                    MessageBox.Show("No puede haber mas de un concepto del tipo \"básico\" seleccionado.");
+                    return;
+            }
+
+            try
+            {
+                string rta = ControladorPersona.InsertarActualizarPersona(0, _empresa.codigoEmpresa, numeroLegajo, nombre, apellido, cuil,
+                    codigoPuesto, convenio, fechaIngreso, banco, conceptos);
+
+                if (rta.Equals("ok"))
                 {
-                    try
+                    txtNumeroLegajo.Text = "";
+                    txtNombre.Text = "";
+                    txtApellido.Text = "";
+
+                    txtCuil1.Text = "";
+                    txtCuil2.Text = "";
+                    txtCuil3.Text = "";
+
+                    cboPuesto.SelectedIndex = -1;
+                    txtConvenio.Text = "";
+                    dtFechaIngreso.Value = DateTime.Today;
+                    txtBanco.Text = "";
+
+                    for (int i = 0; i < dgvConceptos.RowCount; i++)
                     {
-                        for (int i = 0; i < dataGridView1.RowCount; i++)
+                        dgvConceptos.Rows[i].Cells[0].Value = false;
+                    }
+
+                    CargarLegajos();
+                    CargarParametros();
+
+                    foreach (Form frm in Application.OpenForms)
+                    {
+                        if (frm.Name == "SelectorLegajo")
                         {
-                            if (Convert.ToBoolean(dataGridView1.Rows[i].Cells[0].Value))
-                            {
-                                conceptosEmpleado += dataGridView1.Rows[i].Cells[1].Value.ToString() + ";";
-                            }
+                            (frm as SelectorLegajo).CargarLegajos();
+                            break;
                         }
-                        conceptosEmpleado = conceptosEmpleado.Substring(0, conceptosEmpleado.Length - 1);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("error: Debe elegir al menos un concepto de la lista de conceptos.");
-                        return;
-                    }
 
-                    ControladorAddLegajos.InsertarLegajo(UsuarioSingleton.Instance.CuitEmpresa, nombreEmpleado, apellidoEmpleado,
-                        cuil1, cuil2, cuil3, ocupacionEmpleado, ingresoEmpleado, conceptosEmpleado, numeroLegajo, bancoEmpleado, convenioEmpleado);
-
-                    ManejoDirectiorios.CrearDirectorioEmpleado(UsuarioSingleton.Instance.AlisFolder, UsuarioSingleton.Instance.NombreEmpresa, UsuarioSingleton.Instance.CuitEmpresa,
-                        nombreEmpleado, apellidoEmpleado, cuil1, cuil2, cuil3, ocupacionEmpleado, ingresoEmpleado, conceptosEmpleado, numeroLegajo,
-                        bancoEmpleado, convenioEmpleado);
-
-                    LimpiarCamposCrearLegajos();
-
-                    foreach (DataGridViewRow row in dataGridView1.Rows)
-                    {
-                        int index = dataGridView1.Rows.IndexOf(row);
-                        dataGridView1.Rows[index].Cells[0].Value = false;
                     }
 
                     MessageBox.Show("¡Legajo creado con éxito!");
-
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(rta);
                 }
 
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
+        private void btnGuardarEdicion_Click(object sender, EventArgs e)
+        {
+            int currentIndex = cboLegajo.SelectedIndex;
+            int codigoPersonaPorEmpresa = Convert.ToInt32(cboLegajo.SelectedValue);
+            int numeroLegajo = (String.IsNullOrEmpty(txtNroLegajoEdit.Text)) ? 0 : Convert.ToInt32(txtNroLegajoEdit.Text);
+            string nombre = (String.IsNullOrEmpty(txtNombreEditar.Text)) ? null : txtNombreEditar.Text;
+            string apellido = (String.IsNullOrEmpty(txtApellidoEditar.Text)) ? null : txtApellidoEditar.Text;
+
+            string cuil = txtCuilEditar.Text;
+
+            int codigoPuesto = Convert.ToInt32(cboPuestoEditar.SelectedValue);
+            string convenio = (String.IsNullOrEmpty(txtConvenioEditar.Text)) ? null : txtConvenioEditar.Text;
+            DateTime fechaIngreso = dtpFechaIngresoEditar.Value;
+            string banco = (String.IsNullOrEmpty(txtBancoEditar.Text)) ? null : txtBancoEditar.Text;
+
+            string conceptos = "";
+
+            if ((numeroLegajo < 1) || (nombre == null) || (apellido == null) || (convenio == null) || (banco == null) || codigoPuesto == 0)
+            {
+                MessageBox.Show("Faltan rellenar campos.");
+                return;
+            }
+
+            conceptos = CrearListaConceptosAsignados(dgvConceptosEditar);
+
+            switch (conceptos)
+            {
+                case "NoSeleccionoConceptos":
+                    MessageBox.Show("Debe elegir al menos un concepto de la lista de conceptos.");
+                    return;
+                case "NoSeleccionoBasico":
+                    MessageBox.Show("Debe elegir al menos un concepto del tipo \"básico\" de la lista de conceptos.");
+                    return;
+
+                case "MasDeUnBasico":
+                    MessageBox.Show("No puede haber mas de un concepto del tipo \"básico\" seleccionado.");
+                    return;
+            }
+
+            try
+            {
+                string rta = ControladorPersona.InsertarActualizarPersona(codigoPersonaPorEmpresa, _empresa.codigoEmpresa, numeroLegajo, nombre, apellido, cuil,
+                    codigoPuesto, convenio, fechaIngreso, banco, conceptos);
+
+                if (rta.Equals("ok"))
+                {
+                    CargarLegajos();
+                    CargarParametros();
+
+                    cboLegajo.SelectedIndex = currentIndex;
+
+                    foreach (Form frm in Application.OpenForms)
+                    {
+                        if (frm.Name== "SelectorLegajo")
+                        {
+                            (frm as SelectorLegajo).CargarLegajos();
+                            break;
+                        }
+
+                    }
+
+                    MessageBox.Show("¡Legajo editado con éxito!");
+                }
+                else
+                {
+                    MessageBox.Show(rta);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
         #endregion
 
         #region METODOS
-
-        private void HabilitarEdicionLegajo()
-        {
-            preventTabChange = true;
-
-            conceptosDGV.Columns[0].ReadOnly = false;
-
-            treeViewLegajos.Enabled = false;
-
-            editLegajoLabel.Visible = false;
-            editNombreLabel.Visible = false;
-            editPuestoLabel.Visible = false;
-            editBancoLabel.Visible = false;
-            editConvenioLabel.Visible = false;
-
-            editLegajoNumeroInput.Visible = true;
-            editNombre.Visible = true;
-
-            editFechaLabel.Visible = true;
-            editBanco.Visible = true;
-            editConvenio.Visible = true;
-            editPuestoSelect.Visible = true;
-
-            saveEdit.Enabled = true;
-            saveEdit.Visible = true;
-            cancelEdit.Enabled = true;
-            cancelEdit.Visible = true;
-
-            editNombre.Text = editNombreLabel.Text;
-            editNombre.ReadOnly = false;
-            editNombre.BorderStyle = BorderStyle.Fixed3D;
-
-            editLegajoNumeroInput.Text = editLegajoLabel.Text;
-            editLegajoNumeroInput.ReadOnly = false;
-            editLegajoNumeroInput.BorderStyle = BorderStyle.Fixed3D;
-
-            editBanco.Text = editBancoLabel.Text;
-            editBanco.ReadOnly = false;
-            editBanco.BorderStyle = BorderStyle.Fixed3D;
-
-            editConvenio.Text = editConvenioLabel.Text;
-            editConvenio.ReadOnly = false;
-            editConvenio.BorderStyle = BorderStyle.Fixed3D;
-
-            editPuestoSelect.Enabled = true;
-            oldNumeroLegajo = editLegajoNumeroInput.Text;
-
-            // Limpia la lista que se usa de cache.
-            CacheEdit.Clear();
-            // Llena la lista que se usa de cache.
-            CacheEdit.Add(editLegajoNumeroInput.Text);
-            CacheEdit.Add(editNombre.Text);
-            CacheEdit.Add(editPuestoSelect.Text);
-            CacheEdit.Add(editBanco.Text);
-            CacheEdit.Add(editConvenio.Text);
-
-            deleteLegajoButton.Enabled = false;
-            deleteLegajoButton.Visible = false;
-
-            editLegajoButton.Enabled = false;
-            editLegajoButton.Visible = false;
-        }
-
-        private void DeshabilitarEdicionLegajo()
-        {
-            editLegajoLabel.Visible = true;
-            editNombreLabel.Visible = true;
-            editPuestoLabel.Visible = true;
-            editBancoLabel.Visible = true;
-            editConvenioLabel.Visible = true;
-
-            editLegajoNumeroInput.Visible = false;
-            editNombre.Visible = false;
-
-            editBanco.Visible = false;
-            editConvenio.Visible = false;
-            editPuestoSelect.Visible = false;
-
-            deleteLegajoButton.Enabled = true;
-            deleteLegajoButton.Visible = true;
-
-            editLegajoButton.Enabled = true;
-            editLegajoButton.Visible = true;
-
-            saveEdit.Enabled = false;
-            saveEdit.Visible = false;
-
-            cancelEdit.Enabled = false;
-            cancelEdit.Visible = false;
-
-            editNombre.ReadOnly = true;
-            editNombre.BorderStyle = BorderStyle.None;
-
-            editLegajoNumeroInput.ReadOnly = true;
-            editLegajoNumeroInput.BorderStyle = BorderStyle.None;
-
-            editBanco.ReadOnly = true;
-            editBanco.BorderStyle = BorderStyle.None;
-
-            editConvenio.ReadOnly = true;
-            editConvenio.BorderStyle = BorderStyle.None;
-
-            editPuestoSelect.Enabled = false;
-            treeViewLegajos.Enabled = true;
-
-            foreach (DataGridViewRow row in conceptosDGV.Rows)
-            {
-                int index = conceptosDGV.Rows.IndexOf(row);
-
-                conceptosDGV.Rows[index].Cells[0].Value = CacheEditDGV[index];
-            }
-
-            conceptosDGV.Columns[0].ReadOnly = true;
-
-            TreeNode[] tns = treeViewLegajos.Nodes
-                .Cast<TreeNode>()
-                .Where(r => r.Text == "Nº " + editLegajoNumeroInput.Text)
-                .ToArray();
-
-            if (tns.Length > 0)
-            {
-                treeViewLegajos.SelectedNode = tns[0];
-                treeViewLegajos.Focus();
-            }
-
-            preventTabChange = false;
-        }
-
         private void LimpiarCamposCrearLegajos()
         {
-            LegajoNumeroInput.Clear();
-            nombreInput.Clear();
-            apellidoInput.Clear();
-            cuilInput1.Clear();
-            cuilInput2.Clear();
-            cuilInput3.Clear();
-            puestoSelect.SelectedIndex = 0;
-            convenioInput.Clear();
-            bancoInput.Clear();
-        }
-
-        private void LimpiarCamposEditarLegajos()
-        {
-            editLegajoNumeroInput.Clear();
-            editNombre.Clear();
-            editConvenio.Clear();
-            editBanco.Clear();
-            editPuestoSelect.Text = "";
-
-            treeViewLegajos.Nodes.Clear();
-
+            txtNumeroLegajo.Clear();
+            txtNombre.Clear();
+            txtApellido.Clear();
+            txtCuil1.Clear();
+            txtCuil2.Clear();
+            txtCuil3.Clear();
+            cboPuesto.SelectedIndex = 0;
+            txtConvenio.Clear();
+            txtBanco.Clear();
         }
 
         private void CargarLegajos()
         {
-            if (tabControl1.SelectedIndex == 1)
-            {
-                DataTable tablaLegajos = ControladorAddLegajos.RecuperarLegajos(UsuarioSingleton.Instance.CuitEmpresa);
+            tablaPersonas = ControladorPersona.RecuperarPersonasPorEmpresa(_empresa.codigoEmpresa);
 
-                treeViewLegajos.Nodes.Clear();
+            cboLegajo.DisplayMember = "descripcion";
+            cboLegajo.ValueMember = "codigoPersonaPorEmpresa";
+            cboLegajo.DataSource = tablaPersonas;
 
-                //Carga lista de  legajos para modificar/borrar.
-                foreach (DataRow dr in tablaLegajos.Rows)
-                {
-                    treeViewLegajos.Nodes.Add("Nº " + dr["n_legajo"].ToString());
-                }
-            }
+            cboLegajo.SelectedIndex = -1;
         }
 
+        private string CrearListaConceptosAsignados(DataGridView dgv)
+        {
+            DataTable tablaConceptos = (dgv.DataSource as DataView).Table;
+
+            DataRow rowConcepto;
+            List<string> listaConceptos = new List<string>();
+            string formula = "";
+            string[] formulaSplit;
+            string conceptos = "";
+            int basicosSeleccionados = 0;
+
+            for (int i = 0; i < dgv.RowCount; i++)
+            {
+                if (Convert.ToBoolean(dgv.Rows[i].Cells[0].Value))
+                {
+                    if (Convert.ToString(dgv.Rows[i].Cells[8].Value).Equals("BAS"))
+                        basicosSeleccionados++;
+
+                    if (basicosSeleccionados > 1)
+                    {
+                        conceptos = "MasDeUnBasico";
+                        break;
+                    }
+
+                    listaConceptos.Add(String.Format("|{0}|", Convert.ToString(dgv.Rows[i].Cells[1].Value)));
+
+                    switch (Convert.ToString(dgv.Rows[i].Cells[9].Value ))
+                    {
+                        case "hab_fijo":
+                            if (!String.IsNullOrEmpty(Convert.ToString(dgv.Rows[i].Cells[4].Value)))
+                            {
+                                bool conversion = false;
+                                double number = 0;
+
+                                formula = Convert.ToString(dgv.Rows[i].Cells[4].Value).Replace("(", "");
+                                formula = formula.Replace(")", "");
+
+                                formulaSplit = formula.Split('/', '*', '-', '+');
+
+                                for (int formulaIndex = 0; formulaIndex < formulaSplit.Length; formulaIndex++)
+                                {
+                                    conversion = double.TryParse(formulaSplit[formulaIndex], out number);
+
+                                    if (conversion || formulaSplit[formulaIndex].Equals("|PUESTO|"))
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        if (!listaConceptos.Any(x => x.Contains(formulaSplit[formulaIndex])))
+                                        {
+
+                                            rowConcepto = (from r in tablaConceptos.AsEnumerable() where r.Field<string>("codigo") == formulaSplit[formulaIndex].Replace("|", "").Trim() select r).SingleOrDefault();
+
+                                            if ((rowConcepto != null) && (Convert.ToInt32(rowConcepto["codigoConceptoPorEmpresa"]) > 0) )
+                                            {
+                                                listaConceptos.Add(String.Format("|{0}|", Convert.ToInt32(rowConcepto["codigoConceptoPorEmpresa"])));
+                                            }
+                                            
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        case "ded_fijo":
+                            if (!String.IsNullOrEmpty(Convert.ToString(dgv.Rows[i].Cells[6].Value)))
+                            {
+                                bool conversion = false;
+                                double number = 0;
+
+                                formula = Convert.ToString(dgv.Rows[i].Cells[6].Value).Replace("(", "");
+                                formula = formula.Replace(")", "");
+
+                                formulaSplit = formula.Split('/', '*', '-', '+');
+
+                                for (int formulaIndex = 0; formulaIndex < formulaSplit.Length; formulaIndex++)
+                                {
+                                    conversion = double.TryParse(formulaSplit[formulaIndex], out number);
+
+                                    if (conversion)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        if (!listaConceptos.Any(x => x.Contains(formulaSplit[formulaIndex])))
+                                        {
+                                            rowConcepto = (from r in tablaConceptos.AsEnumerable() where r.Field<string>("codigo") == formulaSplit[formulaIndex].Replace("|", "").Trim() select r).SingleOrDefault();
+
+                                            if ((rowConcepto != null) && (Convert.ToInt32(rowConcepto["codigoConceptoPorEmpresa"]) > 0))
+                                            {
+                                                listaConceptos.Add(String.Format("|{0}|", Convert.ToInt32(rowConcepto["codigoConceptoPorEmpresa"])));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            if (!String.IsNullOrEmpty(Convert.ToString(dgv.Rows[i].Cells[10].Value)))
+                            {
+                                formula = Convert.ToString(dgv.Rows[i].Cells[10].Value);
+                                formulaSplit = formula.Split('+');
+
+                                if (formula.Equals("TotalRemunerativos"))
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    for (int formulaIndex = 0; formulaIndex < formulaSplit.Length; formulaIndex++)
+                                    {
+                                        if (!listaConceptos.Any(x => x.Contains(formulaSplit[formulaIndex])))
+                                        {
+                                            //rowConcepto = (from r in tablaConceptos.AsEnumerable() where r.Field<int>("codigoConceptoPorEmpresa") == Convert.ToInt32(formulaSplit[formulaIndex].Replace("|", " ")) select r).SingleOrDefault();
+
+                                            rowConcepto = tablaConceptos.AsEnumerable().Where(x => Convert.ToInt32(x["codigoConceptoPorEmpresa"]) == Convert.ToInt32(formulaSplit[formulaIndex].Replace("|", " "))).FirstOrDefault();
+
+                                            if ((rowConcepto != null) && (Convert.ToInt32(rowConcepto["codigoConceptoPorEmpresa"]) > 0))
+                                            {
+                                                listaConceptos.Add(String.Format("|{0}|", Convert.ToInt32(rowConcepto["codigoConceptoPorEmpresa"])));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+
+            listaConceptos = listaConceptos.Distinct().ToList();
+
+            if (basicosSeleccionados < 1)
+            {
+                return "NoSeleccionoBasico";
+            }
+
+            if (listaConceptos.Count < 1)
+            {
+                return "NoSeleccionoConceptos";
+            }
+
+            for (int i = 0; i < listaConceptos.Count; i++)
+            {
+                conceptos += listaConceptos[i] + ";";
+            }
+
+            conceptos = conceptos.Substring(0, conceptos.Length - 1);
+
+            return conceptos;
+        }
+
+        private string ConvertirCodigoStringAFormulaCodigo(string formula, DataGridView grilla)
+        {
+            string formulaPorcentaje = formula;
+            string[] formulaPorcentajeSplited = formulaPorcentaje.Split('+');
+            string codigoConceptoGrilla;
+
+            for (int i = 0; i < formulaPorcentajeSplited.Length; i++)
+            {
+                for (int a = 0; a < grilla.Rows.Count; a++)
+                {
+                    codigoConceptoGrilla = Convert.ToString(grilla.Rows[a].Cells[1].Value);
+
+
+                    if (formulaPorcentajeSplited[i].Trim() == String.Format("|{0}|", codigoConceptoGrilla))
+                    {
+                        formulaPorcentaje = formulaPorcentaje.Replace(formulaPorcentajeSplited[i], String.Format(" |{0}| ", Convert.ToString(grilla.Rows[a].Cells[0].Value)));
+                    }
+                }
+            }
+
+            return formulaPorcentaje;
+        }
+
+        private void VerificarConceptoAsigando(int codigoConceptoPorEmpresa)
+        {
+            try
+            {
+                DataTable tablaLegajos = ControladorPersona.RecuperarPersonasPorEmpresa(_empresa.codigoEmpresa);
+                DataTable tablaConceptos = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(_empresa.codigoEmpresa);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
         #endregion
 
         #region EVENTOS
         private void tabControl1_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            CargarLegajos();
-
-            if (tabControl1.SelectedIndex == 0 && preventTabChange)
+            if (tabControl1.SelectedIndex == 1)
             {
-                tabControl1.SelectedIndex = 1;
+                CargarLegajos();
             }
         }
 
@@ -556,7 +552,9 @@ namespace AliS_WinVer
             Index.Enabled = true;
             Index.Visible = true;
 
-            Index.Index_Load(null, EventArgs.Empty);
+            if(Index.GetType() == typeof(Principal))
+                (this.MdiParent as Principal).ActivarBotonesTS();
+              
         }
 
         private void LegajoNumeroInput_KeyPress(object sender, KeyPressEventArgs e)
@@ -588,5 +586,157 @@ namespace AliS_WinVer
 
         #endregion
 
+        private void dgvConceptos_DoubleClick(object sender, EventArgs e)
+        {
+            string modoConcepto = Convert.ToString(dgvConceptos.CurrentRow.Cells[9].Value);
+            StringBuilder sb = new StringBuilder();
+            string porcentaje = "";
+            string formula = "";
+            string[] formulaSplit;
+            int codigoConcepto = 0;
+
+            switch (modoConcepto) {
+                case "hab_fijo":
+                    formula = Convert.ToString(dgvConceptos.CurrentRow.Cells[4].Value);
+
+                    formula = (String.IsNullOrEmpty(formula)) ? "Fórmula sin asignar" : formula;
+
+                    MessageBox.Show(formula, "Fórmula:");
+                    break;
+                case "ded_fijo":
+                    formula = Convert.ToString(dgvConceptos.CurrentRow.Cells[6].Value);
+
+                    formula = (String.IsNullOrEmpty(formula)) ? "Fórmula sin asignar" : formula;
+
+                    MessageBox.Show(formula, "Fórmula:");
+                    break;
+                case "hab_porc":
+                    porcentaje = Convert.ToString(dgvConceptos.CurrentRow.Cells[5].Value);
+                    formula = Convert.ToString(dgvConceptos.CurrentRow.Cells[10].Value);
+
+                    sb.Append(String.Format("Porcentaje: {0}% \n\n", porcentaje));
+                    sb.Append(String.Format("Aplica a:\n", porcentaje));
+
+                    if (formula.Equals("TotalRemunerativos"))
+                    {
+                        sb.Append("- Total haberes remunerativos.");
+                    }
+                    else
+                    {
+                        formulaSplit = formula.Split('+');
+
+                        for (int i = 0; i < formulaSplit.Length; i++)
+                        {
+                            for (int a = 0; a < dgvConceptos.Rows.Count; a++)
+                            {
+                                codigoConcepto = Convert.ToInt32(dgvConceptos.Rows[a].Cells[1].Value);
+
+                                if (codigoConcepto == Convert.ToInt32(formulaSplit[i].Replace("|","")))
+                                {
+                                    sb.Append(String.Format("- {0}\n", Convert.ToString(dgvConceptos.Rows[a].Cells[3].Value)));
+                                }
+                            }
+                        }
+                    }
+
+                    MessageBox.Show(Convert.ToString(sb), "Fórmula:");
+
+                    break;
+                case "ded_porc":
+                    porcentaje = Convert.ToString(dgvConceptos.CurrentRow.Cells[7].Value);
+                    formula = Convert.ToString(dgvConceptos.CurrentRow.Cells[10].Value);
+
+                    sb.Append(String.Format("Porcentaje: {0}% \n\n", porcentaje));
+                    sb.Append(String.Format("Aplica a:\n", porcentaje));
+
+                    if (formula.Equals("TotalRemunerativos"))
+                    {
+                        sb.Append("- Total haberes remunerativos.");
+                    }
+                    else
+                    {
+                        formulaSplit = formula.Split('+');
+
+                        for (int i = 0; i < formulaSplit.Length; i++)
+                        {
+                            for (int a = 0; a < dgvConceptos.Rows.Count; a++)
+                            {
+                                codigoConcepto = Convert.ToInt32(dgvConceptos.Rows[a].Cells[1].Value);
+
+                                if(codigoConcepto == Convert.ToInt32(formulaSplit[i].Replace("|", "")))
+                                {
+                                    sb.Append(String.Format("- {0}\n", Convert.ToString(dgvConceptos.Rows[a].Cells[3].Value)));
+                                }
+                            }
+                        }
+                    }
+
+                    MessageBox.Show(Convert.ToString(sb), "Fórmula:");
+
+                    break;
+            }
+        }
+
+        private void cboLegajo_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if(cboLegajo.SelectedIndex > -1)
+            {
+                List<string> listaConceptos;
+                int codigoPersonaPorEmpresa = Convert.ToInt32(cboLegajo.SelectedValue);
+                DataRow legajoSeleccionado = (from r in tablaPersonas.AsEnumerable() where r.Field<int>("codigoPersonaPorEmpresa") == codigoPersonaPorEmpresa select r).SingleOrDefault();
+
+                listaConceptos = Convert.ToString(legajoSeleccionado["conceptos"]).Split(';').ToList();
+
+                txtNroLegajoEdit.Text = Convert.ToString(legajoSeleccionado["numeroLegajo"]);
+                txtNombreEditar.Text = Convert.ToString(legajoSeleccionado["nombre"]);
+                txtApellidoEditar.Text = Convert.ToString(legajoSeleccionado["apellido"]);
+
+                txtCuilEditar.Text = Convert.ToString(legajoSeleccionado["cuil"]);
+
+                cboPuestoEditar.SelectedValue = Convert.ToInt32(legajoSeleccionado["codigoPuesto"]);
+                txtConvenioEditar.Text = Convert.ToString(legajoSeleccionado["convenio"]);
+                dtpFechaIngresoEditar.Value = Convert.ToDateTime(legajoSeleccionado["fechaIngreso"]);
+                txtBancoEditar.Text = Convert.ToString(legajoSeleccionado["banco"]);
+
+                for (int i = 0; i < listaConceptos.Count; i++)
+                {
+                    for (int a = 0; a < dgvConceptosEditar.Rows.Count; a++)
+                    {
+                        if (listaConceptos[i] == "|" + Convert.ToString(dgvConceptosEditar.Rows[a].Cells[1].Value) + "|")
+                        {
+                            dgvConceptosEditar.Rows[a].Cells[0].Value = true;
+                            break;
+                        }
+                        else
+                        {
+                            if (!listaConceptos.Contains("|" + Convert.ToString(dgvConceptosEditar.Rows[a].Cells[1].Value) + "|"))
+                            {
+                                dgvConceptosEditar.Rows[a].Cells[0].Value = false;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                txtNroLegajoEdit.Text = "";
+                txtNombreEditar.Text = "";
+                txtApellidoEditar.Text = "";
+
+                txtCuilEditar.Text = "";
+
+                cboPuestoEditar.SelectedIndex = -1;
+                txtConvenioEditar.Text = "";
+                //dtpFechaIngresoEditar.Value =;
+                txtBancoEditar.Text = "";
+
+                for (int i = 0;i < dgvConceptosEditar.Rows.Count; i++)
+                {
+                    dgvConceptosEditar.Rows[i].Cells[0].Value = false;
+                }
+            }
+        }
     }
 }
+
+//TODO:: 07/11/2020 Cuando edito legajo y destildo un concepto que es parte de la formula de otro concepto tengo que hacer que salga un messageBox que diga que no se puede destildar.

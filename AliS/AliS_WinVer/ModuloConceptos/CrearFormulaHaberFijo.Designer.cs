@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CrearFormulaHaberFijo));
             this.dgvConceptosList = new System.Windows.Forms.DataGridView();
             this.btnSumar = new System.Windows.Forms.Button();
             this.btnRestar = new System.Windows.Forms.Button();
@@ -177,7 +178,7 @@
             this.label4.TabIndex = 26;
             this.label4.Text = "Para añadir haga click dos veces sobre el concepto deseado,";
             // 
-            // FormulaHab
+            // CrearFormulaHaberFijo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -195,25 +196,13 @@
             this.Controls.Add(this.btnRestar);
             this.Controls.Add(this.btnSumar);
             this.Controls.Add(this.dgvConceptosList);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FormulaHab";
+            this.Name = "CrearFormulaHaberFijo";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Haberes: Valor fijo($) - Añadir formula";
             this.Load += new System.EventHandler(this.FormulaHab_Load);
-            this.Controls.SetChildIndex(this.dgvConceptosList, 0);
-            this.Controls.SetChildIndex(this.btnSumar, 0);
-            this.Controls.SetChildIndex(this.btnRestar, 0);
-            this.Controls.SetChildIndex(this.btnMultiplicar, 0);
-            this.Controls.SetChildIndex(this.btnDividir, 0);
-            this.Controls.SetChildIndex(this.btnParentesis1, 0);
-            this.Controls.SetChildIndex(this.btnParentesis2, 0);
-            this.Controls.SetChildIndex(this.label2, 0);
-            this.Controls.SetChildIndex(this.label3, 0);
-            this.Controls.SetChildIndex(this.btnAceptar, 0);
-            this.Controls.SetChildIndex(this.btnPunto, 0);
-            this.Controls.SetChildIndex(this.tbxFormula, 0);
-            this.Controls.SetChildIndex(this.label4, 0);
             ((System.ComponentModel.ISupportInitialize)(this.dgvConceptosList)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

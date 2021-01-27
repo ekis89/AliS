@@ -28,9 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GestionLiquidacionConceptos));
             this.dgvDetalles = new System.Windows.Forms.DataGridView();
             this.btnQuitar = new System.Windows.Forms.Button();
             this.btnAgregar = new System.Windows.Forms.Button();
@@ -54,6 +55,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.herramientasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnubtnCalculadoraSAC = new System.Windows.Forms.ToolStripMenuItem();
+            this.liquidaciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnubtnEliminarLiquidación = new System.Windows.Forms.ToolStripMenuItem();
             this.liquidarBtn = new System.Windows.Forms.Button();
             this.btnSubir = new System.Windows.Forms.Button();
             this.btnBajar = new System.Windows.Forms.Button();
@@ -70,70 +73,73 @@
             this.dgvDetalles.AllowUserToResizeRows = false;
             this.dgvDetalles.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvDetalles.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvDetalles.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvDetalles.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.dgvDetalles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvDetalles.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvDetalles.DefaultCellStyle = dataGridViewCellStyle5;
             this.dgvDetalles.Location = new System.Drawing.Point(12, 83);
             this.dgvDetalles.MultiSelect = false;
             this.dgvDetalles.Name = "dgvDetalles";
             this.dgvDetalles.ReadOnly = true;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvDetalles.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvDetalles.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.dgvDetalles.RowHeadersVisible = false;
             this.dgvDetalles.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvDetalles.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvDetalles.Size = new System.Drawing.Size(575, 235);
             this.dgvDetalles.TabIndex = 16;
+            this.dgvDetalles.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDetalles_CellClick);
             this.dgvDetalles.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDetalles_CellContentClick);
             // 
             // btnQuitar
             // 
-            this.btnQuitar.Location = new System.Drawing.Point(511, 324);
+            this.btnQuitar.Enabled = false;
+            this.btnQuitar.Image = ((System.Drawing.Image)(resources.GetObject("btnQuitar.Image")));
+            this.btnQuitar.Location = new System.Drawing.Point(560, 324);
             this.btnQuitar.Name = "btnQuitar";
-            this.btnQuitar.Size = new System.Drawing.Size(75, 23);
+            this.btnQuitar.Size = new System.Drawing.Size(27, 23);
             this.btnQuitar.TabIndex = 45;
-            this.btnQuitar.Text = "Quitar";
             this.btnQuitar.UseVisualStyleBackColor = true;
-            this.btnQuitar.Click += new System.EventHandler(this.Del_con_Click);
+            this.btnQuitar.Click += new System.EventHandler(this.btnQuitar_Click);
             // 
             // btnAgregar
             // 
-            this.btnAgregar.Location = new System.Drawing.Point(349, 324);
+            this.btnAgregar.Image = ((System.Drawing.Image)(resources.GetObject("btnAgregar.Image")));
+            this.btnAgregar.Location = new System.Drawing.Point(527, 324);
             this.btnAgregar.Name = "btnAgregar";
-            this.btnAgregar.Size = new System.Drawing.Size(75, 23);
+            this.btnAgregar.Size = new System.Drawing.Size(27, 23);
             this.btnAgregar.TabIndex = 44;
-            this.btnAgregar.Text = "Agregar";
             this.btnAgregar.UseVisualStyleBackColor = true;
-            this.btnAgregar.Click += new System.EventHandler(this.Add_con_Click);
+            this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
             // 
             // btnEditar
             // 
-            this.btnEditar.Location = new System.Drawing.Point(430, 324);
+            this.btnEditar.Location = new System.Drawing.Point(516, 468);
             this.btnEditar.Name = "btnEditar";
             this.btnEditar.Size = new System.Drawing.Size(75, 23);
             this.btnEditar.TabIndex = 43;
             this.btnEditar.Text = "Editar";
             this.btnEditar.UseVisualStyleBackColor = true;
+            this.btnEditar.Visible = false;
             this.btnEditar.Click += new System.EventHandler(this.Edit_con_Click);
             // 
             // dtpFechaLiquidacion
@@ -192,7 +198,7 @@
             this.btnGuardar.TabIndex = 55;
             this.btnGuardar.Text = "Guardar";
             this.btnGuardar.UseVisualStyleBackColor = true;
-            this.btnGuardar.Click += new System.EventHandler(this.Save_Click);
+            this.btnGuardar.Click += new System.EventHandler(this.BtnGuardar_Click);
             // 
             // btnCancelar
             // 
@@ -202,7 +208,7 @@
             this.btnCancelar.TabIndex = 56;
             this.btnCancelar.Text = "Cancelar";
             this.btnCancelar.UseVisualStyleBackColor = true;
-            this.btnCancelar.Click += new System.EventHandler(this.Cancel_Click);
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
             // 
             // groupBox4
             // 
@@ -306,7 +312,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.herramientasToolStripMenuItem});
+            this.herramientasToolStripMenuItem,
+            this.liquidaciónToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(603, 24);
@@ -328,6 +335,22 @@
             this.mnubtnCalculadoraSAC.Text = "Calculador de aguinaldo";
             this.mnubtnCalculadoraSAC.Click += new System.EventHandler(this.mnubtnCalculadoraSAC_Click);
             // 
+            // liquidaciónToolStripMenuItem
+            // 
+            this.liquidaciónToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnubtnEliminarLiquidación});
+            this.liquidaciónToolStripMenuItem.Name = "liquidaciónToolStripMenuItem";
+            this.liquidaciónToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
+            this.liquidaciónToolStripMenuItem.Text = "Liquidación";
+            this.liquidaciónToolStripMenuItem.Visible = false;
+            // 
+            // mnubtnEliminarLiquidación
+            // 
+            this.mnubtnEliminarLiquidación.Name = "mnubtnEliminarLiquidación";
+            this.mnubtnEliminarLiquidación.Size = new System.Drawing.Size(179, 22);
+            this.mnubtnEliminarLiquidación.Text = "Eliminar liquidación";
+            this.mnubtnEliminarLiquidación.Click += new System.EventHandler(this.mnubtnEliminarLiquidación_Click);
+            // 
             // liquidarBtn
             // 
             this.liquidarBtn.Location = new System.Drawing.Point(516, 497);
@@ -340,25 +363,27 @@
             // 
             // btnSubir
             // 
+            this.btnSubir.Enabled = false;
+            this.btnSubir.Image = ((System.Drawing.Image)(resources.GetObject("btnSubir.Image")));
             this.btnSubir.Location = new System.Drawing.Point(66, 324);
             this.btnSubir.Name = "btnSubir";
             this.btnSubir.Size = new System.Drawing.Size(48, 23);
             this.btnSubir.TabIndex = 60;
-            this.btnSubir.Text = "Subir";
             this.btnSubir.UseVisualStyleBackColor = true;
             this.btnSubir.Click += new System.EventHandler(this.btnSubir_Click);
             // 
             // btnBajar
             // 
+            this.btnBajar.Enabled = false;
+            this.btnBajar.Image = ((System.Drawing.Image)(resources.GetObject("btnBajar.Image")));
             this.btnBajar.Location = new System.Drawing.Point(12, 324);
             this.btnBajar.Name = "btnBajar";
             this.btnBajar.Size = new System.Drawing.Size(48, 23);
             this.btnBajar.TabIndex = 61;
-            this.btnBajar.Text = "Bajar";
             this.btnBajar.UseVisualStyleBackColor = true;
             this.btnBajar.Click += new System.EventHandler(this.btnBajar_Click);
             // 
-            // Liquidar
+            // GestionLiquidacionConceptos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -379,12 +404,13 @@
             this.Controls.Add(this.btnEditar);
             this.Controls.Add(this.dgvDetalles);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Liquidar";
+            this.Name = "GestionLiquidacionConceptos";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Liquidación";
+            this.Text = "Gestión de liquidación";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Liquidar_FormClosing);
             this.Load += new System.EventHandler(this.Liquidar_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvDetalles)).EndInit();
@@ -425,5 +451,7 @@
         private System.Windows.Forms.Button liquidarBtn;
         private System.Windows.Forms.Button btnSubir;
         private System.Windows.Forms.Button btnBajar;
+        private System.Windows.Forms.ToolStripMenuItem liquidaciónToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mnubtnEliminarLiquidación;
     }
 }

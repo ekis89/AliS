@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CalculadoraSAC));
             this.label1 = new System.Windows.Forms.Label();
             this.tbxCode = new System.Windows.Forms.TextBox();
             this.tbxDescripcion = new System.Windows.Forms.TextBox();
@@ -202,9 +203,9 @@
             this.lblBrutoTitle.Enabled = false;
             this.lblBrutoTitle.Location = new System.Drawing.Point(27, 60);
             this.lblBrutoTitle.Name = "lblBrutoTitle";
-            this.lblBrutoTitle.Size = new System.Drawing.Size(69, 13);
+            this.lblBrutoTitle.Size = new System.Drawing.Size(66, 13);
             this.lblBrutoTitle.TabIndex = 3;
-            this.lblBrutoTitle.Text = "Salario bruto:";
+            this.lblBrutoTitle.Text = "Salario neto:";
             // 
             // lblMesMayor
             // 
@@ -352,9 +353,9 @@
             this.lblBrutoTitleProp.Enabled = false;
             this.lblBrutoTitleProp.Location = new System.Drawing.Point(27, 60);
             this.lblBrutoTitleProp.Name = "lblBrutoTitleProp";
-            this.lblBrutoTitleProp.Size = new System.Drawing.Size(69, 13);
+            this.lblBrutoTitleProp.Size = new System.Drawing.Size(66, 13);
             this.lblBrutoTitleProp.TabIndex = 13;
-            this.lblBrutoTitleProp.Text = "Salario bruto:";
+            this.lblBrutoTitleProp.Text = "Salario neto:";
             // 
             // lblMesMayorProp
             // 
@@ -434,7 +435,7 @@
             this.btnCancelar.UseVisualStyleBackColor = true;
             this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
             // 
-            // SacCalculadora
+            // CalculadoraSAC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -447,9 +448,10 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tbxCode);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "SacCalculadora";
+            this.Name = "CalculadoraSAC";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Calculador de S.A.C";
             this.Load += new System.EventHandler(this.Aguinaldos_Load);

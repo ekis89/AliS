@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AñadirConcepto));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.optBasico = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tbxHaberComponentes = new System.Windows.Forms.TextBox();
             this.btnHaberSelecccionar = new System.Windows.Forms.Button();
@@ -67,7 +69,6 @@
             this.label10 = new System.Windows.Forms.Label();
             this.tbxDeducNombre = new System.Windows.Forms.TextBox();
             this.btnDeducAdd = new System.Windows.Forms.Button();
-            this.optBasico = new System.Windows.Forms.RadioButton();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -107,6 +108,18 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Haberes";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // optBasico
+            // 
+            this.optBasico.AutoSize = true;
+            this.optBasico.Location = new System.Drawing.Point(123, 384);
+            this.optBasico.Name = "optBasico";
+            this.optBasico.Size = new System.Drawing.Size(57, 17);
+            this.optBasico.TabIndex = 21;
+            this.optBasico.TabStop = true;
+            this.optBasico.Text = "Básico";
+            this.optBasico.UseVisualStyleBackColor = true;
+            this.optBasico.CheckedChanged += new System.EventHandler(this.optBasico_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -491,26 +504,16 @@
             this.btnDeducAdd.UseVisualStyleBackColor = true;
             this.btnDeducAdd.Click += new System.EventHandler(this.btnDeducAdd_Click);
             // 
-            // optBasico
-            // 
-            this.optBasico.AutoSize = true;
-            this.optBasico.Location = new System.Drawing.Point(123, 384);
-            this.optBasico.Name = "optBasico";
-            this.optBasico.Size = new System.Drawing.Size(57, 17);
-            this.optBasico.TabIndex = 21;
-            this.optBasico.TabStop = true;
-            this.optBasico.Text = "Básico";
-            this.optBasico.UseVisualStyleBackColor = true;
-            // 
-            // NewConcepto
+            // AñadirConcepto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(468, 518);
             this.Controls.Add(this.tabControl1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "NewConcepto";
+            this.Name = "AñadirConcepto";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Nuevo Concepto";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Con_custom_FormClosing);

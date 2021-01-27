@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Data;
 using System.Windows.Forms;
+using AliS_WinVer.Clases;
 using AliSlib;
-using Obj;
 using AliSLogica.Controladores;
 
 namespace AliS_WinVer
@@ -10,18 +11,36 @@ namespace AliS_WinVer
     {
         #region PROPIEDADES
         PrincipalPuestos puestos;
+        private Empresa _empresa;
         #endregion
 
         #region INICIO
-        public AñadirPuesto(PrincipalPuestos Puestos)
+        public AñadirPuesto(PrincipalPuestos Puestos, Empresa empresa)
         {
             InitializeComponent();
             this.puestos = Puestos;
+            this._empresa = empresa;
         }
 
         private void AddPuesto_Load(object sender, EventArgs e)
         {
+            CargarParametros();
+        }
 
+        private void CargarParametros()
+        {
+            DataTable tablaPuestos = ControladorEmpresa.RecuperarParametrosPorCodigoTipoParametro(1);
+
+            AutoCompleteStringCollection asc = new AutoCompleteStringCollection();
+
+            for (int i = 0; i < tablaPuestos.Rows.Count; i++)
+            {
+                asc.Add(Convert.ToString(tablaPuestos.Rows[i]["descripcion"]));
+            }
+
+            puestoBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            puestoBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            puestoBox.AutoCompleteCustomSource = asc;
         }
         #endregion
 
@@ -29,6 +48,7 @@ namespace AliS_WinVer
 
         private void button1_Click(object sender, EventArgs e)
         {
+            string codigo = txtCodigo.Text;
             string basico = BasiBox.Text.Replace(",", ".");
             string puesto = puestoBox.Text;
             int tipoPuesto = 0;
@@ -62,7 +82,7 @@ namespace AliS_WinVer
                         tipoPuesto = 2;
                     }
 
-                    string rta = ControladorPuesto.InsertarAcualizarPuesto(UsuarioSingleton.Instance.codigoEmpresa, 0, puesto, tipoPuesto, basico);
+                    string rta = ControladorPuesto.InsertarAcualizarPuesto(_empresa.codigoEmpresa, codigo, 0, puesto, tipoPuesto, basico);
 
                     if (rta.Equals("ok"))
                     {

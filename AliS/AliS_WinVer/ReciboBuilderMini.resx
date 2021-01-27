@@ -117,10 +117,57 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="btnAgregar.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1
+        MAAA6mAAADqYAAAXb5JfxUYAAAAJcEhZcwAACxMAAAsTAQCanBgAAAEhSURBVDhPY/j//z9FGEJgAgMg
+        ngnE76AYxAaJoQB8BsxMnJb6f9rLeWAMYoPEIFIIgM+AdRkr8//P/L4IjEFskBhECgHwGbAqfnHa/74v
+        M8EYxAaJQaQQANkAmJ9BisA4ZG7s/8YPfWAMYiPLATE4TJANmOna6/vfd24YHGdcLf1f/LoRjEFsZDmQ
+        WpAeZAN+Jz0q/J/yrJgoDFIL0oNiQPDd5P8hD1OJwiC16AbM1Gwx+a872QqO7Y77/3e5Ew7GIDayHEgt
+        SA+yARiBqNRr8N/kuhcYg9jIckCMEYjoYJVkj+Z/tUu2YAxig8QgUgiAz4B1gr1K/yXPGYExiA0Sg0gh
+        AD4DZnJUSf7n3asGxiA2SAwihQD4DCAtM5GP/zMAAIAilE759+GCAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="btnBorrar.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1
+        MAAA6mAAADqYAAAXb5JfxUYAAAAJcEhZcwAACxMAAAsTAQCanBgAAABXSURBVDhPpdCxCYBAEAXRLcAi
+        LECwA2OLMrdgzb9cPoFzGzxYBnbhrpK0YDQwGhgNjAZGo551W979OGeM3RpDrjszxm7/QPsJ9DEGRgOj
+        gdHAaGD8L/UBTYjMR9W0fAgAAAAASUVORK5CYII=
+</value>
+  </data>
   <metadata name="saveFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
+  <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>153, 17</value>
   </metadata>
+  <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>268, 17</value>
+  </metadata>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAA
+        AAD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP//
+        /wD///8A////AP///wDimxmU4ZoZ4eCWF+PfkxXj3pAS49yNEOPbig7j2ocM49mFCuPZhQrj2YUK3tiG
+        Cln///8A////AP///wD///8A5qUi5OWjIP/koB3/450b/+GZGf/jlxT/4ZQS/96QEv/cjRD/24oN/9qH
+        DP/ahguo////AP///wD///8A////AOytJYzqrif86Ksl/+aoI//spRv/3qIk/92fIv/onBT/4JgY/9+V
+        Fv/ekhP73o8QVP///wD///8A////AP///wDtrSUA7LUsY+22Lvn0syP/tKtX/zehwf83ocH/saNR/+6j
+        GP/koR754ZkYZd+QEQD///8A////AP///wD///8A+q8ZAPm4IAD9vyQc/cAlklysqPkQpOr/EKTr/1qp
+        pvn3rxqR9KcTG+2bCwDrkQQA////AP///wD///8A////AJ2cbgCgonAAa5WiAEasyCMju+34Jrbz/ya2
+        8v8ju+33RafFImaLmgCYj2IAlIhhAP///wD///8A////AP///wAKoP8ACp//AAme/wAYr/zsMr31/znB
+        9/85wff/Mr31/xiw/OwKoP8AC6H/AAuh/wD///8A////AP///wD///8AJqjcACao3AAkq95MMLzz/z/E
+        +f9IyPv/SMj7/z/E+f8wvPP/JKveTCao3AAmqdwA////AP///wD///8A////ACSt4gAkruIAIaXdpzO4
+        8f9GyPv/UM3+/1DN/v9GyPv/M7jx/yCl3acir+IAIq7iAP///wD///8A////AP///wAadcgAGnXIABhs
+        xGwvqur/RMr8/07N/v9OzP7/RMv9/y+l5/8YXbxrGWnBABlowQD///8A////AP///wD///8AFFm7ABRZ
+        ugATVbiKI4/a/zvI+/8/v/b/P8D2/zvJ/P8igtP/FECtiBVFrwAVRbAA////AP///wD///8A////ABRh
+        vgAUYb4AFGC9QBZlwf0ces3/GWzF/xltxf8ddsv/FVK3/hRJs0cUS7QAFEu0AP///wD///8A////AP//
+        /wAUYb4AFGG+ABRhvgAVZcFbFGLA9RRjwP8UYb//FFu7/xROtqoQTLUAEEy1ABBMtQD///8A////AP//
+        /wD///8AFGG+ABRhvgAUYb4AFmfDABdpxGcVY7/aFWK/4xVgvuUVWLtUE1a5ABNWuQATVrkA////AP//
+        /wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP//
+        /wD///8A//8AAMADAADAAwAAwAMAAOAHAADwDwAA+B8AAPgfAADwDwAA8A8AAPAPAADwDwAA8A8AAPgf
+        AAD8HwAA//8AAA==
+</value>
+  </data>
 </root>

@@ -2,39 +2,37 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using AliSlib;
 
 namespace AliSLogica.Complementarios
 {
     public class ManejoDeRecibo
     {
-        #region PROPIEDADES (las usa ReciboBuilder)
+        #region Variables (las usa ReciboBuilder)
         private static bool isSalarioMensual = false;
         private static string XMLcurrentFolder;
         private static string EmpresaFolderName;
         private static string[] meses = new string[] { "Undefined", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
 
-        //private static string añoSelected;
-        //private static string mesSelected;
-        //private static string quincenaSelected;
+        private static IFormatProvider myFormatProvider = new CultureInfo("fr").NumberFormat;
         #endregion
 
         #region RECIBO BUILDER CARGAR RECIBO
-        public static void CargarMes(XmlDocument xmlDocumento, DataTable dtXML, DataGridView dgvDetalles, ComboBox cboMes, ComboBox cboQuincena, Button btnEditar, Button btnImprimir, Button btnLiquidar,
+        public static string CargarMes(XmlDocument xmlDocumento, DataTable dtXML, DataGridView dgvDetalles, ComboBox cboMes, ComboBox cboQuincena, Button btnEditar, Button btnImprimir, Button btnLiquidar,
            Label lblRemInfo, Label lblNoRemInfo, Label lblDeduccionesInfo, Label lblNetoInfo, Label lblFechaLiquidacionIfo, Label lblFechaDepositoInfo, Label lblOcupacionInfo, Label lblTipoSalarioInfo,
-           DateTimePicker dtpFechaLiquidacion, DateTimePicker dtpFechaDeposito, bool isEditMode, bool isSalarioMensual)
+           DateTimePicker dtpFechaLiquidacion, DateTimePicker dtpFechaDeposito, ref string tempBanco, ref string tempConvenio, bool isEditMode, bool isSalarioMensual)
         {
             string mesSelected = cboMes.GetItemText(cboMes.SelectedItem);
-            string puesto = "";
             string TipoLiquidacion = "";
-            string fechaLiquidacion = "";
-            string fechaDeposito = "";
+
             int mesesIndex = int.Parse(mesSelected);
+
+            string rta = "";
 
             XmlElement root = xmlDocumento.DocumentElement;
             XmlNode CheckNode = root.SelectSingleNode("//Liquidaciones//" + meses[mesesIndex]);
@@ -42,7 +40,10 @@ namespace AliSLogica.Complementarios
 
             if (xmlDocumento == null || xmlDocumento.ChildNodes.Count < 1)
             {
-                return;
+                tempBanco = "";
+                tempConvenio = "";
+
+                return "nuevo";
             }
 
             if (CheckNode == null)
@@ -78,7 +79,10 @@ namespace AliSLogica.Complementarios
                     cboQuincena.SelectedIndex = -1;
                 }
 
-                return;
+                tempBanco = "";
+                tempConvenio = "";
+
+                return "nuevo";
             }
             else
             {
@@ -96,30 +100,28 @@ namespace AliSLogica.Complementarios
                     cboQuincena.Enabled = false;
                     cboQuincena.SelectedIndex = -1;
 
-                    puesto = CheckNode.Attributes["Puesto"].Value.ToString();
-                    fechaLiquidacion = CheckNode.Attributes["Fecha_de_liquidacion"].Value.ToString();
-                    fechaDeposito = CheckNode.Attributes["Pago"].Value.ToString();
-
-                    lblOcupacionInfo.Text = puesto;
-                    lblFechaLiquidacionIfo.Text = fechaLiquidacion;
-                    lblFechaDepositoInfo.Text = fechaDeposito;
+                    lblOcupacionInfo.Text = CheckNode.Attributes["Puesto"].Value.ToString();
+                    lblFechaLiquidacionIfo.Text = CheckNode.Attributes["Fecha_de_liquidacion"].Value.ToString();
+                    lblFechaDepositoInfo.Text = CheckNode.Attributes["Pago"].Value.ToString();
                     lblTipoSalarioInfo.Text = CheckNode.Attributes["Tipo"].Value.ToString();
 
                     nodes = root.SelectNodes("//Liquidaciones/" + meses[mesesIndex] + "/Concepto");
 
+                    rta = "salarioMensual";
                 }
                 else if (TipoLiquidacion == "quincenal")
                 {
                     cboQuincena.Enabled = true;
                     cboQuincena.SelectedIndex = 0;
-                    return;
+
+                    return "salarioQuincenal";
                 }
             }
 
             //Data Table CLEAR.
             dtXML.Clear();
 
-            if (dtXML.Columns.Count != 12)
+            if (dtXML.Columns.Count != 13)
             {
                 dtXML.Columns.Add("codigo");
                 dtXML.Columns.Add("descripcion");
@@ -133,21 +135,26 @@ namespace AliSLogica.Complementarios
                 dtXML.Columns.Add("unidades");
                 dtXML.Columns.Add("total");
                 dtXML.Columns.Add("resultado");
+                dtXML.Columns.Add("codigoConceptoPorEmpresa");
             }
 
             foreach (XmlNode node in nodes)
             {
-                dtXML.Rows.Add(node["Codigo"].InnerText.ToString(),
-                            node["Descripcion"].InnerText.ToString(),
-                            node["hab_fijo"].InnerText.ToString(),
-                            node["hab_porc"].InnerText.ToString(),
-                            node["ded_fijo"].InnerText.ToString(),
-                            node["ded_porc"].InnerText.ToString(),
-                            node["tipo"].InnerText.ToString(),
-                            node["modo"].InnerText.ToString(),
-                            node["formula_porc"].InnerText.ToString(),
-                            node["unidades"].InnerText.ToString()
-                            );
+                DataRow row = dtXML.NewRow();
+
+                row["codigo"] = (node as XmlElement).GetAttribute("Codigo");
+                row["descripcion"] = (node as XmlElement).GetAttribute("Descripcion");
+                row["hab_fijo"] = (node as XmlElement).GetAttribute("hab_fijo");
+                row["hab_porc"] = (node as XmlElement).GetAttribute("hab_porc");
+                row["ded_fijo"] = (node as XmlElement).GetAttribute("ded_fijo");
+                row["ded_porc"] = (node as XmlElement).GetAttribute("ded_porc");
+                row["tipo"] = (node as XmlElement).GetAttribute("tipo");
+                row["modo"] = (node as XmlElement).GetAttribute("modo");
+                row["formula_porc"] = (node as XmlElement).GetAttribute("formula_porc");
+                row["unidades"] = (node as XmlElement).GetAttribute("unidades");
+                row["codigoConceptoPorEmpresa"] = (node as XmlElement).GetAttribute("codigoConceptoPorEmpresa");
+
+                dtXML.Rows.Add(row);
             }
 
 
@@ -156,26 +163,32 @@ namespace AliSLogica.Complementarios
             DrawTabla(dtXML, dgvDetalles, isEditMode);
 
             CalcularTotales(dtXML, dgvDetalles, lblRemInfo, lblNoRemInfo, lblDeduccionesInfo, lblNetoInfo);
+
+            tempBanco = CheckNode.Attributes["Banco"].Value.ToString();
+            tempConvenio = CheckNode.Attributes["Convenio"].Value.ToString();
+
+            return rta;
         }
 
-        public static void CargarQuincena(XmlDocument xmlDocumento, DataTable dtXML, DataGridView dgvDetalles, ComboBox cboMes, ComboBox cboQuincena, Button btnEditar, Button btnImprimir,
+        public static string CargarQuincena(XmlDocument xmlDocumento, DataTable dtXML, DataGridView dgvDetalles, ComboBox cboMes, ComboBox cboQuincena, Button btnEditar, Button btnImprimir,
             Button btnLiquidar, Label lblRemInfo, Label lblNoRemInfo, Label lblDeduccionesInfo, Label lblNetoInfo, Label lblFechaLiquidacionIfo, Label lblFechaDepositoInfo, Label lblOcupacionInfo,
-            Label lblTipoSalarioInfo, DateTimePicker dtpFechaLiquidacion, DateTimePicker dtpFechaDeposito, bool isEditMode, bool isSalarioMensual)
+            Label lblTipoSalarioInfo, DateTimePicker dtpFechaLiquidacion, DateTimePicker dtpFechaDeposito, ref string tempBanco, ref string tempConvenio, bool isEditMode, bool isSalarioMensual)
         {
-            string puesto = "";
-            string fechaLiquidacion = "";
-            string fechaDeposito = "";
+
             string quincenaSelectedString = "";
             string mesSelected = cboMes.GetItemText(cboMes.SelectedItem);
             int quincenaSelected = cboQuincena.SelectedIndex;
-            int mesesIndex = int.Parse(mesSelected);
+            int mesesIndex = Convert.ToInt32(mesSelected);
             XmlNode mesQuincenaInfo = null;
             XmlNode CheckNode = null;
             XmlNodeList nodes = null;
 
             if (xmlDocumento == null || xmlDocumento.ChildNodes.Count < 1)
             {
-                return;
+                tempBanco = "";
+                tempConvenio = "";
+
+                return "";
             }
 
             XmlElement root = xmlDocumento.DocumentElement;
@@ -215,7 +228,10 @@ namespace AliSLogica.Complementarios
                 lblOcupacionInfo.Text = "- - - - - - - - - - - - - ";
                 lblTipoSalarioInfo.Text = "- - - - - - - - - - - - - ";
 
-                return;
+                tempBanco = "";
+                tempConvenio = "";
+
+                return "";
             }
             else
             {
@@ -226,14 +242,13 @@ namespace AliSLogica.Complementarios
                 btnEditar.Visible = true;
                 btnImprimir.Enabled = true;
 
-                puesto = CheckNode.Attributes["Puesto"].Value.ToString();
-                fechaLiquidacion = CheckNode.Attributes["Fecha_de_liquidacion"].Value.ToString();
-                fechaDeposito = CheckNode.Attributes["Pago"].Value.ToString();
-
-                lblOcupacionInfo.Text = puesto;
-                lblFechaLiquidacionIfo.Text = fechaLiquidacion;
-                lblFechaDepositoInfo.Text = fechaDeposito;
+                lblOcupacionInfo.Text = CheckNode.Attributes["Puesto"].Value.ToString(); 
+                lblFechaLiquidacionIfo.Text = CheckNode.Attributes["Fecha_de_liquidacion"].Value.ToString();
+                lblFechaDepositoInfo.Text = CheckNode.Attributes["Pago"].Value.ToString();
                 lblTipoSalarioInfo.Text = root.SelectSingleNode("//Liquidaciones//" + meses[mesesIndex]).Attributes["Tipo"].Value.ToString();
+
+                tempBanco = CheckNode.Attributes["Banco"].Value.ToString();
+                tempConvenio = CheckNode.Attributes["Convenio"].Value.ToString();
 
                 nodes = root.SelectNodes(quincenaSelectedString + "/Concepto");
             }
@@ -241,7 +256,7 @@ namespace AliSLogica.Complementarios
             //Data Table CLEAR.
             dtXML.Clear();
 
-            if (dtXML.Columns.Count != 12)
+            if (dtXML.Columns.Count != 13)
             {
                 dtXML.Columns.Add("codigo");
                 dtXML.Columns.Add("descripcion");
@@ -255,21 +270,26 @@ namespace AliSLogica.Complementarios
                 dtXML.Columns.Add("unidades");
                 dtXML.Columns.Add("total");
                 dtXML.Columns.Add("resultado");
+                dtXML.Columns.Add("codigoConceptoPorEmpresa");
             }
 
             foreach (XmlNode node in nodes)
             {
-                dtXML.Rows.Add(node["Codigo"].InnerText.ToString(),
-                            node["Descripcion"].InnerText.ToString(),
-                            node["hab_fijo"].InnerText.ToString(),
-                            node["hab_porc"].InnerText.ToString(),
-                            node["ded_fijo"].InnerText.ToString(),
-                            node["ded_porc"].InnerText.ToString(),
-                            node["tipo"].InnerText.ToString(),
-                            node["modo"].InnerText.ToString(),
-                            node["formula_porc"].InnerText.ToString(),
-                            node["unidades"].InnerText.ToString()
-                            );
+                DataRow row = dtXML.NewRow();
+
+                row["codigo"] = (node as XmlElement).GetAttribute("Codigo");
+                row["descripcion"] = (node as XmlElement).GetAttribute("Descripcion");
+                row["hab_fijo"] = (node as XmlElement).GetAttribute("hab_fijo");
+                row["hab_porc"] = (node as XmlElement).GetAttribute("hab_porc");
+                row["ded_fijo"] = (node as XmlElement).GetAttribute("ded_fijo");
+                row["ded_porc"] = (node as XmlElement).GetAttribute("ded_porc");
+                row["tipo"] = (node as XmlElement).GetAttribute("tipo");
+                row["modo"] = (node as XmlElement).GetAttribute("modo");
+                row["formula_porc"] = (node as XmlElement).GetAttribute("formula_porc");
+                row["unidades"] = (node as XmlElement).GetAttribute("unidades");
+                row["codigoConceptoPorEmpresa"] = (node as XmlElement).GetAttribute("codigoConceptoPorEmpresa");
+
+                dtXML.Rows.Add(row);
             }
 
             CalcularTabla(dtXML);
@@ -278,47 +298,58 @@ namespace AliSLogica.Complementarios
 
             CalcularTotales(dtXML, dgvDetalles, lblRemInfo, lblNoRemInfo, lblDeduccionesInfo, lblNetoInfo);
 
+            tempBanco = CheckNode.Attributes["Banco"].Value.ToString();
+            tempConvenio = CheckNode.Attributes["Convenio"].Value.ToString();
+
+            return "";
+
         }
         #endregion
 
         #region RECIBO BUILDER LIQUIDAR
-        public static DataTable Liquidar(string userFolder, XmlDocument Documento, bool SalarioMensualCheck, string puesto_ARG, string empresaCUIT, ComboBox cboAño, ComboBox cboMes, ComboBox cboQuincena, string empleadoCUIL, string empresaNombre)
+        public static DataTable Liquidar(string userFolder, int codigoEmpresa, string numeroLegajo, XmlDocument Documento, bool SalarioMensualCheck, string empresaCUIT, string añoSeleccionado, string mesSeleccionado, string quincenaSeleccionada, string empleadoCUIL, string empresaNombre, bool forzarDesdeDB)
         {
-            string cuilSelected = empleadoCUIL.Replace("-", "");
-            string puestoRecibo = puesto_ARG;
-            string basico = RecuperarSueldoBasico(empresaCUIT, puestoRecibo).Rows[0][0].ToString();
-
-            var añoSelected = cboAño.GetItemText(cboAño.SelectedItem);
-            var mesSelected = cboMes.GetItemText(cboMes.SelectedItem);
-            var quincenaSelected = cboQuincena.GetItemText(cboQuincena.SelectedItem);
-
-            EmpresaFolderName = empresaNombre;
-            isSalarioMensual = SalarioMensualCheck;
-
-            XMLcurrentFolder = string.Format("{0}\\documents\\Alis\\{1}\\{2}\\", userFolder, EmpresaFolderName, cuilSelected);
-
-            string curFile = string.Format("{0}\\{1}.xml", XMLcurrentFolder, añoSelected);
-
-            if (isSalarioMensual)
+            try
             {
-                if (cboQuincena.Enabled)
+                string cuilSelected = empleadoCUIL.Replace("-", "");
+
+                EmpresaFolderName = empresaNombre;
+                isSalarioMensual = SalarioMensualCheck;
+
+                XMLcurrentFolder = string.Format("{0}\\documents\\Alis\\{1}\\{2}\\", userFolder, EmpresaFolderName, cuilSelected);
+
+                string curFile = string.Format("{0}\\{1}.xml", XMLcurrentFolder, añoSeleccionado);
+
+                if (isSalarioMensual)
                 {
-                    MessageBox.Show("Error: No se puede liquidar por quincena si el puesto actual esta mensualizado.");
-                    return null;
+                    if (quincenaSeleccionada != "")
+                    {
+                        DataTable rtaError = new DataTable();
+                        rtaError.Columns.Add("rta");
+                        rtaError.Rows.Add("Error: No se puede liquidar por quincena si el puesto actual esta mensualizado.");
+
+                        return rtaError;
+                    }
+                    else
+                    {
+                        return LiquidarModoMensual(Documento, codigoEmpresa, numeroLegajo, Convert.ToInt32(mesSeleccionado), añoSeleccionado, forzarDesdeDB);
+                    }
                 }
                 else
                 {
-                    return LiquidarModoMensual(Documento, empleadoCUIL, empresaNombre, empresaCUIT, Convert.ToInt32(mesSelected), añoSelected, basico, puestoRecibo);
+                    return LiquidarModoQuincenal(Documento, codigoEmpresa, numeroLegajo, empleadoCUIL, empresaNombre, empresaCUIT, Convert.ToInt32(mesSeleccionado), quincenaSeleccionada, añoSeleccionado, forzarDesdeDB);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                return LiquidarModoQuincenal(Documento, empleadoCUIL, empresaNombre, empresaCUIT, Convert.ToInt32(mesSelected), quincenaSelected, añoSelected, basico, puestoRecibo);
+                throw ex;
             }
 
         }
 
-        private static DataTable LiquidarModoMensual(XmlDocument Documento, string empleadoCUIL, string empresaNombre, string empresaCUIT, int mesesIndex, string añoSelected, string basico, string puesto)
+        //TODO: 12/09 : Recodar revisar los metodos LiquidarModoMensual y LiquidarModoQuincena, que mande fruta para poder compilar.
+
+        private static DataTable LiquidarModoMensual(XmlDocument Documento, int codigoEmpresa, string numeroLegajo, int mesesIndex, string añoSelected, bool forzarDesdeDB)
         {
             string curFile = string.Format("{0}\\{1}.xml", XMLcurrentFolder, añoSelected);
             string curFileMinusOne = string.Format("{0}\\{1}.xml", XMLcurrentFolder, int.Parse(añoSelected) - 1);
@@ -337,9 +368,9 @@ namespace AliSLogica.Complementarios
 
                     var decemberNode = root.SelectSingleNode("//Liquidaciones/" + meses[12]);
 
-                    if ((decemberNode == null) || (decemberNode.Attributes["Tipo"].Value == "quincenal") || (decemberNode.Attributes["Tipo"].Value != "mensual"))
+                    if ((decemberNode == null) || (decemberNode.Attributes["Tipo"].Value == "quincenal") || (decemberNode.Attributes["Tipo"].Value != "mensual") || forzarDesdeDB)
                     {
-                        return GenerarDesdeBD(empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                        return GenerarDesdeBD(codigoEmpresa, numeroLegajo);
                     }
                     else
                     {
@@ -348,14 +379,14 @@ namespace AliSLogica.Complementarios
                 }
                 else
                 {
-                    return GenerarDesdeBD(empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                    return GenerarDesdeBD(codigoEmpresa, numeroLegajo);
                 }
             }
             else
             {
-                if ((CheckNode == null) || (CheckNode.Attributes["Tipo"].Value == "quincenal") || (CheckNode.Attributes["Tipo"].Value != "mensual"))
+                if ((CheckNode == null) || (CheckNode.Attributes["Tipo"].Value == "quincenal") || (CheckNode.Attributes["Tipo"].Value != "mensual") || forzarDesdeDB)
                 {
-                    return GenerarDesdeBD(empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                    return GenerarDesdeBD(codigoEmpresa, numeroLegajo);
                 }
                 else
                 {
@@ -364,7 +395,7 @@ namespace AliSLogica.Complementarios
             }
         }
 
-        private static DataTable LiquidarModoQuincenal(XmlDocument Documento, string empleadoCUIL, string empresaNombre, string empresaCUIT, int mesesIndex, string quincenaSelected, string añoSelected, string basico, string puesto)
+        private static DataTable LiquidarModoQuincenal(XmlDocument Documento, int codigoEmpresa, string numeroLegajo, string empleadoCUIL, string empresaNombre, string empresaCUIT, int mesesIndex, string quincenaSelected, string añoSelected, bool forzarDesdeDB)
         {
             string curFile = string.Format("{0}\\{1}.xml", XMLcurrentFolder, añoSelected);
             string curFileMinusOne = string.Format("{0}\\{1}.xml", XMLcurrentFolder, int.Parse(añoSelected) - 1);
@@ -383,21 +414,22 @@ namespace AliSLogica.Complementarios
 
                     var decemberNode = root.SelectSingleNode("//Liquidaciones/" + meses[12]);
 
-                    if ((decemberNode == null) || (decemberNode.Attributes["Tipo"].Value == "mensual") || (decemberNode.Attributes["Tipo"].Value != "quincenal"))
+                    if ((decemberNode == null) || (decemberNode.Attributes["Tipo"].Value == "mensual") || (decemberNode.Attributes["Tipo"].Value != "quincenal") || forzarDesdeDB)
                     {
-                        return GenerarDesdeBD(empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                        return GenerarDesdeBD(codigoEmpresa, numeroLegajo);
                     }
                     else
                     {
-                        return GenerarQuincena(root, CurrentRoot, mesesIndex, quincenaSelected, true, empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                        return GenerarQuincena(root, codigoEmpresa, numeroLegajo, CurrentRoot, mesesIndex, quincenaSelected, true);
                     }
 
                 }
                 else
                 {
+                    //TODO: Revisar esta nota, no se cuando la puse y no se si resolvi el problema.
                     // SEGUIR DESDE ACA, TIENE QUE FIJARSE SI LA QUINCENA 1 DE ENERO ES NULL, SI NO ES NULL TIENE QUE SACAR LOS DATOS DE AHI, DEBERIA HACER UN METODO CON LO 
                     // QUE ESTA EN EL ELSE DE LA LINEA 633.
-                    return GenerarQuincena(null, CurrentRoot, mesesIndex, quincenaSelected, true, empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                    return GenerarQuincena(null, codigoEmpresa, numeroLegajo, CurrentRoot, mesesIndex, quincenaSelected, true);
 
                 }
 
@@ -407,18 +439,17 @@ namespace AliSLogica.Complementarios
 
                 if ((CheckNode == null) || (CheckNode.Attributes["Tipo"].Value == "mensual") || (CheckNode.Attributes["Tipo"].Value != "quincenal"))
                 {
-                    return GenerarDesdeBD(empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                    return GenerarDesdeBD(codigoEmpresa, numeroLegajo);
                 }
                 else
                 {
-                    return GenerarQuincena(null, CurrentRoot, mesesIndex, quincenaSelected, false, empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                    return GenerarQuincena(null, codigoEmpresa, numeroLegajo, CurrentRoot, mesesIndex, quincenaSelected, false);
                 }
             }
 
         }
 
-        private static DataTable GenerarQuincena(XmlElement anoAnteriorRoot, XmlElement CurrentRoot, int mesesIndex, string quincenaSelected, bool isEnero, string empleadoCUIL, string empresaNombre, string empresaCUIT,
-            string basico)
+        private static DataTable GenerarQuincena(XmlElement anoAnteriorRoot, int codigoEmpresa, string numeroLegajo, XmlElement CurrentRoot, int mesesIndex, string quincenaSelected, bool isEnero)
         {
             XmlNode quincenaNode;
 
@@ -456,7 +487,7 @@ namespace AliSLogica.Complementarios
 
             if (quincenaNode == null)
             {
-                return GenerarDesdeBD(empleadoCUIL, empresaNombre, empresaCUIT, basico);
+                return GenerarDesdeBD(codigoEmpresa, numeroLegajo);
 
             }
             else
@@ -466,59 +497,50 @@ namespace AliSLogica.Complementarios
 
         }
 
-        public static string SetLiquidacionFecha(ComboBox cboAño, ComboBox cboMes, ComboBox cboQuincena, bool isSalarioMensual)
+        public static string GenerarFechaLiquidacion(string mesSeleccionado, string quincenaSeleccionada, string añoSeleccionado, bool isSalarioMensual)
         {
             string momento;
-            string mesSelected = cboMes.GetItemText(cboMes.SelectedItem);
-            string quincenaSelected = cboQuincena.GetItemText(cboQuincena.SelectedItem);
             int mesMasUno = 0;
-            int añoSelected = Int32.Parse(cboAño.GetItemText(cboAño.SelectedItem));
-            int LastDayInMont = DateTime.DaysInMonth(añoSelected, int.Parse(mesSelected));
+            int LastDayInMont = DateTime.DaysInMonth(Convert.ToInt32(añoSeleccionado), Convert.ToInt32(mesSeleccionado));
 
-            DateTime dateTimeValue = new DateTime(añoSelected, int.Parse(mesSelected), LastDayInMont);
+            DateTime dateTimeValue = new DateTime(Convert.ToInt32(añoSeleccionado), Convert.ToInt32(mesSeleccionado), LastDayInMont);
 
             if (!isSalarioMensual)
             {
-                if (quincenaSelected == "Primera")
+                if (quincenaSeleccionada == "Primera")
                 {
-                    DateTime dateTimeValueQuincena = new DateTime(añoSelected, int.Parse(mesSelected), 19);
+                    DateTime dateTimeValueQuincena = new DateTime(Convert.ToInt32(añoSeleccionado), Convert.ToInt32(mesSeleccionado), 19);
 
                     if (dateTimeValue.ToString("dddd") == "domingo")
                     {
-                        DateTime dateTimeString = new DateTime(añoSelected + 1, int.Parse(mesSelected), 20);
+                        DateTime dateTimeString = new DateTime(Convert.ToInt32(añoSeleccionado) + 1, Convert.ToInt32(mesSeleccionado), 20);
                         momento = dateTimeString.ToShortDateString();
-                        //dtpFechaLiquidacion.Value = dateTimeString;
                     }
                     else
                     {
                         momento = dateTimeValueQuincena.ToShortDateString();
-                        //dtpFechaLiquidacion.Value = dateTimeValueQuincena;
                     }
                 }
                 else
                 {
                     if (dateTimeValue.ToString("dddd") == "domingo")
                     {
-                        if (mesSelected.ToString() == "12")
+                        if (mesSeleccionado == "12")
                         {
-                            DateTime dateTimeString = new DateTime(añoSelected + 1, 1, 2);
+                            DateTime dateTimeString = new DateTime(Convert.ToInt32(añoSeleccionado) + 1, 1, 2);
                             momento = dateTimeString.ToShortDateString();
-                            //dtpFechaLiquidacion.Value = dateTimeString;
                         }
                         else
                         {
-                            mesMasUno = Int16.Parse(mesSelected.ToString()) + 1;
-                            DateTime dateTimeString = new DateTime(añoSelected, mesMasUno, 1);
+                            mesMasUno = Convert.ToInt32(mesSeleccionado) + 1;
+                            DateTime dateTimeString = new DateTime(Convert.ToInt32(añoSeleccionado), mesMasUno, 1);
                             momento = dateTimeString.ToShortDateString();
-                            //dtpFechaLiquidacion.Value = dateTimeString;
                         }
-
                     }
                     else
                     {
-                        DateTime dateTimeString = new DateTime(añoSelected, Int16.Parse(mesSelected), LastDayInMont);
+                        DateTime dateTimeString = new DateTime(Convert.ToInt32(añoSeleccionado), Convert.ToInt32(mesSeleccionado), LastDayInMont);
                         momento = dateTimeString.ToShortDateString();
-                        //dtpFechaLiquidacion.Value = dateTimeString;
                     }
                 }
             }
@@ -526,21 +548,21 @@ namespace AliSLogica.Complementarios
             {
                 if (dateTimeValue.ToString("dddd") == "domingo")
                 {
-                    if (mesSelected.ToString() == "12")
+                    if (mesSeleccionado == "12")
                     {
-                        DateTime dateTimeString = new DateTime(añoSelected + 1, 1, 2);
+                        DateTime dateTimeString = new DateTime(Convert.ToInt32(añoSeleccionado) + 1, 1, 2);
                         momento = dateTimeString.ToShortDateString();
                     }
                     else
                     {
-                        mesMasUno = Int16.Parse(mesSelected.ToString()) + 1;
-                        DateTime dateTimeString = new DateTime(añoSelected, mesMasUno, 1);
+                        mesMasUno = Convert.ToInt32(mesSeleccionado) + 1;
+                        DateTime dateTimeString = new DateTime(Convert.ToInt32(añoSeleccionado), mesMasUno, 1);
                         momento = dateTimeString.ToShortDateString();
                     }
                 }
                 else
                 {
-                    DateTime dateTimeString = new DateTime(añoSelected, Int16.Parse(mesSelected), LastDayInMont);
+                    DateTime dateTimeString = new DateTime(Convert.ToInt32(añoSeleccionado), Convert.ToInt32(mesSeleccionado), LastDayInMont);
                     momento = dateTimeString.ToShortDateString();
                 }
             }
@@ -548,122 +570,82 @@ namespace AliSLogica.Complementarios
             return momento;
 
         }
-
-        public static DataTable GenerarDesdeBD(string empleadoCUIL, string empresaNombre, string empresaCUIT, string basico)
+       
+        // TODO: 12/09: Aca tengo que cambiar el hab_fijo de Basico que tiene PUESTO y ponerle el monto en numero
+        public static DataTable GenerarDesdeBD(int codigoEmpresa, string numeroLegajo)
         {
-            string cmd;
-            DataSet dsLegajos;
-            DataSet dsConceptos;
-            DataTable dtLegajoConceptos;
-            DataTable dtTablaConceptos;
-            DataTable dtConceptosFinal = new DataTable();
-            DataRow BasicoRow;
-            string conceptos = "";
-            string[] splitedConceptos;
+            DataTable tablaCodigosConcepto = Controladores.ControladorConcepto.RecuperarListaCodigosConceptosPorCodigoEmpresaYNumeroLegajo(codigoEmpresa, numeroLegajo);
 
-            cmd = string.Format("SELECT conceptos FROM Legajos WHERE cuit_empresa = '{0}' AND cuil = '{1}' ", empresaCUIT, empleadoCUIL);
-            dsLegajos = Utilidades.alisDB(cmd);
+            DataTable tablaConceptos = Controladores.ControladorConcepto.RecuperarConceptosPorListaConceptosCodigoEmpresaYNumeroLegajo(tablaCodigosConcepto, codigoEmpresa, numeroLegajo);
 
-            cmd = string.Format("SELECT codigo, descripcion, hab_fijo, hab_porc, ded_fijo, ded_porc, tipo, modo, formula_porc FROM {0}_Conceptos", empresaNombre.Replace(" ", ""));
-            dsConceptos = Utilidades.alisDB(cmd);
+            tablaConceptos.Columns.Add("unidades");
+            tablaConceptos.Columns.Add("total");
+            tablaConceptos.Columns.Add("resultado");
 
-            dtLegajoConceptos = dsLegajos.Tables[0];
-            dtTablaConceptos = dsConceptos.Tables[0];
+            DataRow basicoRow = tablaConceptos.Select("tipo Like 'BAS'").FirstOrDefault();
+            DataRow newBasicoRow = tablaConceptos.NewRow();
+            newBasicoRow.ItemArray = basicoRow.ItemArray.Clone() as object[];
 
-            conceptos = dtLegajoConceptos.Rows[0][0].ToString();
+            int indexBasicoRow = tablaConceptos.Rows.IndexOf(basicoRow);
 
-            splitedConceptos = conceptos.Split(';');
+            tablaConceptos.Rows.RemoveAt(indexBasicoRow);
+            tablaConceptos.Rows.InsertAt(newBasicoRow, 0);
 
-            dtConceptosFinal.Columns.Add("codigo", typeof(string));
-            dtConceptosFinal.Columns.Add("descripcion", typeof(string));
-            dtConceptosFinal.Columns.Add("hab_fijo", typeof(string));
-            dtConceptosFinal.Columns.Add("hab_porc", typeof(string));
-            dtConceptosFinal.Columns.Add("ded_fijo", typeof(string));
-            dtConceptosFinal.Columns.Add("ded_porc", typeof(string));
-            dtConceptosFinal.Columns.Add("tipo", typeof(string));
-            dtConceptosFinal.Columns.Add("modo", typeof(string));
-            dtConceptosFinal.Columns.Add("formula_porc", typeof(string));
-            dtConceptosFinal.Columns.Add("unidades", typeof(string));
-            dtConceptosFinal.Columns.Add("total", typeof(string));
-            dtConceptosFinal.Columns.Add("resultado", typeof(string));
-
-            BasicoRow = dtConceptosFinal.NewRow();
-            //Escribe 
-            for (int i = 0; i < splitedConceptos.Length; i++)
+            foreach (DataRow row in tablaConceptos.Rows)
             {
-                DataRow[] Rows = dtTablaConceptos.Select("codigo Like '" + splitedConceptos[i] + "'");
-                DataRow Row = Rows[0];
-
-                if (Row["tipo"].ToString() == "BAS")
-                {
-                    string oldHabFijo = Row["hab_fijo"].ToString();
-                    Row["hab_fijo"] = oldHabFijo.Replace("PUESTO", basico);
-                    BasicoRow[0] = '\"' + Row[0].ToString() + '\"';
-                    BasicoRow[1] = Row[1];
-                    BasicoRow[2] = Row[2];
-                    BasicoRow[3] = Row[3];
-                    BasicoRow[4] = Row[4];
-                    BasicoRow[5] = Row[5];
-                    BasicoRow[6] = Row[6];
-                    BasicoRow[7] = Row[7];
-
-                    continue;
-                }
-
-                Row["codigo"] = '\"' + Row["codigo"].ToString() + '\"';
-
-                dtConceptosFinal.ImportRow(Row);
-                dtConceptosFinal.Rows[i][9] = "1";
+                row["unidades"] = 1;
+                row["total"] = 0;
+                row["resultado"] = 0;
             }
-            dtConceptosFinal.DefaultView.Sort = "tipo DESC";
-            dtConceptosFinal.Rows.InsertAt(BasicoRow, 0);
-            dtConceptosFinal.Rows[0][9] = "1";
 
-            return dtConceptosFinal;
+            tablaConceptos.AcceptChanges();
+
+            return tablaConceptos;
         }
 
         private static DataTable GenerarDesdeXML(XmlNode NodoActual)
         {
             DataTable dtTablaConceptos = new DataTable();
-            //var nodes = añoAnteriorXML.SelectNodes("//Liquidaciones/" + meses[mesIndex] + "/Concepto");
 
-            dtTablaConceptos.Columns.Add("codigo", typeof(string));
-            dtTablaConceptos.Columns.Add("descripcion", typeof(string));
-            dtTablaConceptos.Columns.Add("hab_fijo", typeof(string));
-            dtTablaConceptos.Columns.Add("hab_porc", typeof(string));
-            dtTablaConceptos.Columns.Add("ded_fijo", typeof(string));
-            dtTablaConceptos.Columns.Add("ded_porc", typeof(string));
-            dtTablaConceptos.Columns.Add("tipo", typeof(string));
-            dtTablaConceptos.Columns.Add("modo", typeof(string));
-            dtTablaConceptos.Columns.Add("formula_porc", typeof(string));
-            dtTablaConceptos.Columns.Add("unidades", typeof(string));
-            dtTablaConceptos.Columns.Add("total", typeof(string));
-            dtTablaConceptos.Columns.Add("resultado", typeof(string));
+            if (dtTablaConceptos.Columns.Count != 13)
+            {
+                dtTablaConceptos.Columns.Add("codigo");
+                dtTablaConceptos.Columns.Add("descripcion");
+                dtTablaConceptos.Columns.Add("hab_fijo");
+                dtTablaConceptos.Columns.Add("hab_porc");
+                dtTablaConceptos.Columns.Add("ded_fijo");
+                dtTablaConceptos.Columns.Add("ded_porc");
+                dtTablaConceptos.Columns.Add("tipo");
+                dtTablaConceptos.Columns.Add("modo");
+                dtTablaConceptos.Columns.Add("formula_porc");
+                dtTablaConceptos.Columns.Add("unidades");
+                dtTablaConceptos.Columns.Add("total");
+                dtTablaConceptos.Columns.Add("resultado");
+                dtTablaConceptos.Columns.Add("codigoConceptoPorEmpresa");
+            }
 
             foreach (XmlNode node in NodoActual)
             {
-                dtTablaConceptos.Rows.Add(node["Codigo"].InnerText.ToString(),
-                    node["Descripcion"].InnerText.ToString(),
-                    node["hab_fijo"].InnerText.ToString(),
-                    node["hab_porc"].InnerText.ToString(),
-                    node["ded_fijo"].InnerText.ToString(),
-                    node["ded_porc"].InnerText.ToString(),
-                    node["tipo"].InnerText.ToString(),
-                    node["modo"].InnerText.ToString(),
-                    node["formula_porc"].InnerText.ToString(),
-                    node["unidades"].InnerText.ToString()
-                );
+                DataRow row = dtTablaConceptos.NewRow();
+
+                row["codigo"] = (node as XmlElement).GetAttribute("Codigo");
+                row["descripcion"] = (node as XmlElement).GetAttribute("Descripcion");
+                row["hab_fijo"] = (node as XmlElement).GetAttribute("hab_fijo");
+                row["hab_porc"] = (node as XmlElement).GetAttribute("hab_porc");
+                row["ded_fijo"] = (node as XmlElement).GetAttribute("ded_fijo");
+                row["ded_porc"] = (node as XmlElement).GetAttribute("ded_porc");
+                row["tipo"] = (node as XmlElement).GetAttribute("tipo");
+                row["modo"] = (node as XmlElement).GetAttribute("modo");
+                row["formula_porc"] = (node as XmlElement).GetAttribute("formula_porc");
+                row["unidades"] = (node as XmlElement).GetAttribute("unidades");
+                row["codigoConceptoPorEmpresa"] = (node as XmlElement).GetAttribute("codigoConceptoPorEmpresa");
+
+                dtTablaConceptos.Rows.Add(row);
             }
 
             return dtTablaConceptos;
         }
 
-        private static DataTable RecuperarSueldoBasico(string empresaCUIT, string puestoRecibo)
-        {
-            string cmd = string.Format("SELECT basico FROM Puestos WHERE puesto = '{0}' AND cuit_empresa = '{1}'", puestoRecibo, empresaCUIT);
-            DataSet ds = Utilidades.alisDB(cmd);
-            return ds.Tables[0];
-        }
         #endregion
 
         #region RECIBO BUILDER MINI
@@ -678,18 +660,18 @@ namespace AliSLogica.Complementarios
             foreach (DataRow row in dtDetalle.Rows)
             {
                 int index = dtDetalle.Rows.IndexOf(row);
-                string CheckType = dtDetalle.Rows[index][4].ToString();
+                string CheckType = dtDetalle.Rows[index]["Tipo"].ToString();
 
                 switch (CheckType)
                 {
                     case "RM":
-                        RMtotal += double.Parse(dtDetalle.Rows[index][2].ToString());
+                        RMtotal += double.Parse(dtDetalle.Rows[index]["Haberes"].ToString());
                         break;
                     case "NRM":
-                        NRMtotal += double.Parse(dtDetalle.Rows[index][2].ToString());
+                        NRMtotal += double.Parse(dtDetalle.Rows[index]["Haberes"].ToString());
                         break;
                     case "DED":
-                        DEDtotal += double.Parse(dtDetalle.Rows[index][3].ToString());
+                        DEDtotal += double.Parse(dtDetalle.Rows[index]["Deducciones"].ToString());
                         break;
                 }
             }
@@ -701,10 +683,19 @@ namespace AliSLogica.Complementarios
             lblDeducciones.Text = DEDtotal.ToString();
             lblNeto.Text = NETOtotal.ToString();
 
-            NETOString = ConversorIntString.enletras(NETOtotal.ToString());
+            if (NETOtotal < 0)
+            {
+                NETOString = ConversorIntString.enletras(NETOtotal.ToString().Replace("-", ""));
+                NETOString = "MENOS " + NETOString;
+            }
+            else
+            {
+                NETOString = ConversorIntString.enletras(NETOtotal.ToString());
+            }
 
             tbxLinea2.Text = string.Format("LA CANTIDAD DE PESOS: {0}", NETOString);
         }
+        
         #endregion
 
         #region CALCULAR DETALLE RECIBO
@@ -715,26 +706,26 @@ namespace AliSLogica.Complementarios
                 int indexRow = datable.Rows.IndexOf(row);
 
                 string newforumla = "";
-                string modoConcepto = Convert.ToString(row["modo"]);//datable.Rows[indexRow][7].ToString();
+                string modoConcepto = Convert.ToString(row["modo"]);
                 string columnaFormula;
                 int totalCheck = 0;
                 // Chequea si el modo es fijo o porcentaje.
                 switch (modoConcepto)
                 {
                     case "hab_fijo":
-                        columnaFormula = Convert.ToString(row["hab_fijo"]); //datable.Rows[indexRow][2].ToString();
+                        columnaFormula = Convert.ToString(row["hab_fijo"]);
                         newforumla = ResolverHaberFijo(datable, indexRow, columnaFormula);
                         break;
                     case "hab_porc":
-                        columnaFormula = Convert.ToString(row["formula_porc"]); //datable.Rows[indexRow][8].ToString();
+                        columnaFormula = Convert.ToString(row["formula_porc"]);
                         newforumla = ResolverHaberPorcentual(datable, indexRow, columnaFormula);
                         break;
                     case "ded_fijo":
-                        //datable.Rows[indexRow][10] = Convert.ToDouble(datable.Rows[indexRow][4].ToString()) * Convert.ToDouble(datable.Rows[indexRow][9].ToString());
+
                         datable.Rows[indexRow]["total"] = Convert.ToDouble(row["ded_fijo"]) * Convert.ToDouble(row["unidades"]);
                         break;
                     case "ded_porc":
-                        columnaFormula = Convert.ToString(row["formula_porc"]); //datable.Rows[indexRow][8].ToString();
+                        columnaFormula = Convert.ToString(row["formula_porc"]);
 
                         if (columnaFormula.Equals("TotalRemunerativos"))
                         {
@@ -751,10 +742,15 @@ namespace AliSLogica.Complementarios
             }
         }
 
+        //TODO: Testar si lo que cambie de este método no da errores.
         private static string ResolverHaberFijo(DataTable tabla, int indexOfRow, string formulaRow)
         {
             string formula = formulaRow;
-            string[] splitedFormula = formulaRow.Split('/', '*', '-', '+');
+            string formulaToSplit = formulaRow.Replace("(","");
+            string[] splitedFormula;
+
+            formulaToSplit = formulaRow.Replace(")", "");
+            splitedFormula = formulaToSplit.Split('/', '*', '-', '+');
 
             for (int i = 0; i < splitedFormula.Length; i++)
             {
@@ -773,14 +769,12 @@ namespace AliSLogica.Complementarios
             }
 
             formula = formula.Replace(",", ".");
-            object resultado = tabla.Compute(formula, "");
+            double resultado = Convert.ToDouble(tabla.Compute(formula, "") );
 
-            //tabla.Rows[indexOfRow]["hab_fijo"] = Convert.ToString(resultado);// --esto cambié 12/01/2020
-            tabla.Rows[indexOfRow]["resultado"] = resultado;
-            //tabla.Rows[indexOfRow]["total"] = Convert.ToDouble(tabla.Rows[indexOfRow]["hab_fijo"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]);
-            tabla.Rows[indexOfRow]["total"] = Convert.ToDouble(tabla.Rows[indexOfRow]["resultado"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]);
+            tabla.Rows[indexOfRow]["resultado"] = Math.Round(resultado, 2);
+            tabla.Rows[indexOfRow]["total"] = Math.Round( Convert.ToDouble(tabla.Rows[indexOfRow]["resultado"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]), 2 );
 
-            return resultado.ToString();
+            return String.Format("{0}", resultado);// Convert.ToString(resultado, myFormatProvider);
         }
 
         private static string ResolverHaberPorcentual(DataTable tabla, int indexOfRow, string formulaRow)
@@ -790,18 +784,19 @@ namespace AliSLogica.Complementarios
 
             for (int i = 0; i < splitedFormula.Length; i++)
             {
-                string resultadoDeCodigo = EncontrarCodigoHaber(tabla, splitedFormula[i]);
+                
+                //string resultadoDeCodigo = EncontrarCodigoHaber(tabla, splitedFormula[i]);
+                string resultadoDeCodigo = EncontrarCodigoHaberPorCodigoConceptoPorEmpresa(tabla, splitedFormula[i]);
                 formula = formula.Replace(splitedFormula[i], resultadoDeCodigo);
             }
 
             formula = formula.Replace(",", ".");
-            object resultado = tabla.Compute(formula, "");
+            double resultado = Convert.ToDouble( tabla.Compute(formula + "+0", "") );
 
-            //tabla.Rows[indexOfRow][8] = resultado.ToString(); --esto cambié 12/01/2020
-            tabla.Rows[indexOfRow]["resultado"] = (Convert.ToDouble(tabla.Rows[indexOfRow]["formula_porc"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["hab_porc"])) / 100;
-            tabla.Rows[indexOfRow]["total"] = Convert.ToDouble(tabla.Rows[indexOfRow]["resultado"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]);
+            tabla.Rows[indexOfRow]["resultado"] =Math.Round((resultado * Convert.ToDouble(tabla.Rows[indexOfRow]["hab_porc"])) / 100, 2);
+            tabla.Rows[indexOfRow]["total"] = Math.Round(Convert.ToDouble(tabla.Rows[indexOfRow]["resultado"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]), 2);
 
-            return tabla.Rows[indexOfRow][11].ToString();
+            return String.Format("{0}", tabla.Rows[indexOfRow][11]); //Convert.ToString(tabla.Rows[indexOfRow][11], myFormatProvider);
         }
 
         private static string ResolverDeduccionPorcentual(DataTable tabla, int indexOfRow, string formulaRow)
@@ -816,36 +811,37 @@ namespace AliSLogica.Complementarios
             }
 
             formula = formula.Replace(",", ".");
-            object resultado = tabla.Compute(formula, "");
+            double resultado = Convert.ToDouble( tabla.Compute(formula + "+0", "") );
 
-            //tabla.Rows[indexOfRow][8] = resultado.ToString(); --esto cambié 12/01/2020
-            tabla.Rows[indexOfRow]["resultado"] = (Convert.ToDouble(tabla.Rows[indexOfRow]["formula_porc"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["ded_porc"])) / 100;
-            tabla.Rows[indexOfRow]["total"] = Convert.ToDouble(tabla.Rows[indexOfRow]["resultado"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]);
+            tabla.Rows[indexOfRow]["resultado"] = Math.Round((resultado * Convert.ToDouble(tabla.Rows[indexOfRow]["ded_porc"])) / 100, 2);
+            tabla.Rows[indexOfRow]["total"] = Math.Round(Convert.ToDouble(tabla.Rows[indexOfRow]["resultado"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]), 2);
 
-            return resultado.ToString();
+            return String.Format("{0}", resultado); //Convert.ToString(resultado, myFormatProvider);
         }
 
+        //TODO: 13/09 estoy aca modificando esto, cambie el codigoConcepto por codigoConceptoPorEmpresa en la variable coneptoTabla
+        //Ademas Tengo que hacer un metodo nuevo que busque los haberes por codigoConceptoPorEmpresa y no por codigo.
         private static string EncontrarTotalCodigoParaDeduccion(DataTable tabla, string splitedConcepto)
         {
 
-            string concepto = splitedConcepto.Replace("\"", "").Trim();
+            string concepto = splitedConcepto.Replace("|", "").Trim();
             string conceptoTabla = "";
             int indexOfConcepto = 0;
 
             for (int i = 0; i < tabla.Rows.Count; i++)
             {
-                conceptoTabla = Convert.ToString(tabla.Rows[i]["codigo"]).Replace("\"", "").Trim();
+                conceptoTabla = Convert.ToString(tabla.Rows[i]["codigoConceptoPorEmpresa"]).Replace("|", "").Trim();
 
                 if (conceptoTabla.Equals(concepto))
                 {
-                    if (Convert.ToString(tabla.Rows[i]["total"]).Equals(""))
+                    if (Convert.ToString(tabla.Rows[i]["total"]).Equals("0"))
                     {
-                        EncontrarCodigoHaber(tabla, concepto);
+                        EncontrarCodigoHaberPorCodigoConceptoPorEmpresa(tabla, concepto);
                     }
                     indexOfConcepto = i;
                 }
             }
-            return Convert.ToString(tabla.Rows[indexOfConcepto]["total"]);
+            return String.Format("{0}", tabla.Rows[indexOfConcepto]["total"]); //Convert.ToString(tabla.Rows[indexOfConcepto]["total"], myFormatProvider);
         }
 
         private static string EncontrarCodigoHaber(DataTable tabla, string codigo)
@@ -856,7 +852,7 @@ namespace AliSLogica.Complementarios
             {
                 int index = tabla.Rows.IndexOf(row);
 
-                if (Convert.ToString(tabla.Rows[index]["codigo"]).Equals(codigo))
+                if (Convert.ToString(tabla.Rows[index]["codigo"]).Equals(codigo.Replace("|","").Trim()))
                 {
                     string modo = Convert.ToString(tabla.Rows[index]["modo"]);
                     string formulaPorcentaje = "";
@@ -918,70 +914,93 @@ namespace AliSLogica.Complementarios
                             break;
                     }
 
-                    //switch (modo)
-                    //{
-                    //    case "hab_fijo":
+                }
+            }
+            formula = formula.Replace(",", ".");
+            double resultado = Convert.ToDouble( tabla.Compute(formula, "") );
+            return String.Format("{0}", Math.Round(resultado, 2)); //Convert.ToString( Math.Round(resultado, 2), myFormatProvider);
+        }
 
-                    //        //agregue hoy 12/01/2020 lineas 910 a 916
-                    //        checkResultado = Convert.ToString(tabla.Rows[index]["total"]);
+        private static string EncontrarCodigoHaberPorCodigoConceptoPorEmpresa(DataTable tabla, string codigo)
+        {
+            string formula = "";
 
-                    //        if (checkResultado == "")
-                    //        {
-                    //            return checkResultado;
-                    //        }
+            foreach (DataRow row in tabla.Rows)
+            {
+                int index = tabla.Rows.IndexOf(row);
 
-                    //        formula = Convert.ToString(tabla.Rows[index]["hab_fijo"]);
+                if (Convert.ToString(tabla.Rows[index]["codigoConceptoPorEmpresa"]).Equals(codigo.Replace("|", "").Trim()))
+                {
+                    string modo = Convert.ToString(tabla.Rows[index]["modo"]);
+                    string formulaPorcentaje = "";
+                    string checkResultado = "";
 
-                    //        conversion = double.TryParse(formula, out number);
+                    double number;
+                    bool conversion;
 
-                    //        if (conversion)
-                    //        {
-                    //            return formula;
-                    //        }
-                    //        else
-                    //        {
-                    //            formula = ResolverHaberFijo(tabla, index, formula);
-                    //        }
+                    switch (modo)
+                    {
+                        case "hab_fijo":
 
-                    //        break;
-                    //    case "hab_porc":
+                            //agregue hoy 12/01/2020 lineas 910 a 916
+                            checkResultado = Convert.ToString(tabla.Rows[index]["resultado"]);
 
-                    //        //agregue hoy 12/01/2020 lineas 934 a 940
-                    //        checkResultado = Convert.ToString(tabla.Rows[index]["total"]);
+                            if (checkResultado != "")
+                            {
+                                return checkResultado;
+                            }
 
-                    //        if (checkResultado == "")
-                    //        {
-                    //            return String.Format("({0}*{1})", checkResultado, tabla.Rows[index]["hab_porc"]);
-                    //        }
+                            formula = Convert.ToString(tabla.Rows[index]["hab_fijo"]);
 
-                    //        formulaPorcentaje = Convert.ToString(tabla.Rows[index]["formula_porc"]);
+                            conversion = double.TryParse(formula, out number);
 
-                    //        conversion = double.TryParse(formula, out number);
+                            if (conversion)
+                            {
+                                return formula;
+                            }
+                            else
+                            {
+                                formula = ResolverHaberFijo(tabla, index, formula);
+                            }
 
-                    //        if (conversion)
-                    //        {
-                    //            formula = String.Format("({0}*{1})", formula, tabla.Rows[index]["hab_porc"]);
-                    //            return formula;
-                    //        }
-                    //        else
-                    //        {
-                    //            formula = ResolverHaberPorcentual(tabla, index, formula);
-                    //            formula = String.Format("({0}*{1})", formula, tabla.Rows[index]["hab_porc"]);
-                    //        }
-                    //        break;
-                    //}
+                            break;
+                        case "hab_porc":
 
+                            //agregue hoy 12/01/2020 lineas 934 a 940
+                            checkResultado = Convert.ToString(tabla.Rows[index]["total"]);
+
+                            if (checkResultado != "")
+                            {
+                                return String.Format("({0}*{1})", checkResultado, tabla.Rows[index]["hab_porc"]);
+                            }
+
+                            formulaPorcentaje = Convert.ToString(tabla.Rows[index]["formula_porc"]);
+
+                            conversion = double.TryParse(formula, out number);
+
+                            if (conversion)
+                            {
+                                formula = String.Format("({0}*{1})", formula, tabla.Rows[index]["hab_porc"]);
+                                return formula;
+                            }
+                            else
+                            {
+                                formula = ResolverHaberPorcentual(tabla, index, formula);
+                                formula = String.Format("({0}*{1})", formula, tabla.Rows[index]["hab_porc"]);
+                            }
+                            break;
+                    }
 
                 }
             }
-            object resultado = tabla.Compute(formula, "");
-            return Convert.ToString(resultado);
+            double resultado = Convert.ToDouble( tabla.Compute(formula + "+0", "") );
+            return String.Format("{0:0,0.00}", Math.Round(resultado, 2));  //Convert.ToString(Math.Round(resultado, 2), myFormatProvider);
         }
 
         private static string CalcularTotalRemunerativos(DataTable tabla, int indexOfRow)
         {
-            double? totalRemunerativos = 0;
-            double? totalConcepto = 0;
+            double totalRemunerativos = 0;
+            double totalConcepto = 0;
 
             for (int i = 0; i < tabla.Rows.Count; i++)
             {
@@ -989,9 +1008,13 @@ namespace AliSLogica.Complementarios
                 {
                     case "BAS":
 
-                        if (!Convert.ToString(tabla.Rows[i]["total"]).Equals(""))
+                        if (tabla.Rows[i]["total"] != DBNull.Value && !Convert.ToString(tabla.Rows[i]["total"]).Equals("0"))
                         {
                             totalConcepto = Convert.ToDouble(tabla.Rows[i]["total"]);
+                        }
+                        else
+                        {
+                            totalConcepto = 0;
                         }
 
                         if (totalConcepto == 0)
@@ -1002,14 +1025,13 @@ namespace AliSLogica.Complementarios
                         totalRemunerativos = totalRemunerativos + Convert.ToDouble(tabla.Rows[i]["total"]);
                         break;
                     case "RM":
-                        if (!Convert.ToString(tabla.Rows[i]["total"]).Equals(""))
+                        if (tabla.Rows[i]["total"] != DBNull.Value && !Convert.ToString(tabla.Rows[i]["total"]).Equals("0"))
                         {
-                            totalConcepto = Convert.ToDouble(tabla.Rows[i]["total"].ToString()); // tabla.Rows[i][10].ToString()
+                            totalConcepto = Convert.ToDouble(tabla.Rows[i]["total"]); // tabla.Rows[i][10].ToString()
 
                         }
                         else
-                        {
-                            // 25-03-2020 - SEGUIR DESDES ACA, HAY QUE CALCULAR LA FORMULA EN CASO DE QUE NO TENGA UN VALOR EN LA COLUMNA DE RESULTADO (parece resuelto pero hay que revisar mejor.)
+                        {   
                             totalConcepto = 0;
                         }
 
@@ -1036,12 +1058,10 @@ namespace AliSLogica.Complementarios
                 }
             }
 
-            //tabla.Rows[indexOfRow][8] = totalRemunerativos.ToString(); --esto cambié 12/01/2020
-            //tabla.Rows[indexOfRow][11] = (Convert.ToDouble(tabla.Rows[indexOfRow][8]) * Convert.ToDouble(tabla.Rows[indexOfRow][5])) / 100; --esto cambié 12/01/2020
-            tabla.Rows[indexOfRow]["resultado"] = (Convert.ToDouble(totalRemunerativos) * Convert.ToDouble(tabla.Rows[indexOfRow]["ded_porc"])) / 100;
-            tabla.Rows[indexOfRow]["total"] = Convert.ToDouble(tabla.Rows[indexOfRow]["resultado"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]);
+            tabla.Rows[indexOfRow]["resultado"] = Math.Round((Convert.ToDouble(totalRemunerativos) * Convert.ToDouble(tabla.Rows[indexOfRow]["ded_porc"])) / 100, 2);
+            tabla.Rows[indexOfRow]["total"] = Math.Round(Convert.ToDouble(tabla.Rows[indexOfRow]["resultado"]) * Convert.ToDouble(tabla.Rows[indexOfRow]["unidades"]), 2);
 
-            return Convert.ToString(totalRemunerativos);
+            return String.Format("{0}", Math.Round(totalRemunerativos, 2)); //Convert.ToString(Math.Round(totalRemunerativos, 2), myFormatProvider);
         }
         #endregion
 
@@ -1061,16 +1081,16 @@ namespace AliSLogica.Complementarios
                 {
                     case "BAS":
 
-                        totalRemunerativos += Convert.ToDouble(dtXML.Rows[index][10].ToString().Replace("$", ""));
+                        totalRemunerativos += Convert.ToDouble(dtXML.Rows[index]["total"].ToString().Replace("$", ""));
                         break;
                     case "RM":
-                        totalRemunerativos += Convert.ToDouble(dtXML.Rows[index][10].ToString().Replace("$", ""));
+                        totalRemunerativos += Convert.ToDouble(dtXML.Rows[index]["total"].ToString().Replace("$", ""));
                         break;
                     case "NRM":
-                        totalNoRemunerativos += Convert.ToDouble(dtXML.Rows[index][10].ToString().Replace("$", ""));
+                        totalNoRemunerativos += Convert.ToDouble(dtXML.Rows[index]["total"].ToString().Replace("$", ""));
                         break;
                     default:
-                        totalDeducciones += Convert.ToDouble(dtXML.Rows[index][10].ToString().Replace("$", ""));
+                        totalDeducciones += Convert.ToDouble(dtXML.Rows[index]["total"].ToString().Replace("$", ""));
                         break;
                 }
 
@@ -1080,21 +1100,20 @@ namespace AliSLogica.Complementarios
             Math.Round(totalNoRemunerativos, 2);
             Math.Round(totalDeducciones, 2);
 
-            lblRemInfo.Text = "$" + totalRemunerativos.ToString();
-            lblNoRemInfo.Text = "$" + totalNoRemunerativos.ToString();
-            lblDeduccionesInfo.Text = "$" + totalDeducciones.ToString();
+            lblRemInfo.Text = String.Format("$ {0:0,0.00}", totalRemunerativos);
+            lblNoRemInfo.Text = String.Format("$ {0:0,0.00}", totalNoRemunerativos);
+            lblDeduccionesInfo.Text = String.Format("$ {0:0,0.00}", totalDeducciones);
             totalNeto = (totalRemunerativos - totalDeducciones) + totalNoRemunerativos;
 
             Math.Round(totalNeto, 2);
 
-            lblNetoInfo.Text = "$" + totalNeto.ToString();
+            lblNetoInfo.Text = String.Format("$ {0:0,0.00}", totalNeto);
         }
         #endregion
 
         #region DIBUJAR TABLA
         public static void DrawTabla(DataTable dtXML, DataGridView dgvDetalles, bool isEditMode)
         {
-
             dgvDetalles.Rows.Clear();
             dgvDetalles.Columns.Clear();
 

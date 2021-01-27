@@ -55,20 +55,10 @@
     <Compile Include="Complementarios\ManejoDeRecibo.cs" />
     <Compile Include="Complementarios\ManejoDirectiorios.cs" />
     <Compile Include="Complementarios\ManejoXML.cs" />
-    <Compile Include="Controladores\ControladorAddConcepto.cs" />
-    <Compile Include="Controladores\ControladorAddEmpresas.cs" />
-    <Compile Include="Controladores\ControladorAddLegajos.cs" />
-    <Compile Include="Controladores\ControladorAddPuesto.cs" />
     <Compile Include="Controladores\ControladorConcepto.cs" />
-    <Compile Include="Controladores\ControladorEditConcepto.cs" />
     <Compile Include="Controladores\ControladorEmpresa.cs" />
-    <Compile Include="Controladores\ControladorIndex.cs" />
-    <Compile Include="Controladores\ControladorLiquidar.cs" />
-    <Compile Include="Controladores\ControladorNewConcepto.cs" />
-    <Compile Include="Controladores\ControladorPorcHabComp.cs" />
+    <Compile Include="Controladores\ControladorPersona.cs" />
     <Compile Include="Controladores\ControladorPuesto.cs" />
-    <Compile Include="Controladores\ControladorPuestos.cs" />
-    <Compile Include="Controladores\ControladorReciboBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

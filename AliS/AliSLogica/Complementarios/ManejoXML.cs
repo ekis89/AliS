@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using AliSlib;
+using AliSLogica.Controladores;
 
 namespace AliSLogica.Complementarios
 {
@@ -15,7 +15,7 @@ namespace AliSLogica.Complementarios
         private static string[] meses = new string[] { "Undefined", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
 
         #region XML RECIBO BUILDER
-        public static XmlDocument CargarXML(string userFolder, string empleadoCUIL, string empresaNombre, ComboBox cboAño, ComboBox cboMes, DataGridView dgvDetalles, Button btnLiquidar, Button btnGuardar)
+        public static XmlDocument CargarXML(string userFolder, string empleadoCUIL, string empresaNombre, ComboBox cboAño, ComboBox cboMes, DataGridView dgvDetalles, Button btnLiquidar)
         {
             XmlDocument XMLDocumento = new XmlDocument();
 
@@ -33,7 +33,7 @@ namespace AliSLogica.Complementarios
 
                     if (confirm == DialogResult.Yes)
                     {
-                        GenerarXmlAñoActual(cboMes, dgvDetalles, btnLiquidar, btnGuardar, XMLDocumento, añoSelected);
+                        GenerarXmlAñoActual(cboMes, dgvDetalles, btnLiquidar, XMLDocumento, añoSelected);
 
                         return XMLDocumento;
                     }
@@ -57,107 +57,177 @@ namespace AliSLogica.Complementarios
             }
         }
 
-        public static void GuardarXML(XmlDocument Docs, DataTable dtXML, string mesSelected, string curFile, DateTimePicker dtpFechaLiquidacion, DateTimePicker dtpFechaDeposito, bool isSalarioMensual, string quincena, string bruto, string numeroLegajo, string cuit, bool isEditMode)
+        public static void GuardarXML(XmlDocument Docs, DataTable dtXML, string puestoActual, string bancoActual, string convenioActual, string fechaLiquidacion, string fechaDeposito, string mesSelected, string curFile, double saldoNeto, bool isSalarioMensual, string quincena, bool isEditMode)
         {
-            XmlElement CurrentRoot = Docs.DocumentElement;
-
-            string semestreCheck = "";
-            // **********************  20/01  Acordate de hacer un if ACA que vea si es mensual o quincenal.  *****************
-
-            if (!isSalarioMensual)
+            try
             {
-                XmlNode SacNode;
+                XmlElement CurrentRoot = Docs.DocumentElement;
 
-                if (int.Parse(mesSelected) > 0 && int.Parse(mesSelected) < 7)
-                {
-                    semestreCheck = "SAC_semestre_1";
-                }
-                else if (int.Parse(mesSelected) > 6 && int.Parse(mesSelected) < 13)
-                {
-                    semestreCheck = "SAC_semestre_2";
-                }
+                string semestreCheck = "";
+                string netoString = Convert.ToString(saldoNeto);
 
-                SacNode = CurrentRoot.SelectSingleNode("//SAC/" + semestreCheck + "/" + meses[Int16.Parse(mesSelected)]);
-
-                if (quincena == "Primera")
+                if (!File.Exists(curFile))
                 {
-                    SacNode.Attributes["Q1_Bruto"].Value = bruto;
-                }
-                else if (quincena == "Segunda")
-                {
-                    SacNode.Attributes["Q2_Bruto"].Value = bruto;
+                    Directory.CreateDirectory(curFile.Substring(0, curFile.Length - 8));
                 }
 
-                GuardarXmlQuincenal(isEditMode, quincena, Docs, dtXML, mesSelected, numeroLegajo, cuit, dtpFechaLiquidacion, dtpFechaDeposito);
+                if (!isSalarioMensual)
+                {
+                    XmlNode SacNode;
+
+                    if (int.Parse(mesSelected) > 0 && int.Parse(mesSelected) < 7)
+                    {
+                        semestreCheck = "SAC_semestre_1";
+                    }
+                    else if (int.Parse(mesSelected) > 6 && int.Parse(mesSelected) < 13)
+                    {
+                        semestreCheck = "SAC_semestre_2";
+                    }
+
+                    SacNode = CurrentRoot.SelectSingleNode("//SAC/" + semestreCheck + "/" + meses[Int16.Parse(mesSelected)]);
+
+                    if (quincena == "Primera")
+                    {
+                        SacNode.Attributes["Q1_Neto"].Value = netoString;
+                    }
+                    else if (quincena == "Segunda")
+                    {
+                        SacNode.Attributes["Q2_Neto"].Value = netoString;
+                    }
+
+                    GuardarXmlQuincenal(Docs, dtXML, puestoActual, bancoActual, convenioActual, mesSelected, quincena, fechaLiquidacion, fechaDeposito, isEditMode);
+                }
+                else
+                {
+                    XmlNode SacNode;
+
+                    if (int.Parse(mesSelected) > 0 && int.Parse(mesSelected) < 7)
+                    {
+                        semestreCheck = "SAC_semestre_1";
+                    }
+                    else if (int.Parse(mesSelected) > 6 && int.Parse(mesSelected) < 13)
+                    {
+                        semestreCheck = "SAC_semestre_2";
+                    }
+
+                    SacNode = CurrentRoot.SelectSingleNode("//SAC/" + semestreCheck + "/" + meses[Int16.Parse(mesSelected)]);
+                    SacNode.Attributes["Neto"].Value = netoString;
+
+                    GuardarXmlMensual(Docs, dtXML, puestoActual, bancoActual, convenioActual, mesSelected, fechaLiquidacion, fechaDeposito, isEditMode);
+                }
+
+                Docs.Save(curFile);
             }
-            else
+            catch (Exception ex)
             {
-                XmlNode SacNode;
 
-                if (int.Parse(mesSelected) > 0 && int.Parse(mesSelected) < 7)
-                {
-                    semestreCheck = "SAC_semestre_1";
-                }
-                else if (int.Parse(mesSelected) > 6 && int.Parse(mesSelected) < 13)
-                {
-                    semestreCheck = "SAC_semestre_2";
-                }
-
-                SacNode = CurrentRoot.SelectSingleNode("//SAC/" + semestreCheck + "/" + meses[Int16.Parse(mesSelected)]);
-                SacNode.Attributes["Bruto"].Value = bruto;
-
-                GuardarXmlMensual(isEditMode, Docs, dtXML, mesSelected, numeroLegajo, cuit, dtpFechaLiquidacion, dtpFechaDeposito);
+                throw ex;
             }
+            
 
-            Docs.Save(curFile);
+        }
+
+        public static void EliminarLiquidacion(XmlDocument XML, string curFile, string mesSelected, string quincenaSelected, bool isSalarioMensual)
+        {
+            try
+            {
+                int mesSelectedInt = Convert.ToInt32(mesSelected);
+                string mesActual = meses[mesSelectedInt];
+
+                var root = XML.DocumentElement;
+                XmlNodeList nodeList = root.SelectSingleNode("//Liquidaciones").ChildNodes;
+
+                foreach (XmlNode node in nodeList)
+                {
+                    if (isSalarioMensual)
+                    {
+                        if (node.Name.Equals(mesActual))
+                        {
+                            node.ParentNode.RemoveChild(node);
+                        }
+                    }
+                    else
+                    {
+                        if (node.Name.Equals(mesActual))
+                        {
+                            foreach (XmlNode quincenaNode in node.ChildNodes)
+                            {
+                                if (quincenaNode.Name.Equals("Quincena_1") && quincenaSelected == "Primera")
+                                {
+                                    node.RemoveChild(quincenaNode);
+                                }
+                                else if (quincenaNode.Name.Equals("Quincena_2") && quincenaSelected != "Primera")
+                                {
+                                    node.RemoveChild(quincenaNode);
+                                }
+                            }
+
+                            if (node.ChildNodes.Count < 1)
+                                node.ParentNode.RemoveChild(node);
+                        }
+ 
+                    }
+
+                }
+
+                LimpiarSac(root, mesActual, mesSelectedInt, quincenaSelected, isSalarioMensual);
+
+                XML.Save(curFile);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
         }
 
         #region METODOS
 
-        private static void GuardarXmlMensual(bool isEditMode, XmlDocument XML, DataTable dt, string mesSelected, string numeroLegajo, string cuit, DateTimePicker dtpFechaLiquidacion, DateTimePicker dtpFechaDeposito)
+        private static void GuardarXmlMensual(XmlDocument XML, DataTable dt, string puestoActual, string bancoActual, string convenioActual, string mesSelected, string fechaLiquidacion, string fechaDeposito, bool isEditMode)
         {
-            string cmd = "";
             string puesto = "";
-
-            DataSet DS;
-
-            if (isEditMode)
-            {
-                puesto = "Puesto desde XML";
-            }
-            else
-            {
-                cmd = string.Format("SELECT P.puesto FROM Legajos L , Puestos P WHERE L.n_legajo = '{0}' AND L.cuit_empresa = '{1}' AND P.cuit_empresa = L.cuit_empresa", numeroLegajo, cuit);
-                DS = Utilidades.alisDB(cmd);
-
-                puesto = DS.Tables[0].Rows[0][0].ToString();
-            }
+            string banco = "";
+            string convenio = "";
 
             try
             {
                 XmlElement CurrentRoot = XML.DocumentElement;
+                XmlElement liquidacionMes;
 
                 var CurrentNode = CurrentRoot.SelectSingleNode("//Liquidaciones");
 
-                XmlElement liquidacionMes = XML.CreateElement(meses[int.Parse(mesSelected)]);
+                XmlNodeList listaConceptos = CurrentNode.SelectNodes(meses[Convert.ToInt32(mesSelected)] + "/Concepto");
 
-                liquidacionMes.SetAttribute("Fecha_de_liquidacion", dtpFechaLiquidacion.Text);
-                liquidacionMes.SetAttribute("Pago", dtpFechaDeposito.Text);
+                if (listaConceptos.Count > 0)
+                {
+                    liquidacionMes = CurrentNode.SelectSingleNode(meses[Convert.ToInt32(mesSelected)]) as XmlElement;
+
+                    puesto = liquidacionMes.GetAttribute("Puesto");
+                    banco = liquidacionMes.GetAttribute("Banco");
+                    convenio = liquidacionMes.GetAttribute("Convenio");
+
+                    liquidacionMes.RemoveAll();
+                }
+                else
+                {
+                    liquidacionMes = XML.CreateElement(meses[Convert.ToInt32(mesSelected)]);
+
+                    puesto = puestoActual;
+                    banco = bancoActual;
+                    convenio = convenioActual;
+                }
+
+                liquidacionMes.SetAttribute("Fecha_de_liquidacion", fechaLiquidacion);
+                liquidacionMes.SetAttribute("Pago", fechaDeposito);
                 liquidacionMes.SetAttribute("Puesto", puesto);
                 liquidacionMes.SetAttribute("Tipo", "mensual");
+                liquidacionMes.SetAttribute("Puesto", puesto);
+                liquidacionMes.SetAttribute("Banco", banco);
+                liquidacionMes.SetAttribute("Convenio", convenio);
 
                 XmlElement concepto_xml;
-                XmlElement cod_xml;
-                XmlElement desc_xml;
-                XmlElement fijo_hab;
-                XmlElement porc_hab;
-                XmlElement fijo_ded;
-                XmlElement porc_ded;
-                XmlElement tipo_ded;
-                XmlElement modo_ded;
-                XmlElement formula_ded;
-                XmlElement unidad;
+
+                string codeCEmp;
                 string code;
                 string desc;
                 string hab_fijo;
@@ -171,18 +241,17 @@ namespace AliSLogica.Complementarios
 
                 foreach (DataRow row in dt.Rows)
                 {
-                    int index = dt.Rows.IndexOf(row);
-
-                    code = dt.Rows[index][0].ToString();
-                    desc = dt.Rows[index][1].ToString();
-                    hab_fijo = dt.Rows[index][2].ToString();
-                    hab_porc = dt.Rows[index][3].ToString();
-                    ded_fijo = dt.Rows[index][4].ToString();
-                    ded_porc = dt.Rows[index][5].ToString();
-                    tipo = dt.Rows[index][6].ToString();
-                    modo = dt.Rows[index][7].ToString();
-                    formula = dt.Rows[index][8].ToString();
-                    unid = dt.Rows[index][9].ToString();
+                    codeCEmp = Convert.ToString(row["codigoConceptoPorEmpresa"]);
+                    code = Convert.ToString(row["codigo"]);
+                    desc = Convert.ToString(row["descripcion"]);
+                    hab_fijo = Convert.ToString(row["hab_fijo"]);
+                    hab_porc = Convert.ToString(row["hab_porc"]);
+                    ded_fijo = Convert.ToString(row["ded_fijo"]);
+                    ded_porc = Convert.ToString(row["ded_porc"]);
+                    tipo = Convert.ToString(row["tipo"]);
+                    modo = Convert.ToString(row["modo"]);
+                    formula = Convert.ToString(row["formula_porc"]);
+                    unid = Convert.ToString(row["unidades"]);
 
                     if (tipo.Equals("BAS"))
                     {
@@ -192,45 +261,18 @@ namespace AliSLogica.Complementarios
                     concepto_xml = XML.CreateElement("Concepto");
                     liquidacionMes.AppendChild(concepto_xml);
 
-                    cod_xml = XML.CreateElement("Codigo");
-                    concepto_xml.AppendChild(cod_xml);
-                    cod_xml.AppendChild(XML.CreateTextNode(code));
+                    concepto_xml.SetAttribute("codigoConceptoPorEmpresa", codeCEmp);
+                    concepto_xml.SetAttribute("Codigo", code);
+                    concepto_xml.SetAttribute("Descripcion", desc);
+                    concepto_xml.SetAttribute("hab_fijo", hab_fijo);
+                    concepto_xml.SetAttribute("hab_porc", hab_porc);
+                    concepto_xml.SetAttribute("ded_fijo", ded_fijo);
+                    concepto_xml.SetAttribute("ded_porc", ded_porc);
+                    concepto_xml.SetAttribute("tipo", tipo);
+                    concepto_xml.SetAttribute("modo", modo);
+                    concepto_xml.SetAttribute("formula_porc", formula);
+                    concepto_xml.SetAttribute("unidades", unid);
 
-                    desc_xml = XML.CreateElement("Descripcion");
-                    concepto_xml.AppendChild(desc_xml);
-                    desc_xml.AppendChild(XML.CreateTextNode(desc));
-
-                    fijo_hab = XML.CreateElement("hab_fijo");
-                    concepto_xml.AppendChild(fijo_hab);
-                    fijo_hab.AppendChild(XML.CreateTextNode(hab_fijo));
-
-                    porc_hab = XML.CreateElement("hab_porc");
-                    concepto_xml.AppendChild(porc_hab);
-                    porc_hab.AppendChild(XML.CreateTextNode(hab_porc));
-
-                    fijo_ded = XML.CreateElement("ded_fijo");
-                    concepto_xml.AppendChild(fijo_ded);
-                    fijo_ded.AppendChild(XML.CreateTextNode(ded_fijo));
-
-                    porc_ded = XML.CreateElement("ded_porc");
-                    concepto_xml.AppendChild(porc_ded);
-                    porc_ded.AppendChild(XML.CreateTextNode(ded_porc));
-
-                    tipo_ded = XML.CreateElement("tipo");
-                    concepto_xml.AppendChild(tipo_ded);
-                    tipo_ded.AppendChild(XML.CreateTextNode(tipo));
-
-                    modo_ded = XML.CreateElement("modo");
-                    concepto_xml.AppendChild(modo_ded);
-                    modo_ded.AppendChild(XML.CreateTextNode(modo));
-
-                    formula_ded = XML.CreateElement("formula_porc");
-                    concepto_xml.AppendChild(formula_ded);
-                    formula_ded.AppendChild(XML.CreateTextNode(formula));
-
-                    unidad = XML.CreateElement("unidades");
-                    concepto_xml.AppendChild(unidad);
-                    unidad.AppendChild(XML.CreateTextNode(unid));
                 }
 
                 CurrentNode.AppendChild(liquidacionMes);
@@ -243,68 +285,66 @@ namespace AliSLogica.Complementarios
 
         }
 
-        private static void GuardarXmlQuincenal(bool isEditMode, string quincena, XmlDocument XML, DataTable dt, string mesSelected, string numeroLegajo, string cuit, DateTimePicker dtpFechaLiquidacion, DateTimePicker dtpFechaDeposito)
+        //TODO:: 14/11/2020: Al editar reemplaza el puesto y no deberia(mensual arreglado quincenal no). Al editar quincenal en vuelve a crae un nodo de quincena nuevo lo que hace que explote el programa al tener nodo quincena repetido.
+        private static void GuardarXmlQuincenal(XmlDocument XML, DataTable dt, string puestoActual, string bancoActual, string convenioActual, string mesSelected, string quincena, string fechaLiquidacion, string fechaDeposito, bool isEditMode)
         {
-            string cmd = "";
             string puesto = "";
-
-            DataSet DS;
-
-            if (isEditMode)
-            {
-                puesto = "Puesto desde XML";
-            }
-            else
-            {
-                cmd = string.Format("SELECT P.puesto FROM Legajos L , Puestos P WHERE L.n_legajo = '{0}' AND L.cuit_empresa = '{1}' AND P.cuit_empresa = L.cuit_empresa", numeroLegajo, cuit);
-                DS = Utilidades.alisDB(cmd);
-
-                puesto = DS.Tables[0].Rows[0][0].ToString();
-            }
+            string banco = "";
+            string convenio = "";
 
             try
             {
                 XmlElement CurrentRoot = XML.DocumentElement;
 
                 var CurrentNode = CurrentRoot.SelectSingleNode("//Liquidaciones");
-                var currentMonthNode = CurrentRoot.SelectSingleNode(String.Format("//Liquidaciones/{0}", meses[int.Parse(mesSelected)]));
+                var currentMonthNode = CurrentRoot.SelectSingleNode(String.Format("//Liquidaciones/{0}", meses[Convert.ToInt32(mesSelected)]));
                 XmlElement liquidacionMes = null;
+                XmlNodeList listaConceptos = null;
 
                 if (currentMonthNode == null)
                 {
-                    liquidacionMes = XML.CreateElement(meses[int.Parse(mesSelected)]);
+                    liquidacionMes = XML.CreateElement(meses[Convert.ToInt32(mesSelected)]);
                     liquidacionMes.SetAttribute("Tipo", "quincenal");
 
                     CurrentNode.AppendChild(liquidacionMes);
                 }
+                else
+                {
+                    liquidacionMes = CurrentNode.SelectSingleNode(String.Format("//{0}", meses[Convert.ToInt32(mesSelected)])) as XmlElement;
 
+                    listaConceptos = quincena == "Primera" ? currentMonthNode.SelectNodes("//Quincena_1/Concepto") : currentMonthNode.SelectNodes("//Quincena_2/Concepto");
+                }
 
                 XmlElement liquidacionQuincena;
 
-                if (quincena == "Primera")
+                if (listaConceptos != null && listaConceptos.Count > 0)
                 {
-                    liquidacionQuincena = XML.CreateElement("Quincena_1");
+                    liquidacionQuincena = quincena == "Primera" ? liquidacionMes.SelectSingleNode("//Quincena_1") as XmlElement : liquidacionMes.SelectSingleNode("//Quincena_2") as XmlElement;
+
+                    puesto = liquidacionQuincena.GetAttribute("Puesto");
+                    banco = liquidacionQuincena.GetAttribute("Banco");
+                    convenio = liquidacionQuincena.GetAttribute("Convenio");
+
+                    liquidacionQuincena.RemoveAll();
                 }
                 else
                 {
-                    liquidacionQuincena = XML.CreateElement("Quincena_2");
+                    liquidacionQuincena = quincena == "Primera" ? XML.CreateElement("Quincena_1") : XML.CreateElement("Quincena_2");
+
+                    puesto = puestoActual;
+                    banco = bancoActual;
+                    convenio = convenioActual;
                 }
 
-                liquidacionQuincena.SetAttribute("Fecha_de_liquidacion", dtpFechaLiquidacion.Text);
-                liquidacionQuincena.SetAttribute("Pago", dtpFechaDeposito.Text);
+                liquidacionQuincena.SetAttribute("Fecha_de_liquidacion", fechaLiquidacion);
+                liquidacionQuincena.SetAttribute("Pago", fechaDeposito);
                 liquidacionQuincena.SetAttribute("Puesto", puesto);
+                liquidacionQuincena.SetAttribute("Banco", banco);
+                liquidacionQuincena.SetAttribute("Convenio", convenio);
 
                 XmlElement concepto_xml;
-                XmlElement cod_xml;
-                XmlElement desc_xml;
-                XmlElement fijo_hab;
-                XmlElement porc_hab;
-                XmlElement fijo_ded;
-                XmlElement porc_ded;
-                XmlElement tipo_ded;
-                XmlElement modo_ded;
-                XmlElement formula_ded;
-                XmlElement unidad;
+
+                string codeCEmp;
                 string code;
                 string desc;
                 string hab_fijo;
@@ -318,18 +358,17 @@ namespace AliSLogica.Complementarios
 
                 foreach (DataRow row in dt.Rows)
                 {
-                    int index = dt.Rows.IndexOf(row);
-
-                    code = dt.Rows[index][0].ToString();
-                    desc = dt.Rows[index][1].ToString();
-                    hab_fijo = dt.Rows[index][2].ToString();
-                    hab_porc = dt.Rows[index][3].ToString();
-                    ded_fijo = dt.Rows[index][4].ToString();
-                    ded_porc = dt.Rows[index][5].ToString();
-                    tipo = dt.Rows[index][6].ToString();
-                    modo = dt.Rows[index][7].ToString();
-                    formula = dt.Rows[index][8].ToString();
-                    unid = dt.Rows[index][9].ToString();
+                    codeCEmp = Convert.ToString(row["codigoConceptoPorEmpresa"]);
+                    code = Convert.ToString(row["codigo"]);
+                    desc = Convert.ToString(row["descripcion"]);
+                    hab_fijo = Convert.ToString(row["hab_fijo"]);
+                    hab_porc = Convert.ToString(row["hab_porc"]);
+                    ded_fijo = Convert.ToString(row["ded_fijo"]);
+                    ded_porc = Convert.ToString(row["ded_porc"]);
+                    tipo = Convert.ToString(row["tipo"]);
+                    modo = Convert.ToString(row["modo"]);
+                    formula = Convert.ToString(row["formula_porc"]);
+                    unid = Convert.ToString(row["unidades"]);
 
                     if (tipo.Equals("BAS"))
                     {
@@ -339,45 +378,18 @@ namespace AliSLogica.Complementarios
                     concepto_xml = XML.CreateElement("Concepto");
                     liquidacionQuincena.AppendChild(concepto_xml);
 
-                    cod_xml = XML.CreateElement("Codigo");
-                    concepto_xml.AppendChild(cod_xml);
-                    cod_xml.AppendChild(XML.CreateTextNode(code));
+                    concepto_xml.SetAttribute("codigoConceptoPorEmpresa", codeCEmp);
+                    concepto_xml.SetAttribute("Codigo", code);
+                    concepto_xml.SetAttribute("Descripcion", desc);
+                    concepto_xml.SetAttribute("hab_fijo", hab_fijo);
+                    concepto_xml.SetAttribute("hab_porc", hab_porc);
+                    concepto_xml.SetAttribute("ded_fijo", ded_fijo);
+                    concepto_xml.SetAttribute("ded_porc", ded_porc);
+                    concepto_xml.SetAttribute("tipo", tipo);
+                    concepto_xml.SetAttribute("modo", modo);
+                    concepto_xml.SetAttribute("formula_porc", formula);
+                    concepto_xml.SetAttribute("unidades", unid);
 
-                    desc_xml = XML.CreateElement("Descripcion");
-                    concepto_xml.AppendChild(desc_xml);
-                    desc_xml.AppendChild(XML.CreateTextNode(desc));
-
-                    fijo_hab = XML.CreateElement("hab_fijo");
-                    concepto_xml.AppendChild(fijo_hab);
-                    fijo_hab.AppendChild(XML.CreateTextNode(hab_fijo));
-
-                    porc_hab = XML.CreateElement("hab_porc");
-                    concepto_xml.AppendChild(porc_hab);
-                    porc_hab.AppendChild(XML.CreateTextNode(hab_porc));
-
-                    fijo_ded = XML.CreateElement("ded_fijo");
-                    concepto_xml.AppendChild(fijo_ded);
-                    fijo_ded.AppendChild(XML.CreateTextNode(ded_fijo));
-
-                    porc_ded = XML.CreateElement("ded_porc");
-                    concepto_xml.AppendChild(porc_ded);
-                    porc_ded.AppendChild(XML.CreateTextNode(ded_porc));
-
-                    tipo_ded = XML.CreateElement("tipo");
-                    concepto_xml.AppendChild(tipo_ded);
-                    tipo_ded.AppendChild(XML.CreateTextNode(tipo));
-
-                    modo_ded = XML.CreateElement("modo");
-                    concepto_xml.AppendChild(modo_ded);
-                    modo_ded.AppendChild(XML.CreateTextNode(modo));
-
-                    formula_ded = XML.CreateElement("formula_porc");
-                    concepto_xml.AppendChild(formula_ded);
-                    formula_ded.AppendChild(XML.CreateTextNode(formula));
-
-                    unidad = XML.CreateElement("unidades");
-                    concepto_xml.AppendChild(unidad);
-                    unidad.AppendChild(XML.CreateTextNode(unid));
                 }
 
                 if (currentMonthNode == null)
@@ -396,7 +408,7 @@ namespace AliSLogica.Complementarios
             }
         }
 
-        private static void GenerarXmlAñoActual(ComboBox cboMes, DataGridView dgvDetalles, Button btnLiquidar, Button btnGuardar, XmlDocument XMLDocumento, string añoSelected)
+        private static void GenerarXmlAñoActual(ComboBox cboMes, DataGridView dgvDetalles, Button btnLiquidar, XmlDocument XMLDocumento, string añoSelected)
         {
             XmlElement raiz = XMLDocumento.CreateElement("AÑO-" + añoSelected);
             XMLDocumento.AppendChild(raiz);
@@ -419,9 +431,9 @@ namespace AliSLogica.Complementarios
             for (int i = 1; i < 7; i++)
             {
                 month = XMLDocumento.CreateElement(meses[i]);
-                month.SetAttribute("Bruto", "0");
-                month.SetAttribute("Q1_Bruto", "0");
-                month.SetAttribute("Q2_Bruto", "0");
+                month.SetAttribute("Neto", "0");
+                month.SetAttribute("Q1_Neto", "0");
+                month.SetAttribute("Q2_Neto", "0");
 
                 semestre_1.AppendChild(month);
             }
@@ -429,9 +441,9 @@ namespace AliSLogica.Complementarios
             for (int i = 7; i < 13; i++)
             {
                 month = XMLDocumento.CreateElement(meses[i]);
-                month.SetAttribute("Bruto", "0");
-                month.SetAttribute("Q1_Bruto", "0");
-                month.SetAttribute("Q2_Bruto", "0");
+                month.SetAttribute("Neto", "0");
+                month.SetAttribute("Q1_Neto", "0");
+                month.SetAttribute("Q2_Neto", "0");
 
                 semestre_2.AppendChild(month);
             }
@@ -441,14 +453,53 @@ namespace AliSLogica.Complementarios
             btnLiquidar.Visible = true;
             cboMes.Enabled = true;
 
-            btnGuardar.Enabled = false;
+        }
+
+        private static void LimpiarSac(XmlElement root, string mesActual, int mesSelectedInt, string quincenaSelected, bool isSalarioMensual)
+        {
+            if ((mesSelectedInt >= 1) && (mesSelectedInt <= 6) && isSalarioMensual)
+            {
+                XmlNode SacNode = root.SelectSingleNode("//SAC/SAC_semestre_1/" + mesActual);
+                SacNode.Attributes["Neto"].Value = "0";
+            }
+            else if ((mesSelectedInt >= 7) && (mesSelectedInt <= 12) && isSalarioMensual)
+            {
+                XmlNode SacNode = root.SelectSingleNode("//SAC/SAC_semestre_2/" + mesActual);
+                SacNode.Attributes["Neto"].Value = "0";
+            }
+            else if ((mesSelectedInt >= 1) && (mesSelectedInt <= 6) && !isSalarioMensual)
+            {
+                if (quincenaSelected == "Primera")
+                {
+                    XmlNode SacNode = root.SelectSingleNode("//SAC/SAC_semestre_1/" + mesActual);
+                    SacNode.Attributes["Q1_Neto"].Value = "0";
+                }
+                else
+                {
+                    XmlNode SacNode = root.SelectSingleNode("//SAC/SAC_semestre_1/" + mesActual);
+                    SacNode.Attributes["Q2_Neto"].Value = "0";
+                }
+            }
+            else if ((mesSelectedInt >= 7) && (mesSelectedInt <= 12) && !isSalarioMensual)
+            {
+                if (quincenaSelected == "Primera")
+                {
+                    XmlNode SacNode = root.SelectSingleNode("//SAC/SAC_semestre_2/" + mesActual);
+                    SacNode.Attributes["Q1_Neto"].Value = "0";
+                }
+                else
+                {
+                    XmlNode SacNode = root.SelectSingleNode("//SAC/SAC_semestre_2/" + mesActual);
+                    SacNode.Attributes["Q2_Neto"].Value = "0";
+                }
+            }
         }
         #endregion
 
         #endregion
 
         #region RECIBO BUILDER MINI
-        public void GuardarXmlReciboBuilderMini(DataGridView DGV, string curFile, string legajoNumero, string empleadoNombre, string empleadoOcupacion, string empleadoIngreso, string empleadoConvenio, string periodoLiquidado, string footer)
+        public static void GuardarXmlReciboBuilderMini(DataGridView DGV, string añoSelected, string mesSelected, string quincenaSelected, string curFile, string legajoNumero, string empleadoNombre, string empleadoOcupacion, string empleadoIngreso, string empleadoConvenio, string periodoLiquidado, string footer)
         {
             //Crea Archivo XML
             XmlDocument doc = new XmlDocument();
@@ -456,6 +507,18 @@ namespace AliSLogica.Complementarios
             //Crea pestaña ReciboManual.
             XmlElement raiz = doc.CreateElement("A_liq");
             doc.AppendChild(raiz);
+
+            XmlElement año = doc.CreateElement("A_liq_año");
+            raiz.AppendChild(año);
+            año.AppendChild(doc.CreateTextNode(añoSelected));
+
+            XmlElement mes = doc.CreateElement("A_liq_mes");
+            raiz.AppendChild(mes);
+            mes.AppendChild(doc.CreateTextNode(mesSelected));
+
+            XmlElement quincena = doc.CreateElement("A_liq_quincena");
+            raiz.AppendChild(quincena);
+            quincena.AppendChild(doc.CreateTextNode(quincenaSelected));
 
             //Legajo
             XmlElement emp_leg = doc.CreateElement("A_liq_Legajo");
@@ -500,6 +563,7 @@ namespace AliSLogica.Complementarios
             {
                 int index = DGV.Rows.IndexOf(row);
 
+                string codigo = DGV.Rows[index].Cells[0].Value.ToString();
                 string description = DGV.Rows[index].Cells[1].Value.ToString();
                 string value = DGV.Rows[index].Cells[2].Value.ToString();
                 string checkType = DGV.Rows[index].Cells[4].Value.ToString();
@@ -512,6 +576,10 @@ namespace AliSLogica.Complementarios
 
                 XmlElement concepto = doc.CreateElement("Concepto");
                 detalles.AppendChild(concepto);
+
+                XmlElement codigoConcepto = doc.CreateElement("Codigo");
+                concepto.AppendChild(codigoConcepto);
+                codigoConcepto.AppendChild(doc.CreateTextNode(codigo));
 
                 XmlElement desc = doc.CreateElement("Descripcion");
                 concepto.AppendChild(desc);
@@ -529,6 +597,29 @@ namespace AliSLogica.Complementarios
 
             doc.Save(curFile);
         }
+        
+        public static XmlDocument CargarXmlReciboBuilderMINI(string curfile)
+        {
+            try
+            {
+                XmlDocument xml = new XmlDocument();
+                xml.Load(curfile);
+
+                var root = xml.SelectSingleNode("//A_liq");
+
+                if (root == null)
+                {
+                    throw new Exception("Error: No es un archivo válido.");
+                }
+
+                return xml;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        
         #endregion
     }
 }

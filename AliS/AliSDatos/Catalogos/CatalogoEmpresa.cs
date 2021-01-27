@@ -23,7 +23,7 @@ namespace AliSDatos.Catalogos
                 listaParametros.Add("chvDireccion", direccion);
                 listaParametros.Add("chvTelefono", telefono);
 
-                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("InsertarAcualizarEmpresa", listaParametros);
+                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("InsertarActualizarEmpresa", listaParametros);
             }
             catch (Exception ex)
             {
@@ -60,6 +60,35 @@ namespace AliSDatos.Catalogos
             }
         }
 
-        
+        public static DataTable EliminarEmpresaPorCodigoEmpresa(int codigoEmpresa)
+        {
+            try
+            {
+                Dictionary<string, object> listaParametros = new Dictionary<string, object>();
+                listaParametros.Add("intCodigoEmpresa", codigoEmpresa);
+
+                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("EliminarEmpresaPorCodigoEmpresa", listaParametros);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static DataTable RecuperarParametrosPorCodigoTipoParametro(int codigoTipoParametro)
+        {
+            try
+            {
+                Dictionary<string, object> listaParametros = new Dictionary<string, object>();
+                listaParametros.Add("intCodigoTipoParametro", codigoTipoParametro);
+
+                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("RecuperarParametroPorCodigoTipoParametro", listaParametros);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

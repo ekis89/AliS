@@ -4,12 +4,12 @@ using System.Data;
 using System.Xml;
 using System.Windows.Forms;
 using AliSlib;
-using Recibo;
-using Obj;
 using System.Globalization;
 using AliSLogica.Controladores;
 using AliSLogica.Complementarios;
 using AliSDatos.Clases;
+using System.Runtime.CompilerServices;
+using AliS_WinVer.Clases;
 
 namespace AliS_WinVer
 {
@@ -18,39 +18,43 @@ namespace AliS_WinVer
         #region VARIABLES
         IFormatProvider myFormatProvider = new CultureInfo("fr").NumberFormat;
 
-        private Index Index;
+        private Form Index;
         public XmlDocument XMLDocumento;
 
-        private DataTable tablaLegajos;
         public  DataTable dtXML = new DataTable();
-        
-        public List<string> edit_formulas = new List<string>();         //Guarda formulas de haberes o deducciones fijas.
 
         public string AñoActual = DateTime.Now.ToString("yyyy");
-
-        public string mesCheck;
 
         public bool isProfileLoaded = false;
         public bool isSalarioMensual = false;
 
+        public Legajo _legajo;
+        private Empresa _empresa;
+
+        private string tempBanco;
+        private string tempConvenio;
+
         #endregion
 
         #region INICIO
-        public PrincipalLiquidaciones(Index Index)
+        public PrincipalLiquidaciones(SelectorLegajo Index, Empresa empresa, Legajo legajo)
         {
             InitializeComponent();
             this.Index = Index;
-            this.Text = "A.li.S: Liquidador de sueldo - " + UsuarioSingleton.Instance.NombreEmpresa;
+
+            this._empresa = empresa;
+            this._legajo = legajo;
+
+            this.Text = "Liquidaciones -  Legajo: " + _legajo.NumeroLegajo + " - " + _legajo.NombreEmpleado;
+
         }
 
         private void ReciboBuilder_Load(object sender, EventArgs e)
         {
-            tablaLegajos = ControladorReciboBuilder.RecuperarLegajos(UsuarioSingleton.Instance.CuitEmpresa);
+            tempBanco = "";
+            tempConvenio = "";
 
-            foreach (DataRow dr in tablaLegajos.Rows)
-            {
-                treLegajosList.Nodes.Add("Nº "+ dr["n_legajo"].ToString() + " - " + dr["nombre"].ToString());
-            }
+            CargaPerfil();
 
         }
         #endregion
@@ -59,73 +63,105 @@ namespace AliS_WinVer
         private void btnLiquidar_Click(object sender, EventArgs e)
         {
             this.Enabled = false;
-            GestionLiquidacionConceptos screenLiquidar = new GestionLiquidacionConceptos(this, false);
+            GestionLiquidacionConceptos screenLiquidar = new GestionLiquidacionConceptos(this, _empresa, _legajo, false);
+
+
             screenLiquidar.Show();
         }
 
         private void btnImprimir_Click(object sender, EventArgs e)
         {
-            int añoSelected = Convert.ToInt32(cboAño.Text);
-            int mesSelected = Convert.ToInt32(cboMes.Text);
+            Cursor.Current = Cursors.WaitCursor;
 
-            string Neto = lblNetoInfo.Text.Replace("$", "");
+            try
+            {
+                int añoSelected = Convert.ToInt32(cboAño.Text);
+                int mesSelected = Convert.ToInt32(cboMes.Text);
 
-            string empresaNombre = UsuarioSingleton.Instance.NombreEmpresa;
-            string empresaUbicacion = string.Format("{0} - {1} - {2}", UsuarioSingleton.Instance.DireccionEmpresa, UsuarioSingleton.Instance.PostalEmpresa, UsuarioSingleton.Instance.LocalidadEmpresa);
-            string mesAnterior;
-            string mesActual = string.Format("{0} de {1}", UsuarioSingleton.Instance.Meses[mesSelected].ToUpper(), añoSelected);
+                string titulo = String.Format("Imprimir: {0} - {1} - {2}", UsuarioSingleton.Instance.Meses[mesSelected], _empresa.NombreEmpresa, _legajo.NombreEmpleado);
 
-            //fecha de deposito(Esta mal el nombre de la variabla pero da pachorra cambiarlo xdxdxd).
-            string pagoString = "";
-            string[] pagoSplit = lblFechaDepositoInfo.Text.Split('/');
+                string Neto = lblNetoInfo.Text.Replace("$", "");
 
-            string fechaLiquidacion = lblFechaLiquidacionInfo.Text;
+                string empresaNombre = _empresa.NombreEmpresa;
+                string empresaUbicacion = string.Format("{0} - {1} - {2}", _empresa.DireccionEmpresa, _empresa.PostalEmpresa, _empresa.LocalidadEmpresa);
+                string mesAnterior;
+                string mesActual = string.Format("{0} de {1}", UsuarioSingleton.Instance.Meses[mesSelected].ToUpper(), añoSelected);
 
-            string remunerativo = string.Format("{0:0,0.00}", double.Parse(lblHaberesRemInfo.Text.Replace("$", "")));
-            string noRemunerativo = string.Format("{0:0,0.00}", double.Parse(lblHaberesNoRemInfo.Text.Replace("$", "")));
-            string deducciones = string.Format("{0:0,0.00}", double.Parse(lblDeduccionInfo.Text.Replace("$", "")));
-            string sueldoNeto = string.Format("{0:0,0.00}", double.Parse(lblNetoInfo.Text.Replace("$", "")));
+                //fecha de deposito(Esta mal el nombre de la variabla pero da pachorra cambiarlo xdxdxd).
+                string pagoString = "";
+                string[] pagoSplit = lblFechaDepositoInfo.Text.Split('/');
 
-            //Arma el string de la fecha de deposito.
-            pagoString = ArmarStringFechaDeposito(pagoString, pagoSplit);
+                string fechaLiquidacion = lblFechaLiquidacionInfo.Text;
 
-            mesAnterior = CalcularMesAnterior(añoSelected, mesSelected);
+                string puestoRecibo = lblOcupacionInfo.Text;
 
-            CabeceraRecibo cabeceraRecibo = ManejoDeImpresion.GenerarEncabezadoRecibo(UsuarioSingleton.Instance.NombreEmpresa, UsuarioSingleton.Instance.CuitEmpresa,
-                UsuarioSingleton.Instance.Convenio, UsuarioSingleton.Instance.DireccionEmpresa,Convert.ToString(UsuarioSingleton.Instance.PostalEmpresa), UsuarioSingleton.Instance.LocalidadEmpresa,
-                UsuarioSingleton.Instance.TelefonoEmpresa, UsuarioSingleton.Instance.LegajoNumero, UsuarioSingleton.Instance.NombreEmpleado, UsuarioSingleton.Instance.EmpleadoCUIL,
-                UsuarioSingleton.Instance.FechaIngreso, UsuarioSingleton.Instance.PuestoRecibo, ConversorIntString.enletras(lblNetoInfo.Text.Replace("$", "")), UsuarioSingleton.Instance.Meses, mesSelected, añoSelected, false, "");
+                string remunerativo = string.Format("{0:0,0.00}", double.Parse(lblHaberesRemInfo.Text.Replace("$", "")));
+                string noRemunerativo = string.Format("{0:0,0.00}", double.Parse(lblHaberesNoRemInfo.Text.Replace("$", "")));
+                string deducciones = string.Format("{0:0,0.00}", double.Parse(lblDeduccionInfo.Text.Replace("$", "")));
+                string sueldoNeto = string.Format("{0:0,0.00}", double.Parse(lblNetoInfo.Text.Replace("$", "")));
 
-            List<AliSDatos.Clases.Concepto> detalleRecibo = ManejoDeImpresion.GenerarDetalle(dgvDetallesRecibo);
+                //Arma el string de la fecha de deposito.
+                pagoString = ArmarStringFechaDeposito(pagoString, pagoSplit);
 
-            PieRecibo pieRecibo = ManejoDeImpresion.GenerarPieRecibo(remunerativo, noRemunerativo, deducciones, sueldoNeto, UsuarioSingleton.Instance.NombreEmpresa,
-                UsuarioSingleton.Instance.DireccionEmpresa, cabeceraRecibo.NetoString, mesActual, mesAnterior, UsuarioSingleton.Instance.Banco, pagoString, fechaLiquidacion);
+                mesAnterior = CalcularMesAnterior(añoSelected, mesSelected);
 
-            ImprimirRecibo print = new ImprimirRecibo(this, null);
+                CabeceraRecibo cabeceraRecibo;
 
-            print.EncabezadoList.Add(cabeceraRecibo);
-            print.ConcepList = detalleRecibo;
-            print.FooterList.Add(pieRecibo);
+                if (isSalarioMensual)
+                {
+                    cabeceraRecibo = ManejoDeImpresion.GenerarEncabezadoRecibo(_empresa.NombreEmpresa, _empresa.CuitEmpresa,
+                        tempConvenio, _empresa.DireccionEmpresa, Convert.ToString(_empresa.PostalEmpresa), _empresa.LocalidadEmpresa,
+                        _empresa.TelefonoEmpresa, _legajo.NumeroLegajo, _legajo.NombreEmpleado, _legajo.EmpleadoCUIL,
+                        _legajo.FechaIngreso, puestoRecibo, ConversorIntString.enletras(lblNetoInfo.Text.Replace("$", "")), UsuarioSingleton.Instance.Meses, mesSelected, añoSelected, false, "");                    
 
-            this.Visible = false;
-            print.Show();
+                }
+                else
+                {
+                    string quincenaLiquidada = cboQuincena.Text == "Primera" ? "Primera" : "Segunda";
+
+                    cabeceraRecibo = ManejoDeImpresion.GenerarEncabezadoRecibo(_empresa.NombreEmpresa, _empresa.CuitEmpresa,
+                        tempConvenio, _empresa.DireccionEmpresa, Convert.ToString(_empresa.PostalEmpresa), _empresa.LocalidadEmpresa,
+                        _empresa.TelefonoEmpresa, _legajo.NumeroLegajo, _legajo.NombreEmpleado, _legajo.EmpleadoCUIL,
+                        _legajo.FechaIngreso, _legajo.PuestoRecibo, ConversorIntString.enletras(lblNetoInfo.Text.Replace("$", "")), UsuarioSingleton.Instance.Meses, mesSelected, añoSelected, true, quincenaLiquidada);                    
+
+                }
+
+                List<AliSDatos.Clases.Concepto> detalleRecibo = ManejoDeImpresion.GenerarDetalle(dtXML);
+
+                PieRecibo pieRecibo = ManejoDeImpresion.GenerarPieRecibo(remunerativo, noRemunerativo, deducciones, sueldoNeto, _empresa.NombreEmpresa,
+                    _empresa.DireccionEmpresa, ConversorIntString.enletras(lblNetoInfo.Text.Replace("$", "")), mesActual, mesAnterior, tempBanco, pagoString, fechaLiquidacion);                
+
+                ImprimirRecibo print = new ImprimirRecibo(this, titulo);
+
+                print.EncabezadoList.Add(cabeceraRecibo);
+                print.ConcepList = detalleRecibo;
+                print.FooterList.Add(pieRecibo);
+
+                print.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+
         }
 
         private void btnEditar_Click(object sender, EventArgs e)
         {
             this.Enabled = false;
-            GestionLiquidacionConceptos screenLiquidar = new GestionLiquidacionConceptos(this, true);
-            screenLiquidar.Show();
-        }
+            GestionLiquidacionConceptos screenLiquidar = new GestionLiquidacionConceptos(this, _empresa, _legajo, true);
+            //screenLiquidar.MdiParent = this.Index.ParentForm;
 
-        private void btnAbrir_Click(object sender, EventArgs e)
-        {
-            CargaPerfil();
+            screenLiquidar.Show();
         }
 
         private void mnubtnRBMini_Click(object sender, EventArgs e)
         {
-            ReciboBuilderMini screenRBMini = new ReciboBuilderMini(this);
+            ReciboBuilderMini screenRBMini = new ReciboBuilderMini(this, _empresa, _legajo);
             this.Enabled = false;
             this.Visible = false;
             screenRBMini.Show();
@@ -133,29 +169,36 @@ namespace AliS_WinVer
         #endregion
 
         #region EVENTOS
-        private void treLegajosList_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            CargaPerfil();
-        }
-
         private void ReciboBuilder_FormClosing(object sender, FormClosingEventArgs e)
         {
+            int frmLiquidacionesCount = 0;
             Index.Visible = true;
+
+            foreach (Form frm in Application.OpenForms)
+            {
+                if (frm.Name == "PrincipalLiquidaciones")
+                {
+                    frmLiquidacionesCount++;
+                }
+            }
+
+            if(frmLiquidacionesCount <= 1)
+            {
+                if (Index.GetType() == typeof(SelectorLegajo))
+                    (this.MdiParent as Principal).ActivarBotonesTS();
+            }
+
             this.Dispose();
-        }
-        private void treLegajosList_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            btnAbrir.Enabled = true;
         }
         #endregion
 
         #region COMBOS
-        private void cboAño_SelectedIndexChanged(object sender, EventArgs e)
+        public void cboAño_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboAño.SelectedIndex != -1)
             {
-                XMLDocumento = ManejoXML.CargarXML(UsuarioSingleton.Instance.UserFolder, UsuarioSingleton.Instance.EmpleadoCUIL,
-                    UsuarioSingleton.Instance.NombreEmpresa, cboAño, cboMes, dgvDetallesRecibo, btnLiquidar, btnGuardar);
+                XMLDocumento = ManejoXML.CargarXML(UsuarioSingleton.Instance.UserFolder, _legajo.EmpleadoCUIL,
+                    _empresa.NombreEmpresa, cboAño, cboMes, dgvDetallesRecibo, btnLiquidar);
 
                 if (XMLDocumento != null)
                 {
@@ -169,22 +212,54 @@ namespace AliS_WinVer
             }
         }
 
-        private void cboMes_SelectedIndexChanged(object sender, EventArgs e)
+        public void cboMes_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboMes.SelectedIndex != -1)
             {
-                ManejoDeRecibo.CargarMes(XMLDocumento, dtXML, dgvDetallesRecibo, cboMes, cboQuincena, btnEditar, btnImprimir, btnLiquidar, lblHaberesRemInfo, lblHaberesNoRemInfo,
-                    lblDeduccionInfo, lblNetoInfo, lblFechaLiquidacionInfo, lblFechaDepositoInfo, lblOcupacionInfo, lblTipoSalarioInfo, null, null, false, isSalarioMensual);
+                string rta = ManejoDeRecibo.CargarMes(XMLDocumento, dtXML, dgvDetallesRecibo, cboMes, cboQuincena, btnEditar, btnImprimir, btnLiquidar, lblHaberesRemInfo, lblHaberesNoRemInfo,
+                    lblDeduccionInfo, lblNetoInfo, lblFechaLiquidacionInfo, lblFechaDepositoInfo, lblOcupacionInfo, lblTipoSalarioInfo, null, null, ref tempBanco, ref tempConvenio, false, isSalarioMensual);
+
+                switch (rta)
+                {
+                    case "nuevo":
+                        isSalarioMensual = _legajo.TipoSalario.Equals("Mensual") ? true : false;
+
+                        if (isSalarioMensual)
+                        {
+                            cboQuincena.Enabled = false;
+                            cboQuincena.SelectedIndex = -1;
+                        }
+                        else
+                        {
+                            cboQuincena.Enabled = true;
+                        }
+
+                        btnLiquidar.Enabled = true;
+
+                        break;
+                    case "salarioMensual":
+                        isSalarioMensual = true;
+                        break;
+                    case "salarioQuincenal":
+                        isSalarioMensual = false;
+                        break;
+                }
             }
         }
 
-        private void cboQuincena_SelectedIndexChanged(object sender, EventArgs e)
+        public void cboQuincena_SelectedIndexChanged(object sender, EventArgs e)
         {
 
             if (cboQuincena.SelectedIndex != -1)
             {
                 ManejoDeRecibo.CargarQuincena(XMLDocumento, dtXML, dgvDetallesRecibo, cboMes, cboQuincena, btnEditar, btnImprimir, btnLiquidar, lblHaberesRemInfo, lblHaberesNoRemInfo,
-                    lblDeduccionInfo, lblNetoInfo, lblFechaLiquidacionInfo, lblFechaDepositoInfo, lblOcupacionInfo, lblTipoSalarioInfo, null, null, false, isSalarioMensual);
+                    lblDeduccionInfo, lblNetoInfo, lblFechaLiquidacionInfo, lblFechaDepositoInfo, lblOcupacionInfo, lblTipoSalarioInfo, null, null, ref tempBanco, ref tempConvenio, false, isSalarioMensual);
+
+                btnLiquidar.Enabled = _legajo.TipoSalario == "Mensual" ? false : true;
+            }
+            else
+            {
+                btnLiquidar.Enabled = false;
             }
             
         }
@@ -193,37 +268,29 @@ namespace AliS_WinVer
         #region METODOS
         private void CargaPerfil()
         {
-            int treeviewIndex = 0;
 
             try
             {
-                treeviewIndex = treLegajosList.SelectedNode.Index;
-
-                UsuarioSingleton.Instance.NombreEmpleado = tablaLegajos.Rows[treeviewIndex][0].ToString();
-                UsuarioSingleton.Instance.EmpleadoCUIL = tablaLegajos.Rows[treeviewIndex][1].ToString();
-                UsuarioSingleton.Instance.PuestoRecibo = tablaLegajos.Rows[treeviewIndex][2].ToString();
-                UsuarioSingleton.Instance.FechaIngreso = tablaLegajos.Rows[treeviewIndex][3].ToString();
-                UsuarioSingleton.Instance.LegajoNumero = tablaLegajos.Rows[treeviewIndex][4].ToString();
-                UsuarioSingleton.Instance.TipoSalario = tablaLegajos.Rows[treeviewIndex][5].ToString();
-                UsuarioSingleton.Instance.Banco = tablaLegajos.Rows[treeviewIndex][6].ToString();
-                UsuarioSingleton.Instance.Convenio = tablaLegajos.Rows[treeviewIndex][7].ToString();
+                _legajo.CurrentUserXmlFolder = string.Format("{0}\\{1}\\{2}\\", UsuarioSingleton.Instance.AlisFolder, _empresa.NombreEmpresa, _legajo.EmpleadoCUIL.Replace("-", ""));
+                
+                UsuarioSingleton.Instance._Legajo = _legajo.Clone() as Legajo;
 
                 groupBox1.Visible = true;
                 isProfileLoaded = false;
                 cboAño.Enabled = true;
 
-                if (lblCUILInfo.Text != UsuarioSingleton.Instance.EmpleadoCUIL)
+                if (lblCUILInfo.Text != _legajo.EmpleadoCUIL)
                 {
-                    string ingresoDS = UsuarioSingleton.Instance.FechaIngreso;
+                    string ingresoDS = _legajo.FechaIngreso;
                     string[] ingresoArray = ingresoDS.Split('/');
                     int ingresoAño = Convert.ToInt32(ingresoArray[2]);
 
-                    nombre.Text = UsuarioSingleton.Instance.NombreEmpleado;
-                    lblCUILInfo.Text = UsuarioSingleton.Instance.EmpleadoCUIL;
-                    lblOcupacionInfo.Text = UsuarioSingleton.Instance.PuestoRecibo;
-                    lblFechaIngresoInfo.Text = UsuarioSingleton.Instance.FechaIngreso;
-                    lblLegajoNumInfo.Text = UsuarioSingleton.Instance.LegajoNumero;
-                    lblTipoSalarioInfo.Text = UsuarioSingleton.Instance.TipoSalario;
+                    nombre.Text = _legajo.NombreEmpleado;
+                    lblCUILInfo.Text = _legajo.EmpleadoCUIL;
+                    lblOcupacionInfo.Text = _legajo.PuestoRecibo;
+                    lblFechaIngresoInfo.Text = _legajo.FechaIngreso;
+                    lblLegajoNumInfo.Text = _legajo.NumeroLegajo;
+                    lblTipoSalarioInfo.Text = _legajo.TipoSalario;
 
                     cboAño.Items.Clear();
 
@@ -232,7 +299,7 @@ namespace AliS_WinVer
                         cboAño.Items.Add(ing.ToString());
                     }
 
-                    if (UsuarioSingleton.Instance.TipoSalario.Equals("Mensual"))
+                    if (_legajo.TipoSalario.Equals("Mensual"))
                     {
                         isSalarioMensual = true;
                     }
@@ -273,7 +340,6 @@ namespace AliS_WinVer
 
             btnLiquidar.Visible = false;
             btnEditar.Visible = false;
-            btnGuardar.Enabled = false;
             btnImprimir.Enabled = false;
         }
 
@@ -312,18 +378,6 @@ namespace AliS_WinVer
         }
 
         #endregion
-
-        private void calculadorDeAguinaldoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            HistorialRecibos hist_scrn = new HistorialRecibos();
-
-            hist_scrn.Show();
-        }
-
-        private void btnGuardar_Click(object sender, EventArgs e)
-        {
-            //XMLDocumento.Save(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/coso.xml");
-        }
 
         private void mnubtnCerrar_Click(object sender, EventArgs e)
         {

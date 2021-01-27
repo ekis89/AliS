@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using AliS_WinVer.Clases;
 using AliSlib;
 using AliSLogica.Controladores;
 
@@ -10,13 +11,17 @@ namespace AliS_WinVer
         #region PROPIEDADES
         PrincipalConceptos screenConceptos;
         EditarConcepto edit;
+
+        Empresa _empresa;
         #endregion
 
         #region INICIO
-        public AñadirConcepto(PrincipalConceptos screenConceptos)
+        public AñadirConcepto(PrincipalConceptos screenConceptos, Empresa empresa)
         {
             InitializeComponent();
             this.screenConceptos = screenConceptos;
+
+            this._empresa = empresa;
         }
         #endregion
 
@@ -29,7 +34,7 @@ namespace AliS_WinVer
             string valorPorcentual = (optHaberValorFijo.Checked) ? null : tbxHaberPorcentaje.Text;
             int tipoConcepto = 0;
             int modoConcepto = (optHaberValorFijo.Checked) ? 1 : 2;
-            string componentesPorcentaje = (optHaberValorFijo.Checked) ? null : tbxHaberComponentes.Text;
+            string componentesPorcentaje = (optHaberValorFijo.Checked) ? null : ConvertirCodigoStringAFormulaCodigo(tbxHaberComponentes);
 
             //Chequea si estan todos lo datos necesarios.
             if (tbxHaberCodigo.Text == "" || tbxHaberNombre.Text == "" || optHaberValorFijo.Checked == true && tbxHaberValor.Text == "" || optHaberPorcentaje.Checked == true && tbxHaberPorcentaje.Text == "" || optHaberPorcentaje.Checked == true && tbxHaberComponentes.Text == "" || optBasico.Checked == false && optHaberRem.Checked == false && optHaberNoRem.Checked == false)
@@ -54,7 +59,7 @@ namespace AliS_WinVer
                         tipoConcepto = 1;
                     }
 
-                    string rta = ControladorConcepto.InsertarActualizarConcepto(UsuarioSingleton.Instance.codigoEmpresa, 0, codigo, descripcion, valorFijo,
+                    string rta = ControladorConcepto.InsertarActualizarConcepto(_empresa.codigoEmpresa, 0, codigo, descripcion, valorFijo,
                         valorPorcentual, null, null, tipoConcepto, modoConcepto, componentesPorcentaje);
 
                     if (rta.Equals("ok"))
@@ -84,7 +89,7 @@ namespace AliS_WinVer
             int tipoConcepto = 4;
             int modoConcepto = (optDeducValorFijo.Checked) ? 3 : 4;
 
-            string componentesPorcentaje = (optDeducValorFijo.Checked) ? null : tbxDeducComponentes.Text;
+            string componentesPorcentaje = (optDeducValorFijo.Checked) ? null : ConvertirCodigoStringAFormulaCodigo(tbxDeducComponentes); 
 
             if (tbxDeducCodigo.Text == "" || tbxDeducNombre.Text == "" || optDeducValorFijo.Checked == true && tbxDeducValor.Text == ""
                 || optDeducPorcentaje.Checked == true && tbxDeducPorcentaje.Text == "" || optDeducPorcentaje.Checked == true && tbxDeducComponentes.Text == "")
@@ -95,7 +100,7 @@ namespace AliS_WinVer
             {
                 try
                 {
-                    string rta = ControladorConcepto.InsertarActualizarConcepto(UsuarioSingleton.Instance.codigoEmpresa, 0, codigo, descripcion, null, null, valorFijo,
+                    string rta = ControladorConcepto.InsertarActualizarConcepto(_empresa.codigoEmpresa, 0, codigo, descripcion, null, null, valorFijo,
                         valorPorcentual, tipoConcepto, modoConcepto, componentesPorcentaje);
 
                     if (rta.Equals("ok"))
@@ -121,20 +126,20 @@ namespace AliS_WinVer
         //Screen Componentes.
         private void btnDeducSeleccionar_Click(object sender, EventArgs e)
         {
-            SeleccionarComponentesDeduccionPorcentual porcDed = new SeleccionarComponentesDeduccionPorcentual(screenConceptos, this, edit, false);
+            SeleccionarComponentesDeduccionPorcentual porcDed = new SeleccionarComponentesDeduccionPorcentual(screenConceptos, this, edit, _empresa, false);
             porcDed.Show();
         }
 
         private void btnHaberSelecccionar_Click(object sender, EventArgs e)
         {
-            SeleccionarComponentesHaberPorcentual porcHab = new SeleccionarComponentesHaberPorcentual(screenConceptos, this, edit, false);
+            SeleccionarComponentesHaberPorcentual porcHab = new SeleccionarComponentesHaberPorcentual(screenConceptos, this, edit, _empresa, false);
             porcHab.Show();
         }
 
         // Screen formula
         private void btnHaberFormula_Click(object sender, EventArgs e)
         {
-            CrearFormulaHaberFijo HabForm = new CrearFormulaHaberFijo(screenConceptos, this, edit, false);
+            CrearFormulaHaberFijo HabForm = new CrearFormulaHaberFijo(screenConceptos, this, edit, _empresa, false);
             HabForm.Show();
         }
         #endregion
@@ -233,5 +238,39 @@ namespace AliS_WinVer
             screenConceptos.Visible = true;
         }
         #endregion
+
+        #region METODOS
+        private string ConvertirCodigoStringAFormulaCodigo(TextBox textBox)
+        {
+            string formulaPorcentaje = textBox.Text;
+            string[] formulaPorcentajeSplited = formulaPorcentaje.Split('+');
+            string codigoConceptoGrilla;
+
+            for (int i = 0; i < formulaPorcentajeSplited.Length; i++)
+            {
+                for (int a = 0; a < screenConceptos.dgvConceptos.Rows.Count; a++)
+                {
+                    codigoConceptoGrilla = Convert.ToString(screenConceptos.dgvConceptos.Rows[a].Cells[1].Value);
+
+
+                    if (formulaPorcentajeSplited[i].Trim() == String.Format("|{0}|", codigoConceptoGrilla))
+                    {
+                        formulaPorcentaje = formulaPorcentaje.Replace(formulaPorcentajeSplited[i], String.Format(" |{0}| ", Convert.ToString(screenConceptos.dgvConceptos.Rows[a].Cells[0].Value)));
+                    }
+                }
+
+            }
+
+            return formulaPorcentaje;
+        }
+        #endregion
+
+        private void optBasico_CheckedChanged(object sender, EventArgs e)
+        {
+            if(optBasico.Checked)
+                tbxHaberValor.Text = "|PUESTO|";
+            else
+                tbxHaberValor.Text = "";
+        }
     }
 }

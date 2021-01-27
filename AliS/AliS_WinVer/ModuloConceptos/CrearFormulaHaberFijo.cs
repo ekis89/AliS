@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using AliS_WinVer.Clases;
 using AliSLogica.Controladores;
 
 namespace AliS_WinVer
@@ -10,14 +11,18 @@ namespace AliS_WinVer
         AñadirConcepto screenNewConcepto;
         EditarConcepto screenEditConcepto;
         bool isEditMode;
+
+        private Empresa _empresa;
         
-        public CrearFormulaHaberFijo(PrincipalConceptos screenConceptos, AñadirConcepto screenNewConcepto, EditarConcepto screenEditConcepto,  bool isEditMode)
+        public CrearFormulaHaberFijo(PrincipalConceptos screenConceptos, AñadirConcepto screenNewConcepto, EditarConcepto screenEditConcepto, Empresa empresa, bool isEditMode)
         {
             InitializeComponent();
             this.screenConceptos = screenConceptos;
             this.screenNewConcepto = screenNewConcepto;
             this.screenEditConcepto = screenEditConcepto;
             this.isEditMode = isEditMode;
+
+            this._empresa = empresa;
         }
 
         private void FormulaHab_Load(object sender, EventArgs e)
@@ -103,7 +108,7 @@ namespace AliS_WinVer
         {
             //dgvConceptosList.DataSource = ControladorPorcHabComp.RecuperarConceptos(UsuarioSingleton.Instance.NombreEmpresa);
 
-            dgvConceptosList.DataSource = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(UsuarioSingleton.Instance.codigoEmpresa);
+            dgvConceptosList.DataSource = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(_empresa.codigoEmpresa);
 
             dgvConceptosList.Columns[1].Width = 70;
             dgvConceptosList.Columns[2].Width = 200;

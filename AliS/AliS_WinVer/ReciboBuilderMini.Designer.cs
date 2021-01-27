@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReciboBuilderMini));
             this.dgvDetalle = new System.Windows.Forms.DataGridView();
             this.tbxCodigo = new System.Windows.Forms.TextBox();
             this.tbxDescripcion = new System.Windows.Forms.TextBox();
@@ -36,6 +37,8 @@
             this.lblValor = new System.Windows.Forms.Label();
             this.tbxValor = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tbxPorcentaje = new System.Windows.Forms.TextBox();
             this.btnCalculadora = new System.Windows.Forms.Button();
             this.btnAgregar = new System.Windows.Forms.Button();
             this.optDeduccion = new System.Windows.Forms.RadioButton();
@@ -55,7 +58,6 @@
             this.tbxLinea2 = new System.Windows.Forms.TextBox();
             this.lblLinea1 = new System.Windows.Forms.Label();
             this.tbxLinea1 = new System.Windows.Forms.TextBox();
-            this.btnImprimir = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tbxConvenio = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -80,13 +82,24 @@
             this.dtpFechaDeposito = new System.Windows.Forms.DateTimePicker();
             this.lblFechaDeposito = new System.Windows.Forms.Label();
             this.lblFechaLiquidacion = new System.Windows.Forms.Label();
-            this.btnGuardar = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.archivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnNuevoMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnAbrirMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnGuardarMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnGuardarComoMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnImprimirMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnCerrarMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDetalle)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dgvDetalle
@@ -94,7 +107,7 @@
             this.dgvDetalle.AllowUserToAddRows = false;
             this.dgvDetalle.AllowUserToDeleteRows = false;
             this.dgvDetalle.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvDetalle.Location = new System.Drawing.Point(20, 301);
+            this.dgvDetalle.Location = new System.Drawing.Point(20, 334);
             this.dgvDetalle.Name = "dgvDetalle";
             this.dgvDetalle.ReadOnly = true;
             this.dgvDetalle.RowHeadersVisible = false;
@@ -106,7 +119,7 @@
             // tbxCodigo
             // 
             this.tbxCodigo.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.tbxCodigo.Location = new System.Drawing.Point(50, 42);
+            this.tbxCodigo.Location = new System.Drawing.Point(26, 41);
             this.tbxCodigo.MaxLength = 8;
             this.tbxCodigo.Name = "tbxCodigo";
             this.tbxCodigo.Size = new System.Drawing.Size(60, 20);
@@ -114,7 +127,7 @@
             // 
             // tbxDescripcion
             // 
-            this.tbxDescripcion.Location = new System.Drawing.Point(135, 42);
+            this.tbxDescripcion.Location = new System.Drawing.Point(92, 41);
             this.tbxDescripcion.MaxLength = 50;
             this.tbxDescripcion.Name = "tbxDescripcion";
             this.tbxDescripcion.Size = new System.Drawing.Size(168, 20);
@@ -123,7 +136,7 @@
             // lblCodigo
             // 
             this.lblCodigo.AutoSize = true;
-            this.lblCodigo.Location = new System.Drawing.Point(50, 26);
+            this.lblCodigo.Location = new System.Drawing.Point(26, 25);
             this.lblCodigo.Name = "lblCodigo";
             this.lblCodigo.Size = new System.Drawing.Size(40, 13);
             this.lblCodigo.TabIndex = 3;
@@ -132,7 +145,7 @@
             // lblDescripcion
             // 
             this.lblDescripcion.AutoSize = true;
-            this.lblDescripcion.Location = new System.Drawing.Point(132, 26);
+            this.lblDescripcion.Location = new System.Drawing.Point(89, 25);
             this.lblDescripcion.Name = "lblDescripcion";
             this.lblDescripcion.Size = new System.Drawing.Size(63, 13);
             this.lblDescripcion.TabIndex = 4;
@@ -141,7 +154,7 @@
             // lblValor
             // 
             this.lblValor.AutoSize = true;
-            this.lblValor.Location = new System.Drawing.Point(323, 26);
+            this.lblValor.Location = new System.Drawing.Point(343, 25);
             this.lblValor.Name = "lblValor";
             this.lblValor.Size = new System.Drawing.Size(31, 13);
             this.lblValor.TabIndex = 6;
@@ -149,7 +162,7 @@
             // 
             // tbxValor
             // 
-            this.tbxValor.Location = new System.Drawing.Point(326, 42);
+            this.tbxValor.Location = new System.Drawing.Point(346, 41);
             this.tbxValor.MaxLength = 20;
             this.tbxValor.Name = "tbxValor";
             this.tbxValor.Size = new System.Drawing.Size(101, 20);
@@ -158,6 +171,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.tbxPorcentaje);
             this.groupBox1.Controls.Add(this.btnCalculadora);
             this.groupBox1.Controls.Add(this.btnAgregar);
             this.groupBox1.Controls.Add(this.optDeduccion);
@@ -170,16 +185,33 @@
             this.groupBox1.Controls.Add(this.tbxValor);
             this.groupBox1.Controls.Add(this.tbxDescripcion);
             this.groupBox1.Controls.Add(this.lblDescripcion);
-            this.groupBox1.Location = new System.Drawing.Point(20, 109);
+            this.groupBox1.Location = new System.Drawing.Point(20, 142);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(518, 142);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Concepto";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(266, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(15, 13);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "%";
+            // 
+            // tbxPorcentaje
+            // 
+            this.tbxPorcentaje.Location = new System.Drawing.Point(266, 41);
+            this.tbxPorcentaje.Name = "tbxPorcentaje";
+            this.tbxPorcentaje.Size = new System.Drawing.Size(74, 20);
+            this.tbxPorcentaje.TabIndex = 9;
+            this.tbxPorcentaje.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            // 
             // btnCalculadora
             // 
-            this.btnCalculadora.Location = new System.Drawing.Point(433, 41);
+            this.btnCalculadora.Location = new System.Drawing.Point(453, 41);
             this.btnCalculadora.Name = "btnCalculadora";
             this.btnCalculadora.Size = new System.Drawing.Size(39, 22);
             this.btnCalculadora.TabIndex = 10;
@@ -189,11 +221,11 @@
             // 
             // btnAgregar
             // 
-            this.btnAgregar.Location = new System.Drawing.Point(222, 110);
+            this.btnAgregar.Image = ((System.Drawing.Image)(resources.GetObject("btnAgregar.Image")));
+            this.btnAgregar.Location = new System.Drawing.Point(489, 113);
             this.btnAgregar.Name = "btnAgregar";
-            this.btnAgregar.Size = new System.Drawing.Size(75, 23);
+            this.btnAgregar.Size = new System.Drawing.Size(23, 23);
             this.btnAgregar.TabIndex = 14;
-            this.btnAgregar.Text = "Agregar";
             this.btnAgregar.UseVisualStyleBackColor = true;
             this.btnAgregar.Click += new System.EventHandler(this.btnAgregarr_Click);
             // 
@@ -242,7 +274,7 @@
             // lblDetalle
             // 
             this.lblDetalle.AutoSize = true;
-            this.lblDetalle.Location = new System.Drawing.Point(17, 281);
+            this.lblDetalle.Location = new System.Drawing.Point(17, 314);
             this.lblDetalle.Name = "lblDetalle";
             this.lblDetalle.Size = new System.Drawing.Size(40, 13);
             this.lblDetalle.TabIndex = 8;
@@ -251,11 +283,11 @@
             // btnBorrar
             // 
             this.btnBorrar.Enabled = false;
-            this.btnBorrar.Location = new System.Drawing.Point(463, 458);
+            this.btnBorrar.Image = ((System.Drawing.Image)(resources.GetObject("btnBorrar.Image")));
+            this.btnBorrar.Location = new System.Drawing.Point(515, 491);
             this.btnBorrar.Name = "btnBorrar";
-            this.btnBorrar.Size = new System.Drawing.Size(75, 23);
+            this.btnBorrar.Size = new System.Drawing.Size(23, 23);
             this.btnBorrar.TabIndex = 18;
-            this.btnBorrar.Text = "Borrar";
             this.btnBorrar.UseVisualStyleBackColor = true;
             this.btnBorrar.Click += new System.EventHandler(this.btnBorrarr_Click);
             // 
@@ -271,7 +303,7 @@
             this.groupBox2.Controls.Add(this.tbxLinea2);
             this.groupBox2.Controls.Add(this.lblLinea1);
             this.groupBox2.Controls.Add(this.tbxLinea1);
-            this.groupBox2.Location = new System.Drawing.Point(20, 545);
+            this.groupBox2.Location = new System.Drawing.Point(20, 578);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(518, 221);
             this.groupBox2.TabIndex = 27;
@@ -363,17 +395,6 @@
             this.tbxLinea1.Size = new System.Drawing.Size(422, 20);
             this.tbxLinea1.TabIndex = 19;
             // 
-            // btnImprimir
-            // 
-            this.btnImprimir.Enabled = false;
-            this.btnImprimir.Location = new System.Drawing.Point(199, 772);
-            this.btnImprimir.Name = "btnImprimir";
-            this.btnImprimir.Size = new System.Drawing.Size(75, 23);
-            this.btnImprimir.TabIndex = 28;
-            this.btnImprimir.Text = "Imprimir";
-            this.btnImprimir.UseVisualStyleBackColor = true;
-            this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.tbxConvenio);
@@ -386,7 +407,7 @@
             this.groupBox3.Controls.Add(this.lblMes);
             this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Controls.Add(this.tbxPuesto);
-            this.groupBox3.Location = new System.Drawing.Point(20, 12);
+            this.groupBox3.Location = new System.Drawing.Point(20, 45);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(518, 91);
             this.groupBox3.TabIndex = 0;
@@ -585,7 +606,7 @@
             this.groupBox4.Controls.Add(this.lblDeducciones);
             this.groupBox4.Controls.Add(this.lblNoRemTitle);
             this.groupBox4.Controls.Add(this.lblNoRem);
-            this.groupBox4.Location = new System.Drawing.Point(20, 487);
+            this.groupBox4.Location = new System.Drawing.Point(20, 520);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(518, 52);
             this.groupBox4.TabIndex = 26;
@@ -595,7 +616,7 @@
             // dtpFechaLiquidacion
             // 
             this.dtpFechaLiquidacion.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpFechaLiquidacion.Location = new System.Drawing.Point(262, 275);
+            this.dtpFechaLiquidacion.Location = new System.Drawing.Point(262, 308);
             this.dtpFechaLiquidacion.Name = "dtpFechaLiquidacion";
             this.dtpFechaLiquidacion.Size = new System.Drawing.Size(97, 20);
             this.dtpFechaLiquidacion.TabIndex = 15;
@@ -603,7 +624,7 @@
             // dtpFechaDeposito
             // 
             this.dtpFechaDeposito.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpFechaDeposito.Location = new System.Drawing.Point(441, 274);
+            this.dtpFechaDeposito.Location = new System.Drawing.Point(441, 307);
             this.dtpFechaDeposito.Name = "dtpFechaDeposito";
             this.dtpFechaDeposito.Size = new System.Drawing.Size(97, 20);
             this.dtpFechaDeposito.TabIndex = 16;
@@ -612,7 +633,7 @@
             // lblFechaDeposito
             // 
             this.lblFechaDeposito.AutoSize = true;
-            this.lblFechaDeposito.Location = new System.Drawing.Point(376, 281);
+            this.lblFechaDeposito.Location = new System.Drawing.Point(376, 314);
             this.lblFechaDeposito.Name = "lblFechaDeposito";
             this.lblFechaDeposito.Size = new System.Drawing.Size(59, 13);
             this.lblFechaDeposito.TabIndex = 24;
@@ -621,50 +642,123 @@
             // lblFechaLiquidacion
             // 
             this.lblFechaLiquidacion.AutoSize = true;
-            this.lblFechaLiquidacion.Location = new System.Drawing.Point(187, 281);
+            this.lblFechaLiquidacion.Location = new System.Drawing.Point(187, 314);
             this.lblFechaLiquidacion.Name = "lblFechaLiquidacion";
             this.lblFechaLiquidacion.Size = new System.Drawing.Size(69, 13);
             this.lblFechaLiquidacion.TabIndex = 25;
             this.lblFechaLiquidacion.Text = "F. liquidación";
             // 
-            // btnGuardar
-            // 
-            this.btnGuardar.Enabled = false;
-            this.btnGuardar.Location = new System.Drawing.Point(280, 772);
-            this.btnGuardar.Name = "btnGuardar";
-            this.btnGuardar.Size = new System.Drawing.Size(75, 23);
-            this.btnGuardar.TabIndex = 29;
-            this.btnGuardar.Text = "Guardar";
-            this.btnGuardar.UseVisualStyleBackColor = true;
-            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
-            // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.Filter = "Archivo XML | *.xml";
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.archivoToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(555, 24);
+            this.menuStrip1.TabIndex = 30;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // archivoToolStripMenuItem
+            // 
+            this.archivoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnNuevoMenu,
+            this.btnAbrirMenu,
+            this.btnGuardarMenu,
+            this.btnGuardarComoMenu,
+            this.toolStripSeparator1,
+            this.btnImprimirMenu,
+            this.toolStripSeparator2,
+            this.btnCerrarMenu});
+            this.archivoToolStripMenuItem.Name = "archivoToolStripMenuItem";
+            this.archivoToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
+            this.archivoToolStripMenuItem.Text = "Archivo";
+            // 
+            // btnNuevoMenu
+            // 
+            this.btnNuevoMenu.Name = "btnNuevoMenu";
+            this.btnNuevoMenu.Size = new System.Drawing.Size(159, 22);
+            this.btnNuevoMenu.Text = "Nuevo";
+            this.btnNuevoMenu.Click += new System.EventHandler(this.btnNuevoMenu_Click);
+            // 
+            // btnAbrirMenu
+            // 
+            this.btnAbrirMenu.Name = "btnAbrirMenu";
+            this.btnAbrirMenu.Size = new System.Drawing.Size(159, 22);
+            this.btnAbrirMenu.Text = "Abrir";
+            this.btnAbrirMenu.Click += new System.EventHandler(this.btnAbrirMenu_Click);
+            // 
+            // btnGuardarMenu
+            // 
+            this.btnGuardarMenu.Enabled = false;
+            this.btnGuardarMenu.Name = "btnGuardarMenu";
+            this.btnGuardarMenu.Size = new System.Drawing.Size(159, 22);
+            this.btnGuardarMenu.Text = "Guardar";
+            this.btnGuardarMenu.Click += new System.EventHandler(this.btnGuardarMenu_Click);
+            // 
+            // btnGuardarComoMenu
+            // 
+            this.btnGuardarComoMenu.Enabled = false;
+            this.btnGuardarComoMenu.Name = "btnGuardarComoMenu";
+            this.btnGuardarComoMenu.Size = new System.Drawing.Size(159, 22);
+            this.btnGuardarComoMenu.Text = "Guardar como...";
+            this.btnGuardarComoMenu.Click += new System.EventHandler(this.btnGuardarComoMenu_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(156, 6);
+            // 
+            // btnImprimirMenu
+            // 
+            this.btnImprimirMenu.Name = "btnImprimirMenu";
+            this.btnImprimirMenu.Size = new System.Drawing.Size(159, 22);
+            this.btnImprimirMenu.Text = "Imprimir";
+            this.btnImprimirMenu.Click += new System.EventHandler(this.btnImprimirMenu_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(156, 6);
+            // 
+            // btnCerrarMenu
+            // 
+            this.btnCerrarMenu.Name = "btnCerrarMenu";
+            this.btnCerrarMenu.Size = new System.Drawing.Size(159, 22);
+            this.btnCerrarMenu.Text = "Cerrar";
+            this.btnCerrarMenu.Click += new System.EventHandler(this.btnCerrarMenu_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // ReciboBuilderMini
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(555, 803);
-            this.Controls.Add(this.btnGuardar);
+            this.ClientSize = new System.Drawing.Size(555, 809);
             this.Controls.Add(this.lblFechaLiquidacion);
             this.Controls.Add(this.lblFechaDeposito);
             this.Controls.Add(this.dtpFechaDeposito);
             this.Controls.Add(this.dtpFechaLiquidacion);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.btnImprimir);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnBorrar);
             this.Controls.Add(this.lblDetalle);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dgvDetalle);
+            this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ReciboBuilderMini";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Recibo manual";
+            this.Text = "Liquidaciones extras";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReciboBuilderMini_FormClosing);
             this.Load += new System.EventHandler(this.ReciboBuilderMini_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvDetalle)).EndInit();
@@ -676,6 +770,8 @@
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -698,7 +794,6 @@
         private System.Windows.Forms.Label lblDetalle;
         private System.Windows.Forms.Button btnBorrar;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button btnImprimir;
         private System.Windows.Forms.Label lblLinea4;
         private System.Windows.Forms.TextBox tbxLinea4;
         private System.Windows.Forms.Label lblLinea3;
@@ -735,7 +830,19 @@
         private System.Windows.Forms.DateTimePicker dtpFechaDeposito;
         private System.Windows.Forms.Label lblFechaDeposito;
         private System.Windows.Forms.Label lblFechaLiquidacion;
-        private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem archivoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem btnNuevoMenu;
+        private System.Windows.Forms.ToolStripMenuItem btnAbrirMenu;
+        private System.Windows.Forms.ToolStripMenuItem btnGuardarMenu;
+        private System.Windows.Forms.ToolStripMenuItem btnGuardarComoMenu;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem btnCerrarMenu;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.ToolStripMenuItem btnImprimirMenu;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tbxPorcentaje;
     }
 }

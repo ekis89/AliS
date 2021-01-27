@@ -24,18 +24,35 @@ namespace AliSDatos.Catalogos
             }
         }
 
-        public static DataTable InsertarAcualizarPuesto(int codigoEmpresa, int codigoPuesto, string descripcion, int tipoPuesto, string montoBasico)
+        public static DataTable RecuperarPuestoPorEmpresaYLegajo(int codigoEmpresa, string numeroLegajo)
         {
             try
             {
                 Dictionary<string, object> listaParametros = new Dictionary<string, object>();
+                listaParametros.Add("intCodigoEmpresa", codigoEmpresa);
+                listaParametros.Add("intNumeroLegajo", numeroLegajo);
+
+                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("RecuperarPuestoPorEmpresaYLegajo", listaParametros);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static DataTable InsertarAcualizarPuesto(int codigoEmpresa, string codigo, int codigoPuesto, string descripcion, int tipoPuesto, string montoBasico)
+        {
+            try
+            {
+                Dictionary<string, object> listaParametros = new Dictionary<string, object>();
+                listaParametros.Add("chvCodigo", codigo);
                 listaParametros.Add("intCodigoEmpresa", codigoEmpresa);
                 listaParametros.Add("intCodigoPuesto", codigoPuesto);
                 listaParametros.Add("chvDescripcion", descripcion);
                 listaParametros.Add("intCodigoTipoPuesto", tipoPuesto);
                 listaParametros.Add("chvMontoBasico", montoBasico);
 
-                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("InsertarAcualizarPuesto", listaParametros);
+                return ManejoDeDBs.EjecutarConsultaEnProcedimiento("InsertarActualizarPuesto", listaParametros);
             }
             catch (Exception ex)
             {

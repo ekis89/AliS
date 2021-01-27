@@ -2,46 +2,44 @@
 using System.Data;
 using System.Windows.Forms;
 using AliSlib;
-using Obj;
 using AliSLogica.Controladores;
 using AliSLogica.Complementarios;
 using System.Text;
+using AliS_WinVer.Clases;
+using System.Collections.Generic;
 
 namespace AliS_WinVer
 {
     public partial class PrincipalConceptos : Form
     {
         #region PROPIEDADES
-        private Index Index;
+        private Form Index;
         private GestionLiquidacionConceptos ScreenLiquidar;
         public DataTable tablaConceptos;
         public bool isDeduccion;
         private bool IsModoEditar;
 
+        private Empresa _empresa;
+
         #endregion
 
         #region INICIO
-        public PrincipalConceptos(Index Index, GestionLiquidacionConceptos Liquidar_scrn, bool isModoEditar)
+        public PrincipalConceptos(Principal Index, GestionLiquidacionConceptos Liquidar_scrn, Empresa empresa, bool isModoEditar)
         {
             InitializeComponent();
             this.Index = Index;
             this.IsModoEditar = isModoEditar;
             this.ScreenLiquidar = Liquidar_scrn;
+            this._empresa = empresa;
         }
 
         public void conceptos_Load(object sender, EventArgs e)
         {
-            this.Text = string.Format("{0}: Conceptos", UsuarioSingleton.Instance.NombreEmpresa);
+            this.Text = string.Format("{0}: Conceptos", _empresa.NombreEmpresa);
 
-            tablaConceptos = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(UsuarioSingleton.Instance.codigoEmpresa);
+            tablaConceptos = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(_empresa.codigoEmpresa);
 
             CargarTablaConceptos();
-
-            if (IsModoEditar)
-            {
-                AdaptarTablaModoEditar();
-            }
-
 
         }
         #endregion
@@ -49,7 +47,7 @@ namespace AliS_WinVer
         #region BOTONES
         private void button1_Click(object sender, EventArgs e)
         {
-            AñadirConcepto añadirConcepto = new AñadirConcepto(this);
+            AñadirConcepto añadirConcepto = new AñadirConcepto(this, _empresa);
             this.Visible = false;
             añadirConcepto.Show();
         }
@@ -57,8 +55,8 @@ namespace AliS_WinVer
         //Elimina concepto.
         private void button3_Click(object sender, EventArgs e)
         {
-            DataTable rta;
-            string nombreEmpresa = UsuarioSingleton.Instance.NombreEmpresa.Replace(" ", "");
+            string verificarConcepto;
+            string nombreEmpresa = _empresa.NombreEmpresa.Replace(" ", "");
 
             int codigoConceptoPorEmpresa = Convert.ToInt32(dgvConceptos.CurrentRow.Cells[0].Value);
             string codigo = Convert.ToString(dgvConceptos.CurrentRow.Cells[1].Value);
@@ -73,33 +71,18 @@ namespace AliS_WinVer
 
                 try
                 {
+                    verificarConcepto = VerificarConceptoAsigando(codigoConceptoPorEmpresa, codigo);
 
-                    rta = ControladorConcepto.EliminarConceptoPorEmpresa(codigoConceptoPorEmpresa);
-
-
-                    if (rta.Columns[0].ColumnName.Equals("respuesta") && rta.Rows[0][0].Equals("ok"))
+                    if (verificarConcepto == "ok")
                     {
-                        MessageBox.Show("¡El concepto fue eliminado con exito!");
-                    }
-                    else if(rta.Columns[0].ColumnName.Equals("descripcion"))
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.Append("El concepto no se puede eliminar ya que está asociado a la formula de los siguientes conceptos:\n");
-                        sb.Append("\n");
+                        ControladorConcepto.EliminarConceptoPorEmpresa(codigoConceptoPorEmpresa);
 
-                        for (int i = 0; i < rta.Rows.Count; i++ )
-                        {
-                            sb.Append("- " + Convert.ToString(rta.Rows[i][0]) + "\n");
-                        }
-
-                        MessageBox.Show(Convert.ToString(sb));
+                        this.conceptos_Load(null, EventArgs.Empty);
                     }
                     else
                     {
-                        MessageBox.Show(Convert.ToString(rta.Rows[0][0]));
+                        MessageBox.Show(verificarConcepto);
                     }
-
-
 
                 }
                 catch (Exception ex)
@@ -108,157 +91,78 @@ namespace AliS_WinVer
                 }
 
             }
-            /*else if (result == DialogResult.No)
-            {
 
-            }*/
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             this.Visible = false;
 
-            EditarConcepto editarConcepto = new EditarConcepto(this, IsModoEditar);
+            EditarConcepto editarConcepto = new EditarConcepto(this, _empresa, IsModoEditar);
             editarConcepto.Show();
         }
         #endregion
 
-        #region EXCLUSIVO MODO EDITAR
-
-        private void AceptarEditBtn_Click(object sender, EventArgs e)
-        {
-            string cmd;
-            string dtCodigo1;
-            string dtCodigo2;
-            string modo;
-            string fijo;
-            string porc;
-            string formula;
-            string tipo;
-
-            DialogResult confirm = MessageBox.Show("Esto solo afectará a los conceptos modificados en el mes seleccionado.\n¿Desea también actualizar los valores de la lista general de conceptos?", "Confirmar", MessageBoxButtons.YesNo);
-
-            // Modifica el concepto en la DB.
-            if (confirm == DialogResult.Yes)
-            {
-                
-                foreach (DataRow row in ScreenLiquidar.dtXML.Rows)
-                {
-                    int index = ScreenLiquidar.dtXML.Rows.IndexOf(row);
-
-                    dtCodigo1 = (ScreenLiquidar.dtXML.Rows[index][0].ToString()).Replace("\"","");
-
-                    for (int i = 0; i < tablaConceptos.Rows.Count; i++)
-                    {
-                        dtCodigo2 = tablaConceptos.Rows[i][0].ToString();
-                        
-                        if (dtCodigo1 == dtCodigo2)
-                        {
-                            modo = tablaConceptos.Rows[i][7].ToString();
-                            tipo = tablaConceptos.Rows[i][6].ToString();
-
-                            switch (modo)
-                            {
-                                case "hab_fijo":
-                                    fijo = tablaConceptos.Rows[i][2].ToString();
-                                    cmd = string.Format("UPDATE {0}_Conceptos SET hab_fijo = '{1}', hab_porc = NULL, tipo = '{2}', modo = 'hab_fijo', formula_porc = NULL WHERE codigo = '{3}'", UsuarioSingleton.Instance.NombreEmpresa.Replace(" ",""), fijo, tipo, dtCodigo2);
-                                    break;
-                                case "hab_porc":
-                                    porc = tablaConceptos.Rows[i][3].ToString();
-                                    formula = tablaConceptos.Rows[i][8].ToString();
-
-                                    cmd = string.Format("UPDATE {0}_Conceptos SET hab_fijo = NULL, hab_porc = '{1}', tipo = '{2}', modo = 'hab_porc', formula_porc = '{3}' WHERE codigo = '{4}'", UsuarioSingleton.Instance.NombreEmpresa.Replace(" ", ""), porc, tipo, formula, dtCodigo2);
-                                    break;
-                                case "ded_fijo":
-                                    fijo = tablaConceptos.Rows[i][4].ToString();
-
-                                    cmd = string.Format("UPDATE {0}_Conceptos SET ded_fijo = '{1}', ded_porc = NULL, tipo = '{2}', modo = 'ded_fijo', formula_porc = NULL WHERE codigo = '{3}'", UsuarioSingleton.Instance.NombreEmpresa.Replace(" ", ""), fijo, tipo, dtCodigo2);
-                                    break;
-                                default:
-                                    porc = tablaConceptos.Rows[i][5].ToString();
-                                    formula = tablaConceptos.Rows[i][8].ToString();
-
-                                    cmd = string.Format("UPDATE {0}_Conceptos SET ded_fijo = NULL, ded_porc = '{1}', tipo = '{2}', modo = 'ded_porc', formula_porc = '{3}' WHERE codigo = '{4}'", UsuarioSingleton.Instance.NombreEmpresa.Replace(" ", ""), porc, tipo, formula, dtCodigo2);
-                                    break;
-                            }
-                            Utilidades.alisDB(cmd);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Modifica la DataTable entrante de Liquidar Screen.
-            foreach (DataRow DT1_row in ScreenLiquidar.dtXML.Rows)
-            {
-                int index = ScreenLiquidar.dtXML.Rows.IndexOf(DT1_row);
-                dtCodigo1 = ScreenLiquidar.dtXML.Rows[index][0].ToString();
-                for (int i = 0; i < tablaConceptos.Rows.Count; i++)
-                {
-                    dtCodigo2 = "\"" + tablaConceptos.Rows[i][0].ToString() + "\"";
-                    if (dtCodigo1 == dtCodigo2)
-                    {
-                        modo = tablaConceptos.Rows[i][7].ToString();
-                        tipo = tablaConceptos.Rows[i][6].ToString();
-
-                        if (dtCodigo1 == "\"" + "BAS" + "\"")
-                        {
-                            break;
-                        }
-                        switch (modo)
-                        {
-                            case "hab_fijo":
-                                fijo = tablaConceptos.Rows[i][2].ToString();
-                                ScreenLiquidar.editFormulas.Add(fijo);
-
-                                ScreenLiquidar.dtXML.Rows[index][2] = fijo;
-                                ScreenLiquidar.dtXML.Rows[index][3] = "";
-                                ScreenLiquidar.dtXML.Rows[index][6] = tipo;
-                                ScreenLiquidar.dtXML.Rows[index][7] = modo;
-                                ScreenLiquidar.dtXML.Rows[index][8] = "";
-                                break;
-                            case "hab_porc":
-                                porc = tablaConceptos.Rows[i][3].ToString();
-                                formula = tablaConceptos.Rows[i][8].ToString();
-                                ScreenLiquidar.editFormulas.Add("");
-
-                                ScreenLiquidar.dtXML.Rows[index][2] = "";
-                                ScreenLiquidar.dtXML.Rows[index][3] = porc;
-                                ScreenLiquidar.dtXML.Rows[index][6] = tipo;
-                                ScreenLiquidar.dtXML.Rows[index][7] = modo;
-                                ScreenLiquidar.dtXML.Rows[index][8] = formula;
-                                break;
-                            case "ded_fijo":
-                                fijo = tablaConceptos.Rows[i][4].ToString();
-                                ScreenLiquidar.editFormulas.Add(fijo);
-
-                                ScreenLiquidar.dtXML.Rows[index][4] = fijo;
-                                ScreenLiquidar.dtXML.Rows[index][5] = "";
-                                ScreenLiquidar.dtXML.Rows[index][6] = tipo;
-                                ScreenLiquidar.dtXML.Rows[index][7] = modo;
-                                ScreenLiquidar.dtXML.Rows[index][8] = "";
-                                break;
-                            default:
-                                porc = tablaConceptos.Rows[i][5].ToString();
-                                formula = tablaConceptos.Rows[i][8].ToString();
-                                ScreenLiquidar.editFormulas.Add("");
-
-
-                                ScreenLiquidar.dtXML.Rows[index][4] = "";
-                                ScreenLiquidar.dtXML.Rows[index][5] = porc;
-                                ScreenLiquidar.dtXML.Rows[index][6] = tipo;
-                                ScreenLiquidar.dtXML.Rows[index][7] = modo;
-                                ScreenLiquidar.dtXML.Rows[index][8] = formula;
-                                break;
-                        }
-                    }
-                }
-            }
-            Close();
-        }
-        #endregion
-
         #region METODOS
+        private string VerificarConceptoAsigando(int codigoConceptoPorEmpresa, string codigo)
+        {
+            List<string> listaConceptos = new List<string>();
+            List<string> listaLegajos = new List<string>();
+            StringBuilder sb = new StringBuilder();
+
+            try
+            {
+                DataTable tablaLegajos = ControladorPersona.RecuperarPersonasPorEmpresa(_empresa.codigoEmpresa);
+                DataTable tablaConceptos = ControladorConcepto.RecuperarConceptosPorCodigoEmpresa(_empresa.codigoEmpresa);
+
+                foreach (DataRow row in tablaConceptos.Rows)
+                {
+                    if(Convert.ToString(row["hab_fijo"]).Contains("|" + codigo + "|") || Convert.ToString(row["ded_fijo"]).Contains("|" + codigo + "|") || Convert.ToString(row["formula_porc"]).Contains("|" + codigoConceptoPorEmpresa + "|"))
+                    {
+                        listaConceptos.Add(String.Format("Cod: {0} - {1}", Convert.ToString(row["codigo"]), Convert.ToString(row["descripcion"])));
+                    }
+                }
+
+                foreach (DataRow row in tablaLegajos.Rows)
+                {
+                    if (Convert.ToString(row["conceptos"]).Contains("|" + codigoConceptoPorEmpresa + "|"))
+                    {
+                        listaLegajos.Add(String.Format("Nro: {0} - {1} {2}", Convert.ToString(row["numeroLegajo"]), Convert.ToString(row["nombre"]), Convert.ToString(row["apellido"])));
+                    }
+                }
+
+                if( (listaConceptos.Count > 0) || (listaLegajos.Count > 0))
+                {
+                    sb.Append("El concepto no se puede eliminar ya que está asociado a la formula de otro concepto o asociado a un legajo:\n");
+
+                    for (int i = 0; i < listaConceptos.Count; i++)
+                    {
+                        if (i == 0) sb.Append("\n*** CONCEPTOS: \n");
+
+                        sb.Append("- " + listaConceptos[i] + "\n");
+                    }
+
+                    for (int i = 0; i < listaLegajos.Count; i++)
+                    {
+                        if (i == 0) sb.Append("\n*** LEGAJOS: \n");
+
+                        sb.Append("- " + listaLegajos[i] + "\n");
+                    }
+
+                    return sb.ToString();
+                }
+                else
+                {
+                    return "ok";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
 
         private void CargarTablaConceptos()
         {
@@ -295,66 +199,6 @@ namespace AliS_WinVer
             }
         }
 
-        private void AdaptarTablaModoEditar()
-        {
-            string dgvConceptosCodigo2;
-
-            AceptarEditBtn.Visible = true;
-
-            foreach (DataRow row in tablaConceptos.Rows)
-            {
-                int index = tablaConceptos.Rows.IndexOf(row);
-
-                dgvConceptos.CurrentCell = null;
-                dgvConceptos.Rows[index].Visible = false;
-
-                foreach (DataRow r in ScreenLiquidar.dtXML.Rows)
-                {
-                    
-                    if (Convert.ToString(r["tipo"]).Equals("BAS"))
-                    {
-                        continue;
-                    }
-
-                    if (Convert.ToString(r["codigo"]).Replace("\"","").Equals(row["Código"]))
-                    {
-                        dgvConceptos.Rows[index].Visible = true;
-                        break;
-                    }
-                }
-            }
-
-
-
-
-
-
-
-
-
-            //for (int i = 0; i < dgvConceptos.Rows.Count; i++)
-            //{
-            //    dgvConceptosCodigo1 = dgvConceptos.Rows[i].Cells[0].Value.ToString();
-            //    dgvConceptos.CurrentCell = null;
-            //    dgvConceptos.Rows[i].Visible = false;
-
-            //    for (int a = 0; a < ScreenLiquidar.dgvDetalles.Rows.Count; a++)
-            //    {
-            //        dgvConceptosCodigo2 = ScreenLiquidar.dgvDetalles.Rows[a].Cells[0].Value.ToString();
-            //        if (dgvConceptosCodigo1 == dgvConceptosCodigo2)
-            //        {
-            //            dgvConceptos.Rows[i].Visible = true;
-            //            break;
-            //        }
-            //    }
-            //}
-            // Hace los botones agregar y eliminar invisibles cuando esta en modo edit.
-            button1.Visible = false;
-            button3.Visible = false;
-
-            button2.Left = 713;
-        }
-
         #endregion
 
         #region EVENTOS
@@ -364,6 +208,9 @@ namespace AliS_WinVer
             {
                 Index.Enabled = true;
                 Index.Visible = true;
+
+                if (Index.GetType() == typeof(Principal))
+                    (this.MdiParent as Principal).ActivarBotonesTS();
             }
             else
             {
@@ -379,3 +226,5 @@ namespace AliS_WinVer
         #endregion
     }
 }
+
+//TODO:: Cuando elimino un concepto no esta verificando que no este usando como formula en otro concepto, revisar procedure [EliminarConceptoPorEmpresa], Hecho pero revisar con mas ganas el lunes xD

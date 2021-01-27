@@ -1,7 +1,6 @@
 C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSLogica.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSLogica.pdb
 C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSDatos.dll
-C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSlib.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSDatos.pdb
 C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\bin\Debug\AliSlib.pdb
 C:\Users\Resi\source\repos\AliS_WinVer\AliSLogica\obj\Debug\AliSLogica.csprojAssemblyReference.cache

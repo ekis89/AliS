@@ -3,7 +3,8 @@ using System.Data;
 using System.Linq;
 using System.Xml;
 using System.Windows.Forms;
-using Obj;
+using AliSDatos.Complementarios;
+using AliSLogica.Complementarios;
 
 namespace AliS_WinVer
 {
@@ -46,7 +47,7 @@ namespace AliS_WinVer
                 lblAbonar.Enabled = true;
                 lblSemestreSelectTitle.Enabled = true;
                 cboSemestreSelect.Enabled = true;
-                cboSemestreSelect.SelectedIndex = cboSemestreSelect.FindStringExact("1");
+                cboSemestreSelect.SelectedIndex = 0;
 
                 lblMesTitleProp.Enabled = false;
                 lblMesMayorProp.Enabled = false;
@@ -69,6 +70,7 @@ namespace AliS_WinVer
                 if (optSACProp.Checked)
                 {
                     optSACProp.Checked = false;
+                    cboSemestreSelect_SelectedIndexChanged(null, EventArgs.Empty);
                 }
             }
         }
@@ -91,7 +93,7 @@ namespace AliS_WinVer
                 lblAbonarProp.Enabled = true;
                 lblSemestreSelectTitleProp.Enabled = true;
                 cboSemestreSelectProp.Enabled = true;
-                cboSemestreSelectProp.SelectedIndex = cboSemestreSelectProp.FindStringExact("1");
+                cboSemestreSelectProp.SelectedIndex = 0;
 
                 lblMesTitle.Enabled = false;
                 lblMesMayor.Enabled = false;
@@ -109,6 +111,7 @@ namespace AliS_WinVer
                 if (optSAC.Checked)
                 {
                     optSAC.Checked = false;
+                    cboSemestreSelectProp_SelectedIndexChanged(null, EventArgs.Empty);
                 }
             }
         }
@@ -134,7 +137,7 @@ namespace AliS_WinVer
                     {
                         foreach (XmlNode node in coso)
                         {
-                            saldos[index] = double.Parse(node.Attributes["Bruto"].Value);
+                            saldos[index] = double.Parse(node.Attributes["Neto"].Value);
                             mes[index] = node.Name;
                             index++;
                         }
@@ -151,8 +154,8 @@ namespace AliS_WinVer
                     {
                         foreach (XmlNode node in coso)
                         {
-                            Q1 = double.Parse(node.Attributes["Q1_Bruto"].Value);
-                            Q2 = double.Parse(node.Attributes["Q2_Bruto"].Value);
+                            Q1 = double.Parse(node.Attributes["Q1_Neto"].Value);
+                            Q2 = double.Parse(node.Attributes["Q2_Neto"].Value);
                             saldos[index] = Q1 + Q2;
                             mes[index] = node.Name;
                             index++;
@@ -209,7 +212,7 @@ namespace AliS_WinVer
 
                     foreach (XmlNode node in coso)
                     {
-                        saldos[index] = double.Parse(node.Attributes["Bruto"].Value);
+                        saldos[index] = double.Parse(node.Attributes["Neto"].Value);
                         mes[index] = node.Name;
                         index++;
                     }
@@ -240,8 +243,8 @@ namespace AliS_WinVer
 
                     foreach (XmlNode node in coso)
                     {
-                        Q1 = double.Parse(node.Attributes["Q1_Bruto"].Value);
-                        Q2 = double.Parse(node.Attributes["Q2_Bruto"].Value);
+                        Q1 = double.Parse(node.Attributes["Q1_Neto"].Value);
+                        Q2 = double.Parse(node.Attributes["Q2_Neto"].Value);
                         saldos[index] = Q1 + Q2;
                         mes[index] = node.Name;
                         index++;
@@ -270,12 +273,7 @@ namespace AliS_WinVer
         //Agrega el SAC a la lista.
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            DataTable XML_dt = screenLiquidar.dtXML;
-            DataGridView DGV = screenLiquidar.dgvDetalles;
-
-            DataRow row = XML_dt.NewRow();
-
-            string code = string.Format("\"{0}\"", tbxCode.Text);
+            string code = tbxCode.Text;
             string desc = tbxDescripcion.Text;
             string value;
 
@@ -288,22 +286,42 @@ namespace AliS_WinVer
                 value = lblAbonarProp.Text;
             }
 
-            row[0] = code;
-            row[1] = desc;
-            row[2] = value;
-            row[6] = "RM";
-            row[7] = "hab_fijo";
-            row[9] = "1";
-            row[10] = value;
-            row[11] = value;
+            Label th_rem = screenLiquidar.lblRemInfo;
+            Label th_norem = screenLiquidar.lblNoRemInfo;
+            Label tded = screenLiquidar.lblDeduccionesInfo;
+            Label tneto = screenLiquidar.lblNetoInfo;
 
-            XML_dt.Rows.InsertAt(row, 1);
+            DataRow dtXMLNewRow = screenLiquidar.dtXML.NewRow();
+            DataRow dtDgvDetallesNewRow = screenLiquidar.dtDgvDetalles.NewRow();
 
-            ReciboTools.CalcularTabla(XML_dt);
 
-            ReciboTools.DrawTabla(XML_dt, DGV, true);
+            dtDgvDetallesNewRow["codigo"] = code;
+            dtDgvDetallesNewRow["descripcion"] = desc;
+            dtDgvDetallesNewRow["hab_fijo"] = value;
+            dtDgvDetallesNewRow["tipo"] = "RM";
+            dtDgvDetallesNewRow["modo"] = "hab_fijo";
+            dtDgvDetallesNewRow["unidades"] = "1";
+            dtDgvDetallesNewRow["codigoConceptoPorEmpresa"] = -10;
 
-            ReciboTools.CalcularTotales(XML_dt, DGV, screenLiquidar.lblRemInfo, screenLiquidar.lblNoRemInfo, screenLiquidar.lblDeduccionesInfo, screenLiquidar.lblNetoInfo);
+            screenLiquidar.dtDgvDetalles.Rows.Add(dtDgvDetallesNewRow);
+
+            dtXMLNewRow["codigo"] = code;
+            dtXMLNewRow["descripcion"] = desc;
+            dtXMLNewRow["hab_fijo"] = value;
+            dtXMLNewRow["tipo"] = "RM";
+            dtXMLNewRow["modo"] = "hab_fijo";
+            dtXMLNewRow["unidades"] = "1";
+            dtXMLNewRow["codigoConceptoPorEmpresa"] = -10;
+
+            screenLiquidar.dtXML.Rows.Add(dtXMLNewRow);
+
+            ManejoDeRecibo.CalcularTabla(screenLiquidar.dtDgvDetalles);
+
+            screenLiquidar.DibujarTablaLiquidar();
+
+            ManejoDeRecibo.CalcularTotales(screenLiquidar.dtDgvDetalles, screenLiquidar.dgvDetalles, th_rem, th_norem, tded, tneto);
+
+            screenLiquidar.ModificarCeldasHaberDeduccion();
 
             Close();
 
@@ -311,7 +329,7 @@ namespace AliS_WinVer
 
         private void tbxDiasTrabajadosProp_KeyPress(object sender, KeyPressEventArgs e)
         {
-            Tools.only_num(e);
+            UsuarioSingleton.SoloNumeros(e);
         }
 
         private void tbxDiasTrabajadosProp_KeyUp(object sender, KeyEventArgs e)
@@ -321,7 +339,7 @@ namespace AliS_WinVer
 
         private void tbxDiaSemestreProp_KeyPress(object sender, KeyPressEventArgs e)
         {
-            Tools.only_num(e);
+            UsuarioSingleton.SoloNumeros(e);
         }
 
         private void tbxDiaSemestreProp_KeyUp(object sender, KeyEventArgs e)
@@ -332,30 +350,38 @@ namespace AliS_WinVer
         //Hace calculo proporcional segun lo que este escrito en los textBox.
         private void modificarDias()
         {
-            double maxValue = double.Parse(lblSalarioBrutoProp.Text);
-            double diasTrabajados = 0;
-            double diasSemestre = 0;
+            try
+            {
+                double maxValue = Convert.ToDouble(lblSalarioBrutoProp.Text);
+                double diasTrabajados = 0;
+                double diasSemestre = 0;
 
-            if (tbxDiaSemestreProp.Text.Length == 0 || tbxDiaSemestreProp.Text == " ")
-            {
-                diasSemestre = 0;
-            }
-            else
-            {
-                diasSemestre = double.Parse(tbxDiaSemestreProp.Text);
-            }
+                if (tbxDiaSemestreProp.Text.Length == 0 || tbxDiaSemestreProp.Text == " ")
+                {
+                    diasSemestre = 0;
+                }
+                else
+                {
+                    diasSemestre = Convert.ToDouble(tbxDiaSemestreProp.Text);
+                }
 
-            if (tbxDiasTrabajadosProp.Text.Length == 0 || tbxDiasTrabajadosProp.Text == " ")
-            {
-                diasTrabajados = 0;
-            }
-            else
-            {
-                diasTrabajados = double.Parse(tbxDiasTrabajadosProp.Text);
-            }
+                if (tbxDiasTrabajadosProp.Text.Length == 0 || tbxDiasTrabajadosProp.Text == " ")
+                {
+                    diasTrabajados = 0;
+                }
+                else
+                {
+                    diasTrabajados = Convert.ToDouble(tbxDiasTrabajadosProp.Text);
+                }
 
-            double resultado = Math.Round((maxValue / 2) * (diasTrabajados / diasSemestre), 2);
-            lblAbonarProp.Text = resultado.ToString();
+                double resultado = Math.Round((maxValue / 2) * (diasTrabajados / diasSemestre), 2);
+                lblAbonarProp.Text = resultado.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
     }
 }

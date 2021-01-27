@@ -33,22 +33,17 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.treLegajosList = new System.Windows.Forms.TreeView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.lblLegajosList = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.archivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnubtnAbrir = new System.Windows.Forms.ToolStripMenuItem();
             this.mnubtnCerrar = new System.Windows.Forms.ToolStripMenuItem();
             this.herramientasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnubtnRBMini = new System.Windows.Forms.ToolStripMenuItem();
-            this.calculadorDeAguinaldoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dgvDetallesRecibo = new System.Windows.Forms.DataGridView();
             this.lblHaberesRem = new System.Windows.Forms.Label();
             this.lblHaberesNoRem = new System.Windows.Forms.Label();
             this.lblDeduccion = new System.Windows.Forms.Label();
             this.lblNeto = new System.Windows.Forms.Label();
-            this.btnAbrir = new System.Windows.Forms.Button();
             this.lblCUIL = new System.Windows.Forms.Label();
             this.lblFechaIngreso = new System.Windows.Forms.Label();
             this.lblNombre = new System.Windows.Forms.Label();
@@ -78,7 +73,6 @@
             this.lblFechaDeposito = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.btnGuardar = new System.Windows.Forms.Button();
             this.btnImprimir = new System.Windows.Forms.Button();
             this.lblFechaIngresoInfo = new System.Windows.Forms.Label();
             this.lblOcupacionInfo = new System.Windows.Forms.Label();
@@ -93,60 +87,32 @@
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // treLegajosList
-            // 
-            this.treLegajosList.ImageIndex = 0;
-            this.treLegajosList.ImageList = this.imageList1;
-            this.treLegajosList.Location = new System.Drawing.Point(12, 64);
-            this.treLegajosList.Name = "treLegajosList";
-            this.treLegajosList.SelectedImageIndex = 0;
-            this.treLegajosList.Size = new System.Drawing.Size(230, 570);
-            this.treLegajosList.TabIndex = 0;
-            this.treLegajosList.TabStop = false;
-            this.treLegajosList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treLegajosList_AfterSelect);
-            this.treLegajosList.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treLegajosList_NodeMouseDoubleClick);
-            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "person.png");
             // 
-            // lblLegajosList
-            // 
-            this.lblLegajosList.AutoSize = true;
-            this.lblLegajosList.Location = new System.Drawing.Point(12, 48);
-            this.lblLegajosList.Name = "lblLegajosList";
-            this.lblLegajosList.Size = new System.Drawing.Size(47, 13);
-            this.lblLegajosList.TabIndex = 1;
-            this.lblLegajosList.Text = "Legajos:";
-            // 
             // menuStrip1
             // 
+            this.menuStrip1.AllowMerge = false;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.archivoToolStripMenuItem,
             this.herramientasToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(880, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(629, 24);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // archivoToolStripMenuItem
             // 
             this.archivoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnubtnAbrir,
             this.mnubtnCerrar});
             this.archivoToolStripMenuItem.Name = "archivoToolStripMenuItem";
             this.archivoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.archivoToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
             this.archivoToolStripMenuItem.Text = "Archivo";
-            // 
-            // mnubtnAbrir
-            // 
-            this.mnubtnAbrir.Name = "mnubtnAbrir";
-            this.mnubtnAbrir.Size = new System.Drawing.Size(106, 22);
-            this.mnubtnAbrir.Text = "Abrir";
             // 
             // mnubtnCerrar
             // 
@@ -158,9 +124,7 @@
             // herramientasToolStripMenuItem
             // 
             this.herramientasToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnubtnRBMini,
-            this.calculadorDeAguinaldoToolStripMenuItem});
-            this.herramientasToolStripMenuItem.Enabled = false;
+            this.mnubtnRBMini});
             this.herramientasToolStripMenuItem.Name = "herramientasToolStripMenuItem";
             this.herramientasToolStripMenuItem.Size = new System.Drawing.Size(90, 20);
             this.herramientasToolStripMenuItem.Text = "Herramientas";
@@ -168,16 +132,9 @@
             // mnubtnRBMini
             // 
             this.mnubtnRBMini.Name = "mnubtnRBMini";
-            this.mnubtnRBMini.Size = new System.Drawing.Size(224, 22);
-            this.mnubtnRBMini.Text = "Generador de recibo manual";
+            this.mnubtnRBMini.Size = new System.Drawing.Size(181, 22);
+            this.mnubtnRBMini.Text = "Liquidaciones extras";
             this.mnubtnRBMini.Click += new System.EventHandler(this.mnubtnRBMini_Click);
-            // 
-            // calculadorDeAguinaldoToolStripMenuItem
-            // 
-            this.calculadorDeAguinaldoToolStripMenuItem.Name = "calculadorDeAguinaldoToolStripMenuItem";
-            this.calculadorDeAguinaldoToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.calculadorDeAguinaldoToolStripMenuItem.Text = "Historial de liquidaciones";
-            this.calculadorDeAguinaldoToolStripMenuItem.Click += new System.EventHandler(this.calculadorDeAguinaldoToolStripMenuItem_Click);
             // 
             // dgvDetallesRecibo
             // 
@@ -260,17 +217,6 @@
             this.lblNeto.Size = new System.Drawing.Size(34, 13);
             this.lblNeto.TabIndex = 26;
             this.lblNeto.Text = "Neto";
-            // 
-            // btnAbrir
-            // 
-            this.btnAbrir.Enabled = false;
-            this.btnAbrir.Location = new System.Drawing.Point(178, 646);
-            this.btnAbrir.Name = "btnAbrir";
-            this.btnAbrir.Size = new System.Drawing.Size(64, 23);
-            this.btnAbrir.TabIndex = 28;
-            this.btnAbrir.Text = "Abrir";
-            this.btnAbrir.UseVisualStyleBackColor = true;
-            this.btnAbrir.Click += new System.EventHandler(this.btnAbrir_Click);
             // 
             // lblCUIL
             // 
@@ -510,7 +456,7 @@
             this.groupBox1.Controls.Add(this.lblCUIL);
             this.groupBox1.Controls.Add(this.dgvDetallesRecibo);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(261, 27);
+            this.groupBox1.Location = new System.Drawing.Point(11, 27);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(607, 642);
             this.groupBox1.TabIndex = 27;
@@ -620,36 +566,24 @@
             // groupBox3
             // 
             this.groupBox3.BackColor = System.Drawing.SystemColors.Control;
-            this.groupBox3.Controls.Add(this.btnGuardar);
             this.groupBox3.Controls.Add(this.btnImprimir);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(372, 512);
+            this.groupBox3.Location = new System.Drawing.Point(486, 512);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(219, 114);
+            this.groupBox3.Size = new System.Drawing.Size(106, 114);
             this.groupBox3.TabIndex = 43;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Acciones";
-            // 
-            // btnGuardar
-            // 
-            this.btnGuardar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGuardar.Location = new System.Drawing.Point(120, 20);
-            this.btnGuardar.Name = "btnGuardar";
-            this.btnGuardar.Size = new System.Drawing.Size(75, 75);
-            this.btnGuardar.TabIndex = 2;
-            this.btnGuardar.Text = "Guardar";
-            this.btnGuardar.UseVisualStyleBackColor = true;
-            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
             // 
             // btnImprimir
             // 
             this.btnImprimir.Enabled = false;
             this.btnImprimir.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnImprimir.Location = new System.Drawing.Point(24, 20);
+            this.btnImprimir.Location = new System.Drawing.Point(16, 25);
             this.btnImprimir.Name = "btnImprimir";
             this.btnImprimir.Size = new System.Drawing.Size(75, 75);
             this.btnImprimir.TabIndex = 1;
-            this.btnImprimir.Text = "Imprimir";
+            this.btnImprimir.Text = "Generar ";
             this.btnImprimir.UseVisualStyleBackColor = true;
             this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
             // 
@@ -696,29 +630,27 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(430, 332);
+            this.label15.Location = new System.Drawing.Point(197, 332);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(235, 13);
             this.label15.TabIndex = 29;
             this.label15.Text = "Seleccione un legajo y presione el botón \"Abrir\".";
             // 
-            // ReciboBuilder
+            // PrincipalLiquidaciones
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(880, 676);
-            this.Controls.Add(this.btnAbrir);
-            this.Controls.Add(this.lblLegajosList);
-            this.Controls.Add(this.treLegajosList);
+            this.ClientSize = new System.Drawing.Size(629, 676);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label15);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(760, 641);
-            this.Name = "ReciboBuilder";
+            this.MinimumSize = new System.Drawing.Size(16, 715);
+            this.Name = "PrincipalLiquidaciones";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "A.li.S: Liquidador de sueldos - Nombre de empresa";
+            this.Text = "tgg";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReciboBuilder_FormClosing);
             this.Load += new System.EventHandler(this.ReciboBuilder_Load);
             this.menuStrip1.ResumeLayout(false);
@@ -737,18 +669,14 @@
         }
 
         #endregion
-        private System.Windows.Forms.Label lblLegajosList;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem archivoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem herramientasToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem calculadorDeAguinaldoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mnubtnCerrar;
         private System.Windows.Forms.Label lblHaberesRem;
         private System.Windows.Forms.Label lblHaberesNoRem;
         private System.Windows.Forms.Label lblDeduccion;
         private System.Windows.Forms.Label lblNeto;
-        public System.Windows.Forms.TreeView treLegajosList;
-        private System.Windows.Forms.Button btnAbrir;
         private System.Windows.Forms.Label lblCUIL;
         private System.Windows.Forms.Label lblFechaIngreso;
         private System.Windows.Forms.Label lblNombre;
@@ -786,8 +714,6 @@
         public System.Windows.Forms.Label lblTipoSalarioInfo;
         public System.Windows.Forms.Label lblFechaIngresoInfo;
         private System.Windows.Forms.ImageList imageList1;
-        public System.Windows.Forms.Button btnGuardar;
-        private System.Windows.Forms.ToolStripMenuItem mnubtnAbrir;
         public System.Windows.Forms.Label lblOcupacionInfo;
     }
 }

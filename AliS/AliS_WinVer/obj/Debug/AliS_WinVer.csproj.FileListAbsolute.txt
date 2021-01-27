@@ -27,7 +27,6 @@ C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\AliS_WinVer.pdb
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\AliSDatos.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\AliSlib.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\AliSLogica.dll
-C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\ClassLibrary1.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\CrystalDecisions.CrystalReports.Engine.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\CrystalDecisions.ReportSource.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\CrystalDecisions.Shared.dll
@@ -56,7 +55,6 @@ C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\EnvDTE.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\CrystalDecisions.ReportAppServer.CommonControls.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\stdole.dll
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\Microsoft.MSXML.dll
-C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\ClassLibrary1.pdb
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\Recibo.pdb
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\AliSDatos.pdb
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\bin\Debug\AliSlib.pdb
@@ -113,3 +111,5 @@ C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\obj\Debug\AliS_WinVer.Selecci
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\obj\Debug\AliS_WinVer.CrearFormulaHaberFijo.resources
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\obj\Debug\AliS_WinVer.GestionLiquidacionConceptos.resources
 C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\obj\Debug\AliS_WinVer.HistorialRecibos.resources
+C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\obj\Debug\AliS_WinVer.Principal.resources
+C:\Users\Resi\source\repos\AliS_WinVer\AliS_WinVer\obj\Debug\AliS_WinVer.SelectorLegajo.resources
